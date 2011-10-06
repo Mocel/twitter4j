@@ -21,6 +21,7 @@ import twitter4j.internal.async.Dispatcher;
 import twitter4j.internal.http.HttpResponse;
 import twitter4j.internal.org.json.JSONException;
 import twitter4j.internal.org.json.JSONObject;
+import twitter4j.internal.util.z_T4JInternalParseUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -88,9 +89,9 @@ class UserStreamImpl extends StatusStreamImpl implements UserStream {
     }
 
     @Override
-    protected void onFavorite(JSONObject source, JSONObject target, JSONObject targetObject) throws TwitterException {
+    protected void onFavorite(JSONObject source, JSONObject target, JSONObject targetObject, JSONObject createdAt) throws TwitterException {
         for (StreamListener listener : listeners) {
-            ((UserStreamListener) listener).onFavorite(asUser(source), asUser(target), asStatus(targetObject));
+            ((UserStreamListener) listener).onFavorite(asUser(source), asUser(target), asStatus(targetObject), z_T4JInternalParseUtil.getDate("created_at", createdAt));
         }
     }
 
