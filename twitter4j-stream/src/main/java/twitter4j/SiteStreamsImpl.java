@@ -132,9 +132,9 @@ class SiteStreamsImpl extends StatusStreamBase {
     }
 
     @Override
-    protected void onFavorite(final JSONObject source, final JSONObject target, final JSONObject targetObject, StreamListener[] listeners) throws TwitterException {
+    protected void onFavorite(final JSONObject source, final JSONObject target, final JSONObject targetObject, JSONObject createdAt, StreamListener[] listeners) throws TwitterException {
         for (StreamListener listener : listeners) {
-            ((SiteStreamsListener) listener).onFavorite(forUser.get(), asUser(source), asUser(target), asStatus(targetObject));
+            ((SiteStreamsListener) listener).onFavorite(forUser.get(), asUser(source), asUser(target), asStatus(targetObject), createdAt);
         }
     }
 

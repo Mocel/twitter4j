@@ -132,7 +132,7 @@ abstract class StatusStreamBase implements StatusStream {
                                         onFriends(json, listeners);
                                         break;
                                     case FAVORITE:
-                                        onFavorite(json.getJSONObject("source"), json.getJSONObject("target"), json.getJSONObject("target_object"), listeners);
+                                        onFavorite(json.getJSONObject("source"), json.getJSONObject("target"), json.getJSONObject("target_object"), json, listeners);
                                         break;
                                     case UNFAVORITE:
                                         onUnfavorite(json.getJSONObject("source"), json.getJSONObject("target"), json.getJSONObject("target_object"), listeners);
@@ -237,7 +237,7 @@ abstract class StatusStreamBase implements StatusStream {
         logger.warn("Unhandled event: onFriends");
     }
 
-    protected void onFavorite(JSONObject source, JSONObject target, JSONObject targetObject, StreamListener[] listeners) throws TwitterException {
+    protected void onFavorite(JSONObject source, JSONObject target, JSONObject targetObject, JSONObject createdAt, StreamListener[] listeners) throws TwitterException {
         logger.warn("Unhandled event: onFavorite");
     }
 

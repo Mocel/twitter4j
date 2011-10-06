@@ -288,7 +288,7 @@ public class SiteStreamsTest extends TwitterTestBase implements SiteStreamsListe
         notifyResponse();
     }
 
-    public void onFavorite(long forUser, User source, User target, Status favoritedStatus) {
+    public void onFavorite(long forUser, User source, User target, Status favoritedStatus, JSONObject createdAt) {
         received.add(new Object[]{TwitterMethod.CREATE_FAVORITE, forUser, source, target, favoritedStatus});
         Assert.assertNotNull(DataObjectFactory.getRawJSON(source));
         Assert.assertNotNull(DataObjectFactory.getRawJSON(target));

@@ -1,5 +1,7 @@
 package twitter4j;
 
+import twitter4j.internal.org.json.JSONObject;
+
 
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
@@ -19,7 +21,7 @@ public class SiteStreamsAdapter implements SiteStreamsListener {
     }
 
     @Override
-    public void onFavorite(long forUser, User source, User target, Status favoritedStatus) {
+    public void onFavorite(long forUser, User source, User target, Status favoritedStatus, JSONObject createdAt) {
     }
 
     @Override
