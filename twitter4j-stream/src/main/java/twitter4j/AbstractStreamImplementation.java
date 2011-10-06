@@ -116,7 +116,7 @@ abstract class AbstractStreamImplementation {
                             } else if (JSONObjectType.FRIENDS == jsonObjectType) {
                                 onFriends(json);
                             } else if (JSONObjectType.FAVORITE == jsonObjectType) {
-                                onFavorite(json.getJSONObject("source"), json.getJSONObject("target"), json.getJSONObject("target_object"));
+                                onFavorite(json.getJSONObject("source"), json.getJSONObject("target"), json.getJSONObject("target_object"), json);
                             } else if (JSONObjectType.UNFAVORITE == jsonObjectType) {
                                 onUnfavorite(json.getJSONObject("source"), json.getJSONObject("target"), json.getJSONObject("target_object"));
                             } else if (JSONObjectType.RETWEET == jsonObjectType) {
@@ -197,7 +197,7 @@ abstract class AbstractStreamImplementation {
         logger.warn("Unhandled event: onFriends");
     }
 
-    protected void onFavorite(JSONObject source, JSONObject target, JSONObject targetObject) throws TwitterException {
+    protected void onFavorite(JSONObject source, JSONObject target, JSONObject targetObject, JSONObject createdAt) throws TwitterException {
         logger.warn("Unhandled event: onFavorite");
     }
 
