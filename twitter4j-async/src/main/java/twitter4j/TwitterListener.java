@@ -1,5 +1,6 @@
 /*
- * Copyright 2007 Yusuke Yamamoto
+ * Copyright (C) 2007 Yusuke Yamamoto
+ * Copyright (C) 2011 Twitter, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,11 +29,6 @@ import twitter4j.api.HelpMethods;
 public interface TwitterListener {
     /*Search API Methods*/
     void searched(QueryResult queryResult);
-
-    /**
-     * @since Twitter4J 2.0.2
-     */
-    void gotTrends(Trends trends);
 
     /**
      * @since Twitter4J 2.0.2
@@ -480,8 +476,6 @@ public interface TwitterListener {
     /*Search API Methods*/
     TwitterMethod SEARCH = TwitterMethod.SEARCH;
 
-    TwitterMethod TRENDS = TwitterMethod.TRENDS;
-    TwitterMethod CURRENT_TRENDS = TwitterMethod.CURRENT_TRENDS;
     TwitterMethod DAILY_TRENDS = TwitterMethod.DAILY_TRENDS;
     TwitterMethod WEEKLY_TRENDS = TwitterMethod.WEEKLY_TRENDS;
 
