@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.GZIPInputStream;
 
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
