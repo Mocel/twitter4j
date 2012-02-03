@@ -86,6 +86,7 @@ public class SiteStreamsTest extends TwitterTestBase implements SiteStreamsListe
         Assert.assertEquals(4933401l, received.get(0)[1]);
     }
 
+    @SuppressWarnings("deprecation")
     public void testSiteStream() throws Exception {
         InputStream is = SiteStreamsTest.class.getResourceAsStream("/sitestream-test.properties");
         if (null == is) {
