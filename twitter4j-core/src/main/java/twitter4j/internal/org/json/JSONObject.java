@@ -625,7 +625,7 @@ public class JSONObject implements Iterable<String> {
     private void populateMap(Object bean) {
         Class<?> klass = bean.getClass();
 
-        // If klass is a System class then set includeSuperClass to false.
+// If klass is a System class then set includeSuperClass to false.
 
         boolean includeSuperClass = klass.getClassLoader() != null;
 
