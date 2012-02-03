@@ -334,7 +334,7 @@ public class XML {
             return JSONObject.NULL;
         }
 
-// If it might be a number, try converting it. If that doesn't work, 
+// If it might be a number, try converting it. If that doesn't work,
 // return the string.
 
         try {
