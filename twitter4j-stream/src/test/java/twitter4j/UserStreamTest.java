@@ -138,9 +138,11 @@ public class UserStreamTest extends TwitterTestBase implements UserStreamListene
         waitForStatus("createdFriendship");
         assertReceived("onFollow", TwitterMethod.CREATE_FRIENDSHIP);
 
-        status = twitter1.updateStatus("somerandometext " + new Date());
-        waitForStatus("updatedStatus");
-        assertReceived("onstatus", "onstatus");
+        twitter1.retweetStatus(status.getId());
+        waitForStatus();
+        DirectMessage dm = twitter1.sendDirectMessage(id2.id, "test " + new Date());
+        assertNotNull(dm);
+        waitForStatus();
 
         twitter1.destroyStatus(status.getId());
         waitForStatus("destroyedStatus");
