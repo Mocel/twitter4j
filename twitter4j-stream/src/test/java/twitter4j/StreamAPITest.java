@@ -210,6 +210,7 @@ public class StreamAPITest extends TwitterTestBase implements StatusListener, Co
         try {
             twitterStream = new TwitterStreamFactory().getInstance();
             StatusStream stream = twitterStream.getFirehoseStream(0);
+            assertNotNull(stream);
             fail();
         } catch (IllegalStateException ise) {
         } catch (TwitterException te) {
@@ -218,6 +219,7 @@ public class StreamAPITest extends TwitterTestBase implements StatusListener, Co
         try {
             twitterStream = new TwitterStreamFactory().getInstance();
             StatusStream stream = twitterStream.getFilterStream(new FilterQuery(new long[]{6358482}));
+            assertNotNull(stream);
             fail();
         } catch (IllegalStateException ise) {
         } catch (TwitterException te) {
