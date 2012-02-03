@@ -14,26 +14,19 @@
  * limitations under the License.
  */
 
-package twitter4j.internal.json;
+package twitter4j.internal.http;
 
-import twitter4j.HashtagEntity;
-import twitter4j.MediaEntity;
-import twitter4j.URLEntity;
-import twitter4j.UserMentionEntity;
-
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-final class HTMLEntity {
-
-    static String escape(String original) {
+public final class HTMLEntity {
+    public static String escape(String original) {
         StringBuilder buf = new StringBuilder(original);
         escape(buf);
         return buf.toString();
     }
 
-    static void escape(StringBuilder original) {
+    public static void escape(StringBuilder original) {
         int index = 0;
         String escaped;
         while (index < original.length()) {
@@ -47,7 +40,7 @@ final class HTMLEntity {
         }
     }
 
-    static String unescape(String original) {
+    public static String unescape(String original) {
         String returnValue = null;
         if (original != null) {
             StringBuilder buf = new StringBuilder(original);
@@ -57,7 +50,7 @@ final class HTMLEntity {
         return returnValue;
     }
 
-    static void unescape(StringBuilder original) {
+    public static void unescape(StringBuilder original) {
         int index = 0;
         int semicolonIndex;
         String escaped;
@@ -81,90 +74,8 @@ final class HTMLEntity {
         }
     }
 
-    static String unescapeAndSlideEntityIncdices(String text, UserMentionEntity[] userMentionEntities,
-                                                 URLEntity[] urlEntities, HashtagEntity[] hashtagEntities,
-                                                 MediaEntity[] mediaEntities) {
-        
-        int entityIndexesLength = 0;
-        entityIndexesLength += userMentionEntities == null ? 0 : userMentionEntities.length;
-        entityIndexesLength += urlEntities == null ? 0 : urlEntities.length;
-        entityIndexesLength += hashtagEntities == null ? 0 : hashtagEntities.length;
-        entityIndexesLength += mediaEntities == null ? 0 : mediaEntities.length;
-
-        EntityIndex[] entityIndexes = new EntityIndex[entityIndexesLength];
-        int copyStartIndex = 0;
-        if (userMentionEntities != null) {
-            System.arraycopy(userMentionEntities, 0, entityIndexes, copyStartIndex, userMentionEntities.length);
-            copyStartIndex += userMentionEntities.length;
-        }
-        
-        if (urlEntities != null) {
-            System.arraycopy(urlEntities, 0, entityIndexes, copyStartIndex, urlEntities.length);
-            copyStartIndex += urlEntities.length;
-        }
-        
-        if (hashtagEntities != null) {
-            System.arraycopy(hashtagEntities, 0, entityIndexes, copyStartIndex, hashtagEntities.length);
-            copyStartIndex += hashtagEntities.length;
-        }
-        
-        if (mediaEntities != null) {
-            System.arraycopy(mediaEntities, 0, entityIndexes, copyStartIndex, mediaEntities.length);
-        }
-
-        Arrays.sort(entityIndexes);
-        boolean handlingStart = true;
-        int entityIndex = 0;
-
-        int delta = 0;
-        int semicolonIndex;
-        String escaped;
-        String entity;
-        StringBuilder unescaped = new StringBuilder(text.length());
-
-        for (int i = 0; i < text.length(); i++) {
-            char c = text.charAt(i);
-            if (c == '&') {
-                semicolonIndex = text.indexOf(";", i);
-                if (-1 != semicolonIndex) {
-                    escaped = text.substring(i, semicolonIndex + 1);
-                    entity = escapeEntityMap.get(escaped);
-                    if (entity != null) {
-                        unescaped.append(entity);
-                        i = semicolonIndex;
-                    } else {
-                        unescaped.append(c);
-                    }
-                } else {
-                    unescaped.append(c);
-                }
-            } else {
-                unescaped.append(c);
-            }
-            if (entityIndex < entityIndexes.length) {
-                if (handlingStart) {
-                    if (entityIndexes[entityIndex].getStart() == (delta + i)) {
-                        entityIndexes[entityIndex].setStart(unescaped.length() - 1);
-                        handlingStart = false;
-                    }
-                } else if (entityIndexes[entityIndex].getEnd() == (delta + i)) {
-                    entityIndexes[entityIndex].setEnd(unescaped.length() - 1);
-                    entityIndex++;
-                    handlingStart = true;
-                }
-            }
-        }
-        if (entityIndex < entityIndexes.length) {
-            if (entityIndexes[entityIndex].getEnd() == (text.length())) {
-                entityIndexes[entityIndex].setEnd(unescaped.length());
-            }
-        }
-
-        return unescaped.toString();
-    }
-
-    private static final Map<String, String> entityEscapeMap = new HashMap<String, String>();
-    private static final Map<String, String> escapeEntityMap = new HashMap<String, String>();
+    private static Map<String, String> entityEscapeMap = new HashMap<String, String>();
+    private static Map<String, String> escapeEntityMap = new HashMap<String, String>();
 
     static {
         String[][] entities =
@@ -453,4 +364,5 @@ final class HTMLEntity {
             escapeEntityMap.put(entity[1], entity[2]);
         }
     }
+
 }
