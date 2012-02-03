@@ -306,6 +306,7 @@ public class DAOTest extends TwitterTestBase {
         };
         url = "http://api.twitter.com/1.1/statuses/show/2245071380.json";
         Status status = new StatusJSONImpl(validateJSONObjectSchema(url, schema));
+        assertNotNull(status);
 
         schema = new String[]{
                 "profile_background_image_url",
@@ -346,6 +347,7 @@ public class DAOTest extends TwitterTestBase {
 
         url = "http://api.twitter.com/1.1/users/show/yusukey.json";
         User user = new UserJSONImpl(validateJSONObjectSchema(url, schema));
+        assertNotNull(user);
     }
 
     private JSONObject validateJSONObjectSchema(String url, String[] knownNames) throws Exception {
@@ -457,17 +459,17 @@ public class DAOTest extends TwitterTestBase {
         return getJSONObjectFromGetURL(url, builder.build());
     }
 
-    private static JSONObject getJSONObjectFromPostURL(String url, Configuration conf) throws Exception {
-        HttpClientWrapper http = new HttpClientWrapper(conf);
-        return http.post(url).asJSONObject();
-    }
+//    private static JSONObject getJSONObjectFromPostURL(String url, Configuration conf) throws Exception {
+//        HttpClientWrapper http = new HttpClientWrapper(conf);
+//        return http.post(url).asJSONObject();
+//    }
 
-    private JSONObject getJSONObjectFromPostURL(String url) throws Exception {
-        ConfigurationBuilder builder = new ConfigurationBuilder();
-        builder.setUser(id1.screenName);
-        builder.setPassword(id1.password);
-        return getJSONObjectFromPostURL(url, builder.build());
-    }
+//    private JSONObject getJSONObjectFromPostURL(String url) throws Exception {
+//        ConfigurationBuilder builder = new ConfigurationBuilder();
+//        builder.setUser(id1.screenName);
+//        builder.setPassword(id1.password);
+//        return getJSONObjectFromPostURL(url, builder.build());
+//    }
 
     private JSONObject getJSONObjectFromGetURL(String url, Configuration conf) throws Exception {
         HttpClientWrapper http = new HttpClientWrapper(conf);
