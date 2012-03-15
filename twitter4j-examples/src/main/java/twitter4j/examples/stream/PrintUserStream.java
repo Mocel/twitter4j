@@ -16,6 +16,8 @@
 
 package twitter4j.examples.stream;
 
+import java.util.Date;
+
 import twitter4j.DirectMessage;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
@@ -72,7 +74,7 @@ public final class PrintUserStream {
             System.out.println();
         }
 
-        public void onFavorite(User source, User target, Status favoritedStatus) {
+        public void onFavorite(User source, User target, Status favoritedStatus, Date createdAt) {
             System.out.println("onFavorite source:@"
                     + source.getScreenName() + " target:@"
                     + target.getScreenName() + " @"
