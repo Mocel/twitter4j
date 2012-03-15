@@ -16,7 +16,7 @@
 
 package twitter4j;
 
-import twitter4j.internal.org.json.JSONObject;
+import java.util.Date;
 
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
@@ -39,7 +39,7 @@ public interface SiteStreamsListener extends StreamListener {
      * @param target
      * @param favoritedStatus
      */
-    void onFavorite(long forUser, User source, User target, Status favoritedStatus, JSONObject createdAt);
+    void onFavorite(long forUser, User source, User target, Status favoritedStatus, Date createdAt);
 
     /**
      * @param forUser           the user id to whom sent the event

@@ -134,7 +134,7 @@ class SiteStreamsImpl extends StatusStreamBase {
     @Override
     protected void onFavorite(final JSONObject source, final JSONObject target, final JSONObject targetObject, JSONObject createdAt, StreamListener[] listeners) throws TwitterException {
         for (StreamListener listener : listeners) {
-            ((SiteStreamsListener) listener).onFavorite(forUser.get(), asUser(source), asUser(target), asStatus(targetObject), createdAt);
+            ((SiteStreamsListener) listener).onFavorite(forUser.get(), asUser(source), asUser(target), asStatus(targetObject), z_T4JInternalParseUtil.getDate("created_at", createdAt));
         }
     }
 

@@ -16,7 +16,18 @@
 
 package twitter4j.examples.stream;
 
-import twitter4j.*;
+import java.util.Date;
+
+import twitter4j.DirectMessage;
+import twitter4j.StallWarning;
+import twitter4j.Status;
+import twitter4j.StatusDeletionNotice;
+import twitter4j.TwitterException;
+import twitter4j.TwitterStream;
+import twitter4j.TwitterStreamFactory;
+import twitter4j.User;
+import twitter4j.UserList;
+import twitter4j.UserStreamListener;
 
 /**
  * <p>
@@ -75,8 +86,7 @@ public final class PrintUserStream {
             System.out.println();
         }
 
-        @Override
-        public void onFavorite(User source, User target, Status favoritedStatus) {
+        public void onFavorite(User source, User target, Status favoritedStatus, Date createdAt) {
             System.out.println("onFavorite source:@"
                     + source.getScreenName() + " target:@"
                     + target.getScreenName() + " @"

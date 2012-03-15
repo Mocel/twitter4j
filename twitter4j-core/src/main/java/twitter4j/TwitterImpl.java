@@ -333,6 +333,52 @@ class TwitterImpl extends TwitterBaseImpl implements Twitter {
      * {@inheritDoc}
      */
     @Override
+    public ResponseList<Status> getFollowingTimeline(String screenName,
+            Paging paging) throws TwitterException {
+        return factory.createStatusList(get(conf.getRestBaseURL() +
+                "statuses/following_timeline.json", mergeParameters(paging.asPostParameterArray()
+                , new HttpParameter[]{
+                new HttpParameter("screen_name", screenName)
+                , INCLUDE_MY_RETWEET })));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ResponseList<Status> getFollowingTimeline(long userId, Paging paging)
+            throws TwitterException {
+        return factory.createStatusList(get(conf.getRestBaseURL() +
+                "statuses/following_timeline.json", mergeParameters(paging.asPostParameterArray()
+                , new HttpParameter[]{
+                new HttpParameter("user_id", userId)
+                , INCLUDE_MY_RETWEET })));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ResponseList<Status> getFollowingTimeline(String screenName)
+            throws TwitterException {
+        return factory.createStatusList(get(conf.getRestBaseURL() +
+                "statuses/following_timeline.json"
+                , new HttpParameter[]{ new HttpParameter("screen_name", screenName)
+                , INCLUDE_MY_RETWEET }));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ResponseList<Status> getFollowingTimeline(long userId)
+            throws TwitterException {
+        return factory.createStatusList(get(conf.getRestBaseURL() +
+                "statuses/following_timeline.json"
+                , new HttpParameter[]{ new HttpParameter("user_id", userId)
+                , INCLUDE_MY_RETWEET }));
+    }
+
     public DirectMessage destroyDirectMessage(long id) throws
             TwitterException {
         return factory.createDirectMessage(post(conf.getRestBaseURL() + "direct_messages/destroy.json?id=" + id));

@@ -16,6 +16,8 @@
 
 package twitter4j.examples.stream;
 
+import java.util.Date;
+
 import twitter4j.*;
 
 /**
@@ -73,7 +75,7 @@ public final class PrintSiteStreams {
         }
 
         @Override
-        public void onFavorite(long forUser, User source, User target, Status favoritedStatus) {
+        public void onFavorite(long forUser, User source, User target, Status favoritedStatus, Date createdAt) {
             System.out.println("onFavorite for_user:" + forUser + " source:@"
                     + source.getScreenName() + " target:@"
                     + target.getScreenName() + " @"

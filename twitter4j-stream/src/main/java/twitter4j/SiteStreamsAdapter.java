@@ -1,6 +1,6 @@
 package twitter4j;
 
-import twitter4j.internal.org.json.JSONObject;
+import java.util.Date;
 
 
 /**
@@ -21,7 +21,7 @@ public class SiteStreamsAdapter implements SiteStreamsListener {
     }
 
     @Override
-    public void onFavorite(long forUser, User source, User target, Status favoritedStatus, JSONObject createdAt) {
+    public void onFavorite(long forUser, User source, User target, Status favoritedStatus, Date createdAt) {
     }
 
     @Override
