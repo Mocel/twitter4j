@@ -16,18 +16,22 @@
 
 package twitter4j.internal.json;
 
-import twitter4j.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+
+import twitter4j.Location;
+import twitter4j.ResponseList;
+import twitter4j.Trend;
+import twitter4j.Trends;
+import twitter4j.TwitterException;
 import twitter4j.conf.Configuration;
 import twitter4j.internal.http.HttpResponse;
 import twitter4j.internal.org.json.JSONArray;
 import twitter4j.internal.org.json.JSONException;
 import twitter4j.internal.org.json.JSONObject;
 import twitter4j.internal.util.z_T4JInternalParseUtil;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
 
 import static twitter4j.internal.util.z_T4JInternalParseUtil.getDate;
 

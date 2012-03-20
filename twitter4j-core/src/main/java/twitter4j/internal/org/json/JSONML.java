@@ -22,10 +22,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-*/
-
-import java.util.Iterator;
-
+ */
 
 /**
  * This provides static methods to convert an XML text into a JSONArray or
@@ -58,11 +55,11 @@ public class JSONML {
         Object token;
         String tagName = null;
 
-// Test for and skip past these forms:
-//      <!-- ... -->
-//      <![  ... ]]>
-//      <!   ...   >
-//      <?   ...  ?>
+        // Test for and skip past these forms:
+        //      <!-- ... -->
+        //      <![  ... ]]>
+        //      <!   ...   >
+        //      <?   ...  ?>
 
         while (true) {
             token = x.nextContent();
@@ -71,7 +68,7 @@ public class JSONML {
                 if (token instanceof Character) {
                     if (token == XML.SLASH) {
 
-// Close tag </
+                        // Close tag </
 
                         token = x.nextToken();
                         if (!(token instanceof String)) {
@@ -85,7 +82,7 @@ public class JSONML {
                         return token;
                     } else if (token == XML.BANG) {
 
-// <!
+                        // <!
 
                         c = x.next();
                         if (c == '-') {
@@ -117,14 +114,14 @@ public class JSONML {
                         }
                     } else if (token == XML.QUEST) {
 
-// <?
+                        // <?
 
                         x.skipPast("?>");
                     } else {
                         throw x.syntaxError("Misshaped tag");
                     }
 
-// Open tag <
+                    // Open tag <
 
                 } else {
                     if (!(token instanceof String)) {
@@ -156,7 +153,7 @@ public class JSONML {
                             break;
                         }
 
-// attribute = value
+                        // attribute = value
 
                         attribute = (String) token;
                         if (!arrayForm && (attribute == "tagName" || attribute == "childNode")) {
@@ -178,7 +175,7 @@ public class JSONML {
                         newja.put(newjo);
                     }
 
-// Empty tag <.../>
+                    // Empty tag <.../>
 
                     if (token == XML.SLASH) {
                         if (x.nextToken() != XML.GT) {
@@ -192,7 +189,7 @@ public class JSONML {
                             }
                         }
 
-// Content, between <...> and </...>
+                        // Content, between <...> and </...>
 
                     } else {
                         if (token != XML.GT) {
@@ -310,17 +307,15 @@ public class JSONML {
      * @throws JSONException
      */
     public static String toString(JSONArray ja) throws JSONException {
-        int i;
-        JSONObject jo;
-        String key;
-        Iterator<String> keys;
-        int length;
-        Object object;
+        int			 i;
+        JSONObject   jo;
+        int			 length;
+        Object		 object;
         StringBuilder sb = new StringBuilder();
-        String tagName;
-        String value;
+        String       tagName;
+        String       value;
 
-// Emit <tagName
+        // Emit <tagName
 
         tagName = ja.getString(0);
         XML.noSpace(tagName);
@@ -331,13 +326,11 @@ public class JSONML {
         object = ja.opt(1);
         if (object instanceof JSONObject) {
             i = 2;
-            jo = (JSONObject) object;
+            jo = (JSONObject)object;
 
-// Emit the attributes
+            // Emit the attributes
 
-            keys = jo.keys();
-            while (keys.hasNext()) {
-                key = keys.next().toString();
+            for (String key : jo) {
                 XML.noSpace(key);
                 value = jo.optString(key);
                 if (value != null) {
@@ -353,7 +346,7 @@ public class JSONML {
             i = 1;
         }
 
-//Emit content in body
+        //Emit content in body
 
         length = ja.length();
         if (i >= length) {
@@ -368,9 +361,9 @@ public class JSONML {
                     if (object instanceof String) {
                         sb.append(XML.escape(object.toString()));
                     } else if (object instanceof JSONObject) {
-                        sb.append(toString((JSONObject) object));
+                        sb.append(toString((JSONObject)object));
                     } else if (object instanceof JSONArray) {
-                        sb.append(toString((JSONArray) object));
+                        sb.append(toString((JSONArray)object));
                     }
                 }
             } while (i < length);
@@ -394,16 +387,16 @@ public class JSONML {
      */
     public static String toString(JSONObject jo) throws JSONException {
         StringBuilder sb = new StringBuilder();
-        int i;
-        JSONArray ja;
-        String key;
-        Iterator<String> keys;
-        int length;
-        Object object;
-        String tagName;
-        String value;
+        int          i;
+        JSONArray    ja;
+//        String       key;
+//        Iterator     keys;
+        int          length;
+        Object		 object;
+        String       tagName;
+        String       value;
 
-//Emit <tagName
+        //Emit <tagName
 
         tagName = jo.optString("tagName");
         if (tagName == null) {
@@ -414,11 +407,9 @@ public class JSONML {
         sb.append('<');
         sb.append(tagName);
 
-//Emit the attributes
+        //Emit the attributes
 
-        keys = jo.keys();
-        while (keys.hasNext()) {
-            key = keys.next().toString();
+        for (String key : jo) {
             if (!key.equals("tagName") && !key.equals("childNodes")) {
                 XML.noSpace(key);
                 value = jo.optString(key);
@@ -433,7 +424,7 @@ public class JSONML {
             }
         }
 
-//Emit content in body
+        //Emit content in body
 
         ja = jo.optJSONArray("childNodes");
         if (ja == null) {
@@ -448,9 +439,9 @@ public class JSONML {
                     if (object instanceof String) {
                         sb.append(XML.escape(object.toString()));
                     } else if (object instanceof JSONObject) {
-                        sb.append(toString((JSONObject) object));
+                        sb.append(toString((JSONObject)object));
                     } else if (object instanceof JSONArray) {
-                        sb.append(toString((JSONArray) object));
+                        sb.append(toString((JSONArray)object));
                     }
                 }
             }

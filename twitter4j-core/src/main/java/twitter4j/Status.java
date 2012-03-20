@@ -161,4 +161,10 @@ public interface Status extends Comparable<Status>, TwitterResponse,
      * @since Twitter4J 3.0.0
      */
     boolean isPossiblySensitive();
+
+    /**
+     * Returns the status if the authorized user retweeted this.
+     * @return Retweeted Status
+     */
+    public Status getMyRetweetedStatus();
 }

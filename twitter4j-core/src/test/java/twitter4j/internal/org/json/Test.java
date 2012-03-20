@@ -1,5 +1,11 @@
 package twitter4j.internal.org.json;
 
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import junit.framework.TestCase;
 
 import java.io.StringWriter;
@@ -1259,7 +1265,6 @@ public class Test extends TestCase {
             assertTrue(expectedKeys.remove(string2));
         }
         assertEquals(0, expectedKeys.size());
-
 
         // accumulate
         jsonobject = new JSONObject();

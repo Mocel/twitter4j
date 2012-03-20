@@ -22,7 +22,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-*/
+ */
 
 import java.io.IOException;
 import java.io.Writer;
@@ -90,7 +90,7 @@ import java.util.TreeSet;
  * @author JSON.org
  * @version 2010-12-28
  */
-public class JSONObject {
+public class JSONObject implements Iterable<String> {
 
     /**
      * JSONObject.NULL is equivalent to the value that JavaScript calls null,
@@ -193,16 +193,16 @@ public class JSONObject {
         for (; ; ) {
             c = x.nextClean();
             switch (c) {
-                case 0:
-                    throw x.syntaxError("A JSONObject text must end with '}'");
-                case '}':
-                    return;
-                default:
-                    x.back();
-                    key = x.nextValue().toString();
+            case 0:
+                throw x.syntaxError("A JSONObject text must end with '}'");
+            case '}':
+                return;
+            default:
+                x.back();
+                key = x.nextValue().toString();
             }
 
-// The key is followed by ':'. We will also tolerate '=' or '=>'.
+            // The key is followed by ':'. We will also tolerate '=' or '=>'.
 
             c = x.nextClean();
             if (c == '=') {
@@ -214,20 +214,20 @@ public class JSONObject {
             }
             putOnce(key, x.nextValue());
 
-// Pairs are separated by ','. We will also tolerate ';'.
+            // Pairs are separated by ','. We will also tolerate ';'.
 
             switch (x.nextClean()) {
-                case ';':
-                case ',':
-                    if (x.nextClean() == '}') {
-                        return;
-                    }
-                    x.back();
-                    break;
-                case '}':
+            case ';':
+            case ',':
+                if (x.nextClean() == '}') {
                     return;
-                default:
-                    throw x.syntaxError("Expected a ',' or '}'");
+                }
+                x.back();
+                break;
+            case '}':
+                return;
+            default:
+                throw x.syntaxError("Expected a ',' or '}'");
             }
         }
     }
@@ -240,12 +240,10 @@ public class JSONObject {
      *            the JSONObject.
      * @throws JSONException
      */
-    public JSONObject(Map<?, ?> map) {
+    public JSONObject(Map<String, ?> map) {
         this.map = new HashMap<String, Object>();
         if (map != null) {
-            Iterator<?> i = map.entrySet().iterator();
-            while (i.hasNext()) {
-				Map.Entry<?, ?> e = (Map.Entry<?, ?>) i.next();
+            for (Map.Entry<String, ?> e : map.entrySet()) {
                 Object value = e.getValue();
                 if (value != null) {
                     this.map.put(String.valueOf(e.getKey()), wrap(value));
@@ -332,31 +330,28 @@ public class JSONObject {
         ResourceBundle r = ResourceBundle.getBundle(baseName, locale,
                 Thread.currentThread().getContextClassLoader());
 
-// Iterate through the keys in the bundle.
+        // Iterate through the keys in the bundle.
 
         Enumeration<String> keys = r.getKeys();
         while (keys.hasMoreElements()) {
-            Object key = keys.nextElement();
-            if (key instanceof String) {
+            String key = keys.nextElement();
 
-// Go through the path, ensuring that there is a nested JSONObject for each
-// segment except the last. Add the value using the last segment's name into
-// the deepest nested JSONObject.
-
-                String[] path = ((String) key).split("\\.");
-                int last = path.length - 1;
-                JSONObject target = this;
-                for (int i = 0; i < last; i += 1) {
-                    String segment = path[i];
-                    JSONObject nextTarget = target.optJSONObject(segment);
-                    if (nextTarget == null) {
-                        nextTarget = new JSONObject();
-                        target.put(segment, nextTarget);
-                    }
-                    target = nextTarget;
+            // Go through the path, ensuring that there is a nested JSONObject for each
+            // segment except the last. Add the value using the last segment's name into
+            // the deepest nested JSONObject.
+            String[] path = key.split("\\.");
+            int last = path.length - 1;
+            JSONObject target = this;
+            for (int i = 0; i < last; i += 1) {
+                String segment = path[i];
+                JSONObject nextTarget = target.optJSONObject(segment);
+                if (nextTarget == null) {
+                    nextTarget = new JSONObject();
+                    target.put(segment, nextTarget);
                 }
-                target.put(path[last], r.getString((String) key));
+                target = nextTarget;
             }
+            target.put(path[last], r.getString(key));
         }
     }
 
@@ -429,7 +424,7 @@ public class JSONObject {
             return "null";
         }
 
-// Shave off trailing zeros and decimal point, if possible.
+        // Shave off trailing zeros and decimal point, if possible.
 
         String string = Double.toString(d);
         if (string.indexOf('.') > 0 && string.indexOf('e') < 0 &&
@@ -501,7 +496,7 @@ public class JSONObject {
         try {
             return object instanceof Number ?
                     ((Number) object).doubleValue() :
-                    Double.parseDouble((String) object);
+                        Double.parseDouble((String) object);
         } catch (Exception e) {
             throw new JSONException("JSONObject[" + quote(key) +
                     "] is not a number.");
@@ -522,7 +517,7 @@ public class JSONObject {
         try {
             return object instanceof Number ?
                     ((Number) object).intValue() :
-                    Integer.parseInt((String) object);
+                        Integer.parseInt((String) object);
         } catch (Exception e) {
             throw new JSONException("JSONObject[" + quote(key) +
                     "] is not an int.");
@@ -579,7 +574,7 @@ public class JSONObject {
         try {
             return object instanceof Number ?
                     ((Number) object).longValue() :
-                    Long.parseLong((String) object);
+                        Long.parseLong((String) object);
         } catch (Exception e) {
             throw new JSONException("JSONObject[" + quote(key) +
                     "] is not a long.");
@@ -597,12 +592,10 @@ public class JSONObject {
         if (length == 0) {
             return null;
         }
-        Iterator<String> iterator = jo.keys();
         String[] names = new String[length];
         int i = 0;
-        while (iterator.hasNext()) {
-            names[i] = (String) iterator.next();
-            i += 1;
+        for (String key : jo) {
+            names[i++] = key;
         }
         return names;
     }
@@ -706,6 +699,13 @@ public class JSONObject {
         return this.map.keySet().iterator();
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Iterator<String> iterator() {
+        return this.map.keySet().iterator();
+    }
 
     /**
      * Get the number of keys stored in the JSONObject.
@@ -726,9 +726,8 @@ public class JSONObject {
      */
     public JSONArray names() {
         JSONArray ja = new JSONArray();
-        Iterator<String> keys = keys();
-        while (keys.hasNext()) {
-            ja.put(keys.next());
+        for (String key : this) {
+            ja.put(key);
         }
         return ja.length() == 0 ? null : ja;
     }
@@ -747,7 +746,7 @@ public class JSONObject {
         }
         testValidity(number);
 
-// Shave off trailing zeros and decimal point, if possible.
+        // Shave off trailing zeros and decimal point, if possible.
 
         String string = number.toString();
         if (string.indexOf('.') > 0 && string.indexOf('e') < 0 &&
@@ -962,47 +961,47 @@ public class JSONObject {
     private void populateMap(Object bean) {
         Class<?> klass = bean.getClass();
 
-// If klass is a System class then set includeSuperClass to false.
+        // If klass is a System class then set includeSuperClass to false.
 
         boolean includeSuperClass = klass.getClassLoader() != null;
 
         Method[] methods = (includeSuperClass) ?
                 klass.getMethods() : klass.getDeclaredMethods();
-        for (int i = 0; i < methods.length; i += 1) {
-            try {
-                Method method = methods[i];
-                if (Modifier.isPublic(method.getModifiers())) {
-                    String name = method.getName();
-                    String key = "";
-                    if (name.startsWith("get")) {
-                        if (name.equals("getClass") ||
-                                name.equals("getDeclaringClass")) {
-                            key = "";
-                        } else {
-                            key = name.substring(3);
-                        }
-                    } else if (name.startsWith("is")) {
-                        key = name.substring(2);
-                    }
-                    if (key.length() > 0 &&
-                            Character.isUpperCase(key.charAt(0)) &&
-                            method.getParameterTypes().length == 0) {
-                        if (key.length() == 1) {
-                            key = key.toLowerCase();
-                        } else if (!Character.isUpperCase(key.charAt(1))) {
-                            key = key.substring(0, 1).toLowerCase() +
-                                    key.substring(1);
-                        }
+                for (int i = 0; i < methods.length; i += 1) {
+                    try {
+                        Method method = methods[i];
+                        if (Modifier.isPublic(method.getModifiers())) {
+                            String name = method.getName();
+                            String key = "";
+                            if (name.startsWith("get")) {
+                                if (name.equals("getClass") ||
+                                        name.equals("getDeclaringClass")) {
+                                    key = "";
+                                } else {
+                                    key = name.substring(3);
+                                }
+                            } else if (name.startsWith("is")) {
+                                key = name.substring(2);
+                            }
+                            if (key.length() > 0 &&
+                                    Character.isUpperCase(key.charAt(0)) &&
+                                    method.getParameterTypes().length == 0) {
+                                if (key.length() == 1) {
+                                    key = key.toLowerCase();
+                                } else if (!Character.isUpperCase(key.charAt(1))) {
+                                    key = key.substring(0, 1).toLowerCase() +
+                                            key.substring(1);
+                                }
 
-                        Object result = method.invoke(bean, (Object[]) null);
-                        if (result != null) {
-                            map.put(key, wrap(result));
+                                Object result = method.invoke(bean, (Object[]) null);
+                                if (result != null) {
+                                    map.put(key, wrap(result));
+                                }
+                            }
                         }
+                    } catch (Exception ignore) {
                     }
                 }
-            } catch (Exception ignore) {
-            }
-        }
     }
 
 
@@ -1184,40 +1183,40 @@ public class JSONObject {
             b = c;
             c = string.charAt(i);
             switch (c) {
-                case '\\':
-                case '"':
+            case '\\':
+            case '"':
+                sb.append('\\');
+                sb.append(c);
+                break;
+            case '/':
+                if (b == '<') {
                     sb.append('\\');
+                }
+                sb.append(c);
+                break;
+            case '\b':
+                sb.append("\\b");
+                break;
+            case '\t':
+                sb.append("\\t");
+                break;
+            case '\n':
+                sb.append("\\n");
+                break;
+            case '\f':
+                sb.append("\\f");
+                break;
+            case '\r':
+                sb.append("\\r");
+                break;
+            default:
+                if (c < ' ' || (c >= '\u0080' && c < '\u00a0') ||
+                        (c >= '\u2000' && c < '\u2100')) {
+                    hhhh = "000" + Integer.toHexString(c);
+                    sb.append("\\u").append(hhhh.substring(hhhh.length() - 4));
+                } else {
                     sb.append(c);
-                    break;
-                case '/':
-                    if (b == '<') {
-                        sb.append('\\');
-                    }
-                    sb.append(c);
-                    break;
-                case '\b':
-                    sb.append("\\b");
-                    break;
-                case '\t':
-                    sb.append("\\t");
-                    break;
-                case '\n':
-                    sb.append("\\n");
-                    break;
-                case '\f':
-                    sb.append("\\f");
-                    break;
-                case '\r':
-                    sb.append("\\r");
-                    break;
-                default:
-                    if (c < ' ' || (c >= '\u0080' && c < '\u00a0') ||
-                            (c >= '\u2000' && c < '\u2100')) {
-                        hhhh = "000" + Integer.toHexString(c);
-                        sb.append("\\u").append(hhhh.substring(hhhh.length() - 4));
-                    } else {
-                        sb.append(c);
-                    }
+                }
             }
         }
         sb.append('"');
@@ -1360,17 +1359,15 @@ public class JSONObject {
      */
     public String toString() {
         try {
-            Iterator<String> keys = keys();
             StringBuilder sb = new StringBuilder("{");
 
-            while (keys.hasNext()) {
+            for (String key : this) {
                 if (sb.length() > 1) {
                     sb.append(',');
                 }
-                Object o = keys.next();
-                sb.append(quote(o.toString()));
+                sb.append(quote(key));
                 sb.append(':');
-                sb.append(valueToString(this.map.get(o)));
+                sb.append(valueToString(this.map.get(key)));
             }
             sb.append('}');
             return sb.toString();
@@ -1420,17 +1417,17 @@ public class JSONObject {
         }
         Iterator<String> keys = sortedKeys();
         int newindent = indent + indentFactor;
-        Object object;
+        String key;
         StringBuilder sb = new StringBuilder("{");
         if (length == 1) {
-            object = keys.next();
-            sb.append(quote(object.toString()));
+            key = keys.next();
+            sb.append(quote(key));
             sb.append(": ");
-            sb.append(valueToString(this.map.get(object), indentFactor,
+            sb.append(valueToString(this.map.get(key), indentFactor,
                     indent));
         } else {
             while (keys.hasNext()) {
-                object = keys.next();
+                key = keys.next();
                 if (sb.length() > 1) {
                     sb.append(",\n");
                 } else {
@@ -1439,9 +1436,9 @@ public class JSONObject {
                 for (i = 0; i < newindent; i += 1) {
                     sb.append(' ');
                 }
-                sb.append(quote(object.toString()));
+                sb.append(quote(key));
                 sb.append(": ");
-                sb.append(valueToString(this.map.get(object), indentFactor,
+                sb.append(valueToString(this.map.get(key), indentFactor,
                         newindent));
             }
             if (sb.length() > 1) {
@@ -1630,15 +1627,13 @@ public class JSONObject {
     public Writer write(Writer writer) throws JSONException {
         try {
             boolean commanate = false;
-            Iterator<String> keys = keys();
             writer.write('{');
 
-            while (keys.hasNext()) {
+            for (String key : this) {
                 if (commanate) {
                     writer.write(',');
                 }
-                Object key = keys.next();
-                writer.write(quote(key.toString()));
+                writer.write(quote(key));
                 writer.write(':');
                 Object value = this.map.get(key);
                 if (value instanceof JSONObject) {
@@ -1656,4 +1651,5 @@ public class JSONObject {
             throw new JSONException(exception);
         }
     }
+
 }
