@@ -16,16 +16,26 @@
 
 package twitter4j.internal.json;
 
-import twitter4j.*;
+import java.util.Arrays;
+import java.util.Date;
+
+import twitter4j.Annotations;
+import twitter4j.GeoLocation;
+import twitter4j.HashtagEntity;
+import twitter4j.MediaEntity;
+import twitter4j.Place;
+import twitter4j.ResponseList;
+import twitter4j.Status;
+import twitter4j.TwitterException;
+import twitter4j.URLEntity;
+import twitter4j.User;
+import twitter4j.UserMentionEntity;
 import twitter4j.conf.Configuration;
 import twitter4j.internal.http.HttpResponse;
 import twitter4j.internal.logging.Logger;
 import twitter4j.internal.org.json.JSONArray;
 import twitter4j.internal.org.json.JSONException;
 import twitter4j.internal.org.json.JSONObject;
-
-import java.util.Arrays;
-import java.util.Date;
 
 import static twitter4j.internal.util.z_T4JInternalParseUtil.getBoolean;
 import static twitter4j.internal.util.z_T4JInternalParseUtil.getDate;
@@ -37,7 +47,8 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.getUnescapedString;
  *
  * @author Yusuke Yamamoto - yusuke at mac.com
  */
-/*package*/ final class StatusJSONImpl extends TwitterResponseImpl implements Status, java.io.Serializable {
+/*package*/ @SuppressWarnings("deprecation")
+final class StatusJSONImpl extends TwitterResponseImpl implements Status, java.io.Serializable {
     private static final Logger logger = Logger.getLogger(StatusJSONImpl.class);
     private static final long serialVersionUID = 7548618898682727465L;
 
@@ -80,10 +91,10 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.getUnescapedString;
         super();
         init(json);
     }
-    
+
     /* Only for serialization purposes. */
     /*package*/ StatusJSONImpl() {
-    	
+
     }
 
     private void init(JSONObject json) throws TwitterException {
@@ -381,6 +392,11 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.getUnescapedString;
      */
     public MediaEntity[] getMediaEntities() {
         return mediaEntities;
+    }
+
+    @Override
+    public Status getMyRetweetedStatus() {
+        return myRetweetedStatus;
     }
 
     /*package*/

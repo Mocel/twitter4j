@@ -153,6 +153,7 @@ public interface Tweet extends Comparable<Tweet>, EntitySupport, Twt,
      * @return the annotations
      * @since Twitter4J 2.1.4
      */
+    @SuppressWarnings("deprecation")
     Annotations getAnnotations();
 
 }

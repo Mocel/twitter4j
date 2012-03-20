@@ -16,6 +16,15 @@
 
 package twitter4j.auth;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectOutputStream;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -30,16 +39,6 @@ import twitter4j.internal.http.HttpParameter;
 import twitter4j.internal.http.HttpRequest;
 import twitter4j.internal.http.HttpResponse;
 import twitter4j.internal.http.RequestMethod;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
@@ -57,9 +56,6 @@ public class OAuthTest extends TwitterTestBase {
     }
 
     public void testDeterministic() throws Exception {
-        ArrayList list1 = new ArrayList();
-        ArrayList list2 = new ArrayList();
-        assertEquals(list1, list2);
         Twitter twitter1 = new TwitterFactory().getInstance();
         twitter1.setOAuthConsumer(browserConsumerKey, browserConsumerSecret);
         Twitter twitter2 = new TwitterFactory().getInstance();
@@ -416,6 +412,7 @@ public class OAuthTest extends TwitterTestBase {
             Configuration conf = new PropertyConfiguration(props);
             twitter = new TwitterFactory(conf).getInstance();
             AccessToken at = twitter.getOAuthAccessToken(id1.screenName, id1.password);
+            assertNotNull(at);
             twitter.updateStatus(new Date() + ": xAuth test.");
 
             twitter = new TwitterFactory().getInstance();

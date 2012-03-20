@@ -16,12 +16,12 @@
 
 package twitter4j;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import java.io.ByteArrayInputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.ByteArrayInputStream;
+
+import org.w3c.dom.Document;
 
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
@@ -32,14 +32,12 @@ public class SizeofStatusChecker {
         DocumentBuilder builder = null;
         builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         int count = 10000;
-        Status[] statuses = new Status[count];
         long before;
         System.gc();
         before = Runtime.getRuntime().freeMemory();
         for (int i = 0; i < count; i++) {
             Document doc = builder.parse(new ByteArrayInputStream(statusXML.getBytes()));
-            Element elem = doc.getDocumentElement();
-//            statuses[i] = new Status(elem, null);
+            doc.getDocumentElement();
         }
         System.out.println((before - Runtime.getRuntime().freeMemory()) / count);
     }

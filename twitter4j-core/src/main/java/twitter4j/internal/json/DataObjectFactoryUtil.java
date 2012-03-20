@@ -74,7 +74,9 @@ public class DataObjectFactoryUtil {
      */
     public static <T> T registerJSONObject(T key, Object json) {
         try {
-            return (T) REGISTER_JSON_OBJECT.invoke(null, key, json);
+        	@SuppressWarnings("unchecked")
+			T result = (T) REGISTER_JSON_OBJECT.invoke(null, key, json);
+            return result;
         } catch (IllegalAccessException e) {
             throw new AssertionError(e);
         } catch (InvocationTargetException e) {
