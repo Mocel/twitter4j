@@ -45,9 +45,6 @@ public class OAuthTest extends TwitterTestBase {
     }
 
     public void testDeterministic() throws Exception {
-        ArrayList<Object> list1 = new ArrayList<Object>();
-        ArrayList<Object> list2 = new ArrayList<Object>();
-        assertEquals(list1, list2);
         Twitter twitter1 = new TwitterFactory().getInstance();
         twitter1.setOAuthConsumer(browserConsumerKey, browserConsumerSecret);
         Twitter twitter2 = new TwitterFactory().getInstance();
