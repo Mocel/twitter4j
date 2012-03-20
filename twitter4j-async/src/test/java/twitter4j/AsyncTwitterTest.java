@@ -16,14 +16,16 @@
 
 package twitter4j;
 
-import twitter4j.api.HelpResources;
-import twitter4j.auth.AccessToken;
-import twitter4j.auth.RequestToken;
-
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
+
+import junit.framework.Assert;
+import twitter4j.api.HelpMethods;
+import twitter4j.json.DataObjectFactory;
 
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
@@ -34,19 +36,6 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     private AsyncTwitter async2 = null;
     private AsyncTwitter async3 = null;
     private AsyncTwitter bestFriend1Async = null;
-    private ResponseList<Location> locations;
-    private ResponseList<Place> places;
-    private Place place;
-    private ResponseList<Category> categories;
-    private AccountTotals totals;
-    private AccountSettings settings;
-    private ResponseList<Friendship> friendships;
-    private ResponseList<UserList> userLists;
-    private ResponseList<HelpResources.Language> languages;
-    private TwitterAPIConfiguration apiConf;
-    private SavedSearch savedSearch;
-    private ResponseList<SavedSearch> savedSearches;
-    private OEmbed oembed;
 
     public AsyncTwitterTest(String name) {
         super(name);
@@ -85,17 +74,17 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
         async1.showUser(id1.screenName);
         waitForResponse();
         User user = this.user;
-        assertEquals(id1.screenName, user.getScreenName());
-        assertTrue(0 <= user.getFavouritesCount());
-        assertTrue(0 <= user.getFollowersCount());
-        assertTrue(0 <= user.getFriendsCount());
-        assertTrue(0 <= user.getStatusesCount());
-        assertNotNull(user.getProfileBackgroundColor());
-        assertNotNull(user.getProfileTextColor());
-        assertNotNull(user.getProfileLinkColor());
-        assertNotNull(user.getProfileSidebarBorderColor());
-        assertNotNull(user.getProfileSidebarFillColor());
-        assertNotNull(user.getProfileTextColor());
+        Assert.assertEquals(id1.screenName, user.getScreenName());
+        Assert.assertTrue(0 <= user.getFavouritesCount());
+        Assert.assertTrue(0 <= user.getFollowersCount());
+        Assert.assertTrue(0 <= user.getFriendsCount());
+        Assert.assertTrue(0 <= user.getStatusesCount());
+        Assert.assertNotNull(user.getProfileBackgroundColor());
+        Assert.assertNotNull(user.getProfileTextColor());
+        Assert.assertNotNull(user.getProfileLinkColor());
+        Assert.assertNotNull(user.getProfileSidebarBorderColor());
+        Assert.assertNotNull(user.getProfileSidebarFillColor());
+        Assert.assertNotNull(user.getProfileTextColor());
 
         this.user = null;
     }
@@ -103,13 +92,13 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     public void testSearchUser() throws TwitterException {
         async1.searchUsers("Doug Williams", 1);
         waitForResponse();
-        assertTrue(4 < users.size());
+        Assert.assertTrue(4 < users.size());
     }
 
     public void testGetUserTimeline_Show() throws Exception {
         async2.getUserTimeline();
         waitForResponse();
-        assertTrue("size", 10 < statuses.size());
+        Assert.assertTrue("size", 10 < statuses.size());
         async2.getUserTimeline(new Paging(999383469l));
     }
 
@@ -117,24 +106,20 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
         te = null;
         async1.updateProfileImage(getRandomlyChosenFile());
         waitForResponse();
-        assertNull(te);
+        Assert.assertNull(te);
         // tile randomly
         async1.updateProfileBackgroundImage(getRandomlyChosenFile(),
                 (5 < System.currentTimeMillis() % 5));
         waitForResponse();
-        assertNull(te);
+        Assert.assertNull(te);
     }
 
 
     public void testFavorite() throws Exception {
-        Status status = twitter1.getHomeTimeline().get(0);
-        try {
-            twitter2.destroyFavorite(status.getId());
-        } catch (TwitterException te) {
-        }
+        Status status = twitter1.updateStatus(new Date().toString());
         async2.createFavorite(status.getId());
         waitForResponse();
-        assertEquals(status, this.status);
+        Assert.assertEquals(status, this.status);
         this.status = null;
         //need to wait for a second to get it destoryable
         Thread.sleep(5000);
@@ -143,20 +128,20 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
         if (te != null && te.getStatusCode() == 404) {
             // sometimes destorying favorite fails with 404
         } else {
-            assertEquals(status, this.status);
+            Assert.assertEquals(status, this.status);
         }
     }
 
     public void testSocialGraphMethods() throws Exception {
         async1.getFriendsIDs(-1);
         waitForResponse();
-        int yusuke = 4933401;
-        assertIDExsits("twit4j is following yusuke", ids, yusuke);
+        int yusukey = 4933401;
+        assertIDExsits("twit4j is following yusukey", ids, yusukey);
         int ryunosukey = 48528137;
         async1.getFriendsIDs(ryunosukey, -1);
         waitForResponse();
-        assertEquals("ryunosukey is not following anyone", 0, ids.getIDs().length);
-        async1.getFriendsIDs("yusuke", -1);
+        Assert.assertEquals("ryunosukey is not following anyone", 0, ids.getIDs().length);
+        async1.getFriendsIDs("yusukey", -1);
         waitForResponse();
         assertIDExsits("yusukey is following ryunosukey", ids, ryunosukey);
 
@@ -169,10 +154,10 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
         assertIDExsits("twit4j2(6377362) is following twit4j(6358482)", ids, 6377362);
         async1.getFollowersIDs(ryunosukey, -1);
         waitForResponse();
-        assertIDExsits("yusukey is following ryunosukey", ids, yusuke);
+        assertIDExsits("yusukey is following ryunosukey", ids, yusukey);
         async1.getFollowersIDs("ryunosukey", -1);
         waitForResponse();
-        assertIDExsits("yusukey is following ryunosukey", ids, yusuke);
+        assertIDExsits("yusukey is following ryunosukey", ids, yusukey);
     }
 
     private void assertIDExsits(String assertion, IDs ids, int idToFind) {
@@ -183,18 +168,18 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
                 break;
             }
         }
-        assertTrue(assertion, found);
+        Assert.assertTrue(assertion, found);
     }
 
     public void testAccountMethods() throws Exception {
 
         async1.verifyCredentials();
         waitForResponse();
-        assertNotNull(user);
-        assertNotNull(user.getName());
-        assertNotNull(user.getURL());
-        assertNotNull(user.getLocation());
-        assertNotNull(user.getDescription());
+        Assert.assertNotNull(user);
+        Assert.assertNotNull(user.getName());
+        Assert.assertNotNull(user.getURL());
+        Assert.assertNotNull(user.getLocation());
+        Assert.assertNotNull(user.getDescription());
 
         String oldName, oldURL, oldLocation, oldDescription;
         oldName = user.getName();
@@ -212,63 +197,67 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
         async1.updateProfile(newName, newURL, newLocation, newDescription);
 
         waitForResponse();
-        assertEquals(newName, user.getName());
-        assertEquals(newURL, user.getURL().toString());
-        assertEquals(newLocation, user.getLocation());
-        assertEquals(newDescription, user.getDescription());
+        Assert.assertEquals(newName, user.getName());
+        Assert.assertEquals(newURL, user.getURL().toString());
+        Assert.assertEquals(newLocation, user.getLocation());
+        Assert.assertEquals(newDescription, user.getDescription());
 
         //revert the profile
         async1.updateProfile(oldName, oldURL, oldLocation, oldDescription);
         waitForResponse();
 
+        bestFriend1Async.existsFriendship(bestFriend1.screenName, bestFriend2.screenName);
+        waitForResponse();
+        Assert.assertTrue(exists);
+
         async1.updateProfileColors("f00", "f0f", "0ff", "0f0", "f0f");
         waitForResponse();
-        assertEquals("f00", user.getProfileBackgroundColor());
-        assertEquals("f0f", user.getProfileTextColor());
-        assertEquals("0ff", user.getProfileLinkColor());
-        assertEquals("0f0", user.getProfileSidebarFillColor());
-        assertEquals("f0f", user.getProfileSidebarBorderColor());
+        Assert.assertEquals("f00", user.getProfileBackgroundColor());
+        Assert.assertEquals("f0f", user.getProfileTextColor());
+        Assert.assertEquals("0ff", user.getProfileLinkColor());
+        Assert.assertEquals("0f0", user.getProfileSidebarFillColor());
+        Assert.assertEquals("f0f", user.getProfileSidebarBorderColor());
         async1.updateProfileColors("f0f", "f00", "f0f", "0ff", "0f0");
         waitForResponse();
-        assertEquals("f0f", user.getProfileBackgroundColor());
-        assertEquals("f00", user.getProfileTextColor());
-        assertEquals("f0f", user.getProfileLinkColor());
-        assertEquals("0ff", user.getProfileSidebarFillColor());
-        assertEquals("0f0", user.getProfileSidebarBorderColor());
+        Assert.assertEquals("f0f", user.getProfileBackgroundColor());
+        Assert.assertEquals("f00", user.getProfileTextColor());
+        Assert.assertEquals("f0f", user.getProfileLinkColor());
+        Assert.assertEquals("0ff", user.getProfileSidebarFillColor());
+        Assert.assertEquals("0f0", user.getProfileSidebarBorderColor());
         async1.updateProfileColors("87bc44", "9ae4e8", "000000", "0000ff", "e0ff92");
         waitForResponse();
-        assertEquals("87bc44", user.getProfileBackgroundColor());
-        assertEquals("9ae4e8", user.getProfileTextColor());
-        assertEquals("000000", user.getProfileLinkColor());
-        assertEquals("0000ff", user.getProfileSidebarFillColor());
-        assertEquals("e0ff92", user.getProfileSidebarBorderColor());
+        Assert.assertEquals("87bc44", user.getProfileBackgroundColor());
+        Assert.assertEquals("9ae4e8", user.getProfileTextColor());
+        Assert.assertEquals("000000", user.getProfileLinkColor());
+        Assert.assertEquals("0000ff", user.getProfileSidebarFillColor());
+        Assert.assertEquals("e0ff92", user.getProfileSidebarBorderColor());
         async1.updateProfileColors("f0f", null, "f0f", null, "0f0");
         waitForResponse();
-        assertEquals("f0f", user.getProfileBackgroundColor());
-        assertEquals("9ae4e8", user.getProfileTextColor());
-        assertEquals("f0f", user.getProfileLinkColor());
-        assertEquals("0000ff", user.getProfileSidebarFillColor());
-        assertEquals("0f0", user.getProfileSidebarBorderColor());
+        Assert.assertEquals("f0f", user.getProfileBackgroundColor());
+        Assert.assertEquals("9ae4e8", user.getProfileTextColor());
+        Assert.assertEquals("f0f", user.getProfileLinkColor());
+        Assert.assertEquals("0000ff", user.getProfileSidebarFillColor());
+        Assert.assertEquals("0f0", user.getProfileSidebarBorderColor());
         async1.updateProfileColors(null, "f00", null, "0ff", null);
         waitForResponse();
-        assertEquals("f0f", user.getProfileBackgroundColor());
-        assertEquals("f00", user.getProfileTextColor());
-        assertEquals("f0f", user.getProfileLinkColor());
-        assertEquals("0ff", user.getProfileSidebarFillColor());
-        assertEquals("0f0", user.getProfileSidebarBorderColor());
+        Assert.assertEquals("f0f", user.getProfileBackgroundColor());
+        Assert.assertEquals("f00", user.getProfileTextColor());
+        Assert.assertEquals("f0f", user.getProfileLinkColor());
+        Assert.assertEquals("0ff", user.getProfileSidebarFillColor());
+        Assert.assertEquals("0f0", user.getProfileSidebarBorderColor());
         async1.updateProfileColors("9ae4e8", "000000", "0000ff", "e0ff92", "87bc44");
         waitForResponse();
-        assertEquals("9ae4e8", user.getProfileBackgroundColor());
-        assertEquals("000000", user.getProfileTextColor());
-        assertEquals("0000ff", user.getProfileLinkColor());
-        assertEquals("e0ff92", user.getProfileSidebarFillColor());
-        assertEquals("87bc44", user.getProfileSidebarBorderColor());
+        Assert.assertEquals("9ae4e8", user.getProfileBackgroundColor());
+        Assert.assertEquals("000000", user.getProfileTextColor());
+        Assert.assertEquals("0000ff", user.getProfileLinkColor());
+        Assert.assertEquals("e0ff92", user.getProfileSidebarFillColor());
+        Assert.assertEquals("87bc44", user.getProfileSidebarBorderColor());
     }
 
     public void testShow() throws Exception {
         async2.showStatus(1000l);
         waitForResponse();
-        assertEquals(52, status.getUser().getId());
+        Assert.assertEquals(52, status.getUser().getId());
         assertDeserializedFormIsEqual(status);
     }
 
@@ -278,40 +267,47 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
         async2.destroyBlock(id1.screenName);
         waitForResponse();
 
-        async1.getBlocksList();
+        async1.existsBlock("twit4j2");
+        Assert.assertFalse(blockExists);
         waitForResponse();
-        assertEquals(1, users.size());
-        assertEquals(39771963, users.get(0).getId());
-        async1.getBlocksList(-1L);
+        async1.existsBlock("twit4jblock");
         waitForResponse();
-        assertEquals(1, users.size());
-        assertEquals(39771963, users.get(0).getId());
-        async1.getBlocksIDs();
+        Assert.assertTrue(blockExists);
+
+        async1.getBlockingUsers();
         waitForResponse();
-        assertEquals(1, ids.getIDs().length);
-        assertEquals(39771963, ids.getIDs()[0]);
+        Assert.assertEquals(1, users.size());
+        Assert.assertEquals(39771963, users.get(0).getId());
+        async1.getBlockingUsers(1);
+        waitForResponse();
+        Assert.assertEquals(1, users.size());
+        Assert.assertEquals(39771963, users.get(0).getId());
+        async1.getBlockingUsersIDs();
+        waitForResponse();
+        Assert.assertEquals(1, ids.getIDs().length);
+        Assert.assertEquals(39771963, ids.getIDs()[0]);
     }
 
     public void testUpdate() throws Exception {
         String date = new java.util.Date().toString() + "test";
         async1.updateStatus(date);
         waitForResponse();
-        assertEquals("", date, status.getText());
+        Assert.assertEquals("", date, status.getText());
 
         long id = status.getId();
 
         async2.updateStatus(new StatusUpdate("@" + id1.screenName + " " + date).inReplyToStatusId(id));
         waitForResponse();
-        assertEquals("", "@" + id1.screenName + " " + date, status.getText());
-        assertEquals("", id, status.getInReplyToStatusId());
-        assertEquals(twitter1.verifyCredentials().getId(), status.getInReplyToUserId());
+        Assert.assertEquals("", "@" + id1.screenName + " " + date, status.getText());
+        Assert.assertEquals("", id, status.getInReplyToStatusId());
+        Assert.assertEquals(twitter1.verifyCredentials().getId(), status.getInReplyToUserId());
 
 
         id = status.getId();
         this.status = null;
         async2.destroyStatus(id);
         waitForResponse();
-        assertEquals("", "@" + id1.screenName + " " + date, status.getText());
+        Assert.assertEquals("", "@" + id1.screenName + " " + date, status.getText());
         assertDeserializedFormIsEqual(status);
     }
 
@@ -319,10 +315,10 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
         String expectedReturn = new Date() + ":directmessage test";
         async1.sendDirectMessage(id3.id, expectedReturn);
         waitForResponse();
-        assertEquals(expectedReturn, message.getText());
+        Assert.assertEquals(expectedReturn, message.getText());
         async3.getDirectMessages();
         waitForResponse();
-        assertTrue(1 <= messages.size());
+        Assert.assertTrue(1 <= messages.size());
     }
 
     public void testCreateDestroyFriend() throws Exception {
@@ -338,7 +334,7 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
 //        user detail = twitterAPI2.showUser(id1.name);
 //        assertTrue(detail.isNotificationEnabled());
         waitForResponse();
-        assertEquals(id1.screenName, user.getScreenName());
+        Assert.assertEquals(id1.screenName, user.getScreenName());
 
 //        te = null;
 //        twitterAPI2.createFriendshipAsync(id2.name);
@@ -349,17 +345,37 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
         waitForResponse();
         //now befriending with non-existing user returns 404
         //http://groups.google.com/group/twitter-development-talk/browse_thread/thread/bd2a912b181bc39f
-        assertEquals(404, te.getStatusCode());
-        assertEquals(34, te.getErrorCode());
+        Assert.assertEquals(404, te.getStatusCode());
 
     }
 
     public void testRateLimitStatus() throws Exception {
         async1.getRateLimitStatus();
         waitForResponse();
-        RateLimitStatus status = rateLimitStatus.values().iterator().next();
-        assertTrue(1 < status.getLimit());
-        assertTrue(1 < status.getRemaining());
+        Assert.assertTrue(10 < rateLimitStatus.getHourlyLimit());
+        Assert.assertTrue(10 < rateLimitStatus.getRemainingHits());
+    }
+
+    public void testFollowLeave() throws Exception {
+        try {
+            twitter1.disableNotification("twit4jprotected");
+        } catch (TwitterException te) {
+        }
+        te = null;
+        async1.enableNotification("twit4jprotected");
+        waitForResponse();
+        Assert.assertNull(te);
+        async1.disableNotification("twit4jprotected");
+        waitForResponse();
+        Assert.assertNull(te);
+        assertDeserializedFormIsEqual(user);
+
+    }
+
+    public void testNoRetweet() throws Exception {
+        async1.getNoRetweetIds();
+        waitForResponse();
+        assertNotNull(this.ids);
     }
 
     private ResponseList<Status> statuses = null;
@@ -367,65 +383,82 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     private ResponseList<DirectMessage> messages = null;
     private Status status = null;
     private User user = null;
-    private boolean test;
-    private UserList userList;
-    private PagableResponseList<UserList> pagableUserLists;
-    private Relationship relationShip;
     private DirectMessage message = null;
     private TwitterException te = null;
-    private Map<String,RateLimitStatus> rateLimitStatus;
+    private RateLimitStatus rateLimitStatus;
     private boolean exists;
-    private QueryResult queryResult;
     private IDs ids;
-    private Trends trends;
     private boolean blockExists;
-    private RelatedResults relatedResults;
 
     /*Search API Methods*/
-    @Override
     public void searched(QueryResult result) {
         notifyResponse();
     }
 
+    public void gotCurrentTrends(Trends trends) {
+        notifyResponse();
+    }
+
+    public void gotDailyTrends(ResponseList<Trends> trendsList) {
+        notifyResponse();
+    }
+
+    public void gotWeeklyTrends(ResponseList<Trends> trendsList) {
+        notifyResponse();
+    }
+
     /*Timeline Methods*/
-    @Override
     public void gotHomeTimeline(ResponseList<Status> statuses) {
         this.statuses = statuses;
         notifyResponse();
     }
 
-    @Override
     public void gotUserTimeline(ResponseList<Status> statuses) {
         this.statuses = statuses;
         notifyResponse();
     }
 
-    @Override
-    public void gotRetweetsOfMe(ResponseList<Status> statuses) {
-        this.statuses = statuses;
-        notifyResponse();
-    }
-
-    @Override
     public void gotMentions(ResponseList<Status> statuses) {
         this.statuses = statuses;
         notifyResponse();
     }
 
+    public void gotRetweetedByMe(ResponseList<Status> statuses) {
+        this.statuses = statuses;
+        notifyResponse();
+    }
+
+    public void gotRetweetedToMe(ResponseList<Status> statuses) {
+        this.statuses = statuses;
+        notifyResponse();
+    }
+
+    public void gotRetweetsOfMe(ResponseList<Status> statuses) {
+        this.statuses = statuses;
+        notifyResponse();
+    }
+
+    public void gotRetweetedByUser(ResponseList<Status> statuses) {
+        this.statuses = statuses;
+        notifyResponse();
+    }
+
+    public void gotRetweetedToUser(ResponseList<Status> statuses) {
+        this.statuses = statuses;
+        notifyResponse();
+    }
+
     /*Status Methods*/
-    @Override
     public void gotShowStatus(Status status) {
         this.status = status;
         notifyResponse();
     }
 
-    @Override
     public void updatedStatus(Status status) {
         this.status = status;
         notifyResponse();
     }
 
-    @Override
     public void destroyedStatus(Status destroyedStatus) {
         this.status = destroyedStatus;
         notifyResponse();
@@ -434,41 +467,46 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     /**
      * @since Twitter4J 2.0.10
      */
-    @Override
     public void retweetedStatus(Status retweetedStatus) {
         this.status = retweetedStatus;
-        notifyResponse();
-    }
-
-    @Override
-    public void gotOEmbed(OEmbed oembed) {
-        this.oembed = oembed;
         notifyResponse();
     }
 
     /**
      * @since Twitter4J 2.1.0
      */
-    @Override
     public void gotRetweets(ResponseList<Status> retweets) {
         this.statuses = retweets;
         notifyResponse();
     }
 
+    /**
+     * @since Twitter4J 2.1.3
+     */
+    public void gotRetweetedBy(ResponseList<User> users) {
+        this.users = users;
+        notifyResponse();
+    }
+
+    /**
+     * @since Twitter4J 2.1.3
+     */
+    public void gotRetweetedByIDs(IDs ids) {
+        this.ids = ids;
+        notifyResponse();
+    }
+
     /*User Methods*/
-    @Override
     public void gotUserDetail(User user) {
         this.user = user;
         notifyResponse();
     }
 
-    @Override
     public void lookedupUsers(ResponseList<User> users) {
         this.users = users;
         notifyResponse();
     }
 
-    @Override
     public void searchedUser(ResponseList<User> userList) {
         this.users = userList;
         notifyResponse();
@@ -477,7 +515,6 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     /**
      * @since Twitter4J 2.1.1
      */
-    @Override
     public void gotSuggestedUserCategories(ResponseList<Category> categories) {
         notifyResponse();
     }
@@ -485,7 +522,6 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     /**
      * @since Twitter4J 2.1.1
      */
-    @Override
     public void gotUserSuggestions(ResponseList<User> users) {
         this.users = users;
         notifyResponse();
@@ -494,216 +530,144 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     /**
      * @since Twitter4J 2.1.9
      */
-    @Override
     public void gotMemberSuggestions(ResponseList<User> users) {
         this.users = users;
         notifyResponse();
     }
 
-    @Override
-    public void gotContributors(ResponseList<User> users) {
-        notifyResponse();
-    }
-
-    @Override
-    public void removedProfileBanner() {
-        notifyResponse();
-    }
-
-    @Override
-    public void updatedProfileBanner() {
-        notifyResponse();
-    }
-
-    @Override
-    public void gotContributees(ResponseList<User> users) {
+    /**
+     * @since Twitter4J 2.1.7
+     */
+    public void gotProfileImage(ProfileImage image) {
         notifyResponse();
     }
 
     /*List Methods*/
 
-    @Override
     public void createdUserList(UserList userList) {
         notifyResponse();
     }
 
-    @Override
     public void updatedUserList(UserList userList) {
         notifyResponse();
     }
 
-    @Override
-    public void gotUserLists(ResponseList<UserList> userLists) {
-        this.userLists = userLists;
+    public void gotUserLists(PagableResponseList<UserList> userLists) {
         notifyResponse();
     }
 
-    @Override
     public void gotShowUserList(UserList userList) {
         notifyResponse();
     }
 
-    @Override
     public void destroyedUserList(UserList userList) {
         notifyResponse();
     }
 
-    @Override
     public void gotUserListStatuses(ResponseList<Status> statuses) {
         this.statuses = statuses;
         notifyResponse();
     }
 
-    @Override
     public void gotUserListMemberships(PagableResponseList<UserList> userLists) {
         notifyResponse();
     }
 
-    @Override
     public void gotUserListSubscriptions(PagableResponseList<UserList> userLists) {
+        notifyResponse();
+    }
+
+    public void gotAllUserLists(ResponseList<UserList> userLists) {
         notifyResponse();
     }
 
     /*List Members Methods*/
 
-    @Override
     public void gotUserListMembers(PagableResponseList<User> users) {
         this.users = users;
-        notifyResponse();
     }
 
-    @Override
-    public void gotSavedSearches(ResponseList<SavedSearch> savedSearches) {
-        this.savedSearches = savedSearches;
-        notifyResponse();
+    public void addedUserListMember(UserList userList) {
     }
 
-    @Override
-    public void gotSavedSearch(SavedSearch savedSearch) {
-        this.savedSearch = savedSearch;
-        notifyResponse();
+    public void addedUserListMembers(UserList userList) {
     }
 
-    @Override
-    public void createdSavedSearch(SavedSearch savedSearch) {
-        this.savedSearch = savedSearch;
-        notifyResponse();
+    public void deletedUserListMember(UserList userList) {
     }
 
-    @Override
-    public void destroyedSavedSearch(SavedSearch savedSearch) {
-        this.savedSearch = savedSearch;
-        notifyResponse();
-    }
-
-    @Override
-    public void createdUserListMember(UserList userList) {
-        this.userList = userList;
-    }
-
-    @Override
-    public void createdUserListMembers(UserList userList) {
-        this.userList = userList;
-    }
-
-    @Override
-    public void destroyedUserListMember(UserList userList) {
-        this.userList = userList;
-    }
-
-    @Override
     public void checkedUserListMembership(User user) {
         this.user = user;
     }
 
     /*List Subscribers Methods*/
 
-    @Override
     public void gotUserListSubscribers(PagableResponseList<User> users) {
         this.users = users;
     }
 
-    @Override
     public void subscribedUserList(UserList userList) {
     }
 
-    @Override
     public void unsubscribedUserList(UserList userList) {
     }
 
-    @Override
     public void checkedUserListSubscription(User user) {
         this.user = user;
     }
 
     /*Direct Message Methods*/
-    @Override
     public void gotDirectMessages(ResponseList<DirectMessage> messages) {
         this.messages = messages;
         notifyResponse();
     }
 
-    @Override
     public void gotSentDirectMessages(ResponseList<DirectMessage> messages) {
         this.messages = messages;
         notifyResponse();
     }
 
-    @Override
     public void sentDirectMessage(DirectMessage message) {
         this.message = message;
         notifyResponse();
     }
 
-    @Override
     public void destroyedDirectMessage(DirectMessage message) {
         this.message = message;
         notifyResponse();
     }
 
-    @Override
     public void gotDirectMessage(DirectMessage message) {
         this.message = message;
         notifyResponse();
     }
 
     /*Friendship Methods*/
-    @Override
     public void createdFriendship(User user) {
         this.user = user;
         notifyResponse();
     }
 
-    @Override
     public void destroyedFriendship(User user) {
         this.user = user;
+        notifyResponse();
+    }
+
+    public void gotExistsFriendship(boolean exists) {
+        this.exists = exists;
         notifyResponse();
     }
 
     /**
      * @since Twitter4J 2.1.0
      */
-    @Override
     public void gotShowFriendship(Relationship relationship) {
-        notifyResponse();
-    }
-
-    @Override
-    public void gotFriendsList(PagableResponseList<User> users) {
-        this.users = users;
-        notifyResponse();
-    }
-
-    @Override
-    public void gotFollowersList(PagableResponseList<User> users) {
-        this.users = users;
         notifyResponse();
     }
 
     /**
      * @since Twitter4J 2.1.2
      */
-    @Override
     public void gotIncomingFriendships(IDs ids) {
         this.ids = ids;
         notifyResponse();
@@ -712,62 +676,67 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     /**
      * @since Twitter4J 2.1.2
      */
-    @Override
     public void gotOutgoingFriendships(IDs ids) {
         this.ids = ids;
         notifyResponse();
     }
 
     /*Social Graph Methods*/
-    @Override
     public void gotFriendsIDs(IDs ids) {
         this.ids = ids;
         notifyResponse();
     }
 
-    @Override
     public void gotFollowersIDs(IDs ids) {
         this.ids = ids;
         notifyResponse();
     }
 
-    @Override
     public void lookedUpFriendships(ResponseList<Friendship> friendships) {
         notifyResponse();
     }
 
 
-    @Override
     public void updatedFriendship(Relationship relationship) {
+        notifyResponse();
+    }
+
+    public void gotNoRetweetIds(IDs ids) {
+        this.ids = ids;
+        assertNotNull(DataObjectFactory.getRawJSON(this.ids));
+        try {
+            assertEquals(this.ids, DataObjectFactory.createIDs(DataObjectFactory.getRawJSON(ids)));
+        } catch (TwitterException e) {
+            fail("");
+        }
         notifyResponse();
     }
 
     /*Account Methods*/
 
-    @Override
-    public void gotRateLimitStatus(Map<String ,RateLimitStatus> rateLimitStatus) {
-        this.rateLimitStatus = rateLimitStatus;
+    public void gotRateLimitStatus(RateLimitStatus status) {
+        this.rateLimitStatus = status;
         notifyResponse();
     }
 
-    @Override
     public void verifiedCredentials(User user) {
         this.user = user;
         notifyResponse();
     }
 
-    @Override
     public void updatedProfileColors(User user) {
         this.user = user;
         notifyResponse();
     }
 
-    @Override
+    public void gotAccountTotals(AccountTotals totals) {
+        notifyResponse();
+    }
+
     public void gotAccountSettings(AccountSettings settings) {
         notifyResponse();
     }
 
-    @Override
     public void updatedAccountSettings(AccountSettings settings) {
         notifyResponse();
     }
@@ -775,7 +744,6 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     /**
      * @since Twitter4J 2.1.0
      */
-    @Override
     public void updatedProfileImage(User user) {
         this.user = user;
         notifyResponse();
@@ -784,66 +752,72 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     /**
      * @since Twitter4J 2.1.0
      */
-    @Override
     public void updatedProfileBackgroundImage(User user) {
         this.user = user;
         notifyResponse();
 
     }
 
-    @Override
     public void updatedProfile(User user) {
         this.user = user;
         notifyResponse();
     }
 
     /*Favorite Methods*/
-    @Override
     public void gotFavorites(ResponseList<Status> statuses) {
         this.statuses = statuses;
         notifyResponse();
     }
 
-    @Override
     public void createdFavorite(Status status) {
         this.status = status;
         notifyResponse();
     }
 
-    @Override
     public void destroyedFavorite(Status status) {
         this.status = status;
         notifyResponse();
     }
 
+    /*Notification Methods*/
+    public void enabledNotification(User user) {
+        this.user = user;
+        notifyResponse();
+    }
+
+    public void disabledNotification(User user) {
+        this.user = user;
+        notifyResponse();
+    }
+
     /*Block Methods*/
-    @Override
     public void createdBlock(User user) {
         this.user = user;
         notifyResponse();
     }
 
-    @Override
     public void destroyedBlock(User user) {
         this.user = user;
         notifyResponse();
     }
 
-    @Override
-    public void gotBlocksList(ResponseList<User> blockingUsers) {
+    public void gotExistsBlock(boolean exists) {
+        this.blockExists = exists;
+        notifyResponse();
+    }
+
+    public void gotBlockingUsers(ResponseList<User> blockingUsers) {
         this.users = blockingUsers;
         notifyResponse();
     }
 
-    @Override
-    public void gotBlockIDs(IDs blockingUsersIDs) {
+    public void gotBlockingUsersIDs(IDs blockingUsersIDs) {
         this.ids = blockingUsersIDs;
         notifyResponse();
     }
 
     /*Spam Reporting Methods*/
 
-    @Override
     public void reportedSpam(User reportedSpammer) {
         this.user = reportedSpammer;
         notifyResponse();
@@ -861,46 +835,36 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
      * @param locations the locations
      * @since Twitter4J 2.1.1
      */
-    @Override
     public void gotAvailableTrends(ResponseList<Location> locations) {
         notifyResponse();
     }
 
-    @Override
-    public void gotClosestTrends(ResponseList<Location> locations) {
-        this.locations = locations;
+    /**
+     * @param trends trends
+     * @since Twitter4J 2.1.1
+     */
+    public void gotLocationTrends(Trends trends) {
         notifyResponse();
     }
 
     /*Geo Methods*/
-    @Override
     public void searchedPlaces(ResponseList<Place> places) {
         notifyResponse();
     }
 
-    @Override
     public void gotSimilarPlaces(SimilarPlaces places) {
         notifyResponse();
     }
 
-    @Override
     public void gotReverseGeoCode(ResponseList<Place> places) {
         notifyResponse();
     }
 
-    @Override
     public void gotGeoDetails(Place place) {
         notifyResponse();
     }
 
-    @Override
     public void createdPlace(Place place) {
-        notifyResponse();
-    }
-
-    @Override
-    public void gotPlaceTrends(Trends trends) {
-        this.trends = trends;
         notifyResponse();
     }
 
@@ -909,7 +873,6 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     /**
      * @since Twitter4J 2.1.7
      */
-    @Override
     public void gotTermsOfService(String str) {
         notifyResponse();
     }
@@ -917,7 +880,6 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     /**
      * @since Twitter4J 2.1.7
      */
-    @Override
     public void gotPrivacyPolicy(String str) {
         notifyResponse();
     }
@@ -927,20 +889,20 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     /**
      *
      */
-    @Override
     public void gotRelatedResults(RelatedResults relatedResults) {
         notifyResponse();
     }
 
     /*Help Methods*/
-    @Override
+    public void tested(boolean test) {
+        notifyResponse();
+    }
+
     public void gotAPIConfiguration(TwitterAPIConfiguration conf) {
         notifyResponse();
     }
 
-    @Override
-    public void gotLanguages(ResponseList<HelpResources.Language> languages) {
-        this.languages = languages;
+    public void gotLanguages(ResponseList<HelpMethods.Language> languages) {
         notifyResponse();
     }
 
@@ -948,20 +910,11 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
      * @param te     TwitterException
      * @param method int
      */
-    @Override
     public void onException(TwitterException te, TwitterMethod method) {
         this.te = te;
         System.out.println("onexception on " + method.name());
         te.printStackTrace();
         notifyResponse();
-    }
-
-    @Override
-    public void gotOAuthRequestToken(RequestToken token) {
-    }
-
-    @Override
-    public void gotOAuthAccessToken(AccessToken token) {
     }
 
     private synchronized void notifyResponse() {
@@ -992,7 +945,7 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
         Object that = ois.readObject();
         byteInputStream.close();
         ois.close();
-        assertEquals(obj, that);
+        Assert.assertEquals(obj, that);
         return that;
     }
 
