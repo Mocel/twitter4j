@@ -24,6 +24,7 @@ import java.util.Date;
  * @author Yusuke Yamamoto - yusuke at mac.com
  */
 public interface Status extends Comparable<Status>, TwitterResponse,
+        EntitySupport, Twt, java.io.Serializable {
     /**
      * Return the created_at
      *
@@ -154,21 +155,12 @@ public interface Status extends Comparable<Status>, TwitterResponse,
     boolean isRetweetedByMe();
 
     /**
-     * Returns the authenticating user's retweet's id of this tweet, or -1L when the tweet was created
-     * before this feature was enabled.
+     * Returns the annotations, or null if no annotations are associated with this status.
      *
-     * @return the authenticating user's retweet's id of this tweet
-     * @since Twitter4J 3.0.1
+     * @since Twitter4J 2.1.4
+     * @deprecated Annotations is not available for now. <a href="http://groups.google.com/group/twitter-development-talk/browse_thread/thread/4d5ff2ec4d2ce4a7">Annotations - Twitter Development Talk | Google Groups</a>
      */
-    long getCurrentUserRetweetId();
-
-     /**
-     * Returns true if the status contains a link that is identified as sensitive.
-     *
-     * @return whether the status contains sensitive links
-     * @since Twitter4J 3.0.0
-     */
-    boolean isPossiblySensitive();
+    Annotations getAnnotations();
 
     /**
      * Returns the status if the authorized user retweeted this.

@@ -18,8 +18,6 @@ package twitter4j;
 
 import java.io.ByteArrayInputStream;
 
-import java.io.ByteArrayInputStream;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
