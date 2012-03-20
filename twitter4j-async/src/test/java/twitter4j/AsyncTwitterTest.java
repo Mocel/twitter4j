@@ -16,15 +16,18 @@
 
 package twitter4j;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.Date;
+
 import junit.framework.Assert;
 import twitter4j.api.HelpMethods;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 import twitter4j.json.DataObjectFactory;
-
-import java.io.*;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
@@ -35,16 +38,6 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     private AsyncTwitter async2 = null;
     private AsyncTwitter async3 = null;
     private AsyncTwitter bestFriend1Async = null;
-    private ResponseList<Location> locations;
-    private ResponseList<Place> places;
-    private Place place;
-    private ResponseList<Category> categories;
-    private AccountTotals totals;
-    private AccountSettings settings;
-    private ResponseList<Friendship> friendships;
-    private ResponseList<UserList> userLists;
-    private ResponseList<HelpMethods.Language> languages;
-    private TwitterAPIConfiguration apiConf;
 
     public AsyncTwitterTest(String name) {
         super(name);
@@ -392,43 +385,31 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     private ResponseList<DirectMessage> messages = null;
     private Status status = null;
     private User user = null;
-    private boolean test;
-    private UserList userList;
-    private PagableResponseList<UserList> pagableUserLists;
-    private Relationship relationship;
     private DirectMessage message = null;
     private TwitterException te = null;
     private RateLimitStatus rateLimitStatus;
     private boolean exists;
-    private QueryResult queryResult;
     private IDs ids;
-    private List<Trends> trendsList;
-    private Trends trends;
     private boolean blockExists;
-    private RelatedResults relatedResults;
 
     /*Search API Methods*/
     @Override
     public void searched(QueryResult result) {
-        this.queryResult = result;
         notifyResponse();
     }
 
     @Override
     public void gotCurrentTrends(Trends trends) {
-        this.trends = trends;
         notifyResponse();
     }
 
     @Override
     public void gotDailyTrends(ResponseList<Trends> trendsList) {
-        this.trendsList = trendsList;
         notifyResponse();
     }
 
     @Override
     public void gotWeeklyTrends(ResponseList<Trends> trendsList) {
-        this.trendsList = trendsList;
         notifyResponse();
     }
 
@@ -560,7 +541,6 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
      */
     @Override
     public void gotSuggestedUserCategories(ResponseList<Category> categories) {
-        this.categories = categories;
         notifyResponse();
     }
 
@@ -594,31 +574,26 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
 
     @Override
     public void createdUserList(UserList userList) {
-        this.userList = userList;
         notifyResponse();
     }
 
     @Override
     public void updatedUserList(UserList userList) {
-        this.userList = userList;
         notifyResponse();
     }
 
     @Override
     public void gotUserLists(PagableResponseList<UserList> userLists) {
-        this.pagableUserLists = userLists;
         notifyResponse();
     }
 
     @Override
     public void gotShowUserList(UserList userList) {
-        this.userList = userList;
         notifyResponse();
     }
 
     @Override
     public void destroyedUserList(UserList userList) {
-        this.userList = userList;
         notifyResponse();
     }
 
@@ -630,19 +605,16 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
 
     @Override
     public void gotUserListMemberships(PagableResponseList<UserList> userLists) {
-        this.pagableUserLists = userLists;
         notifyResponse();
     }
 
     @Override
     public void gotUserListSubscriptions(PagableResponseList<UserList> userLists) {
-        this.pagableUserLists = userLists;
         notifyResponse();
     }
 
     @Override
     public void gotAllUserLists(ResponseList<UserList> userLists) {
-        this.userLists = userLists;
         notifyResponse();
     }
 
@@ -655,17 +627,14 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
 
     @Override
     public void addedUserListMember(UserList userList) {
-        this.userList = userList;
     }
 
     @Override
     public void addedUserListMembers(UserList userList) {
-        this.userList = userList;
     }
 
     @Override
     public void deletedUserListMember(UserList userList) {
-        this.userList = userList;
     }
 
     @Override
@@ -682,12 +651,10 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
 
     @Override
     public void subscribedUserList(UserList userList) {
-        this.userList = userList;
     }
 
     @Override
     public void unsubscribedUserList(UserList userList) {
-        this.userList = userList;
     }
 
     @Override
@@ -750,7 +717,6 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
      */
     @Override
     public void gotShowFriendship(Relationship relationship) {
-        this.relationship = relationship;
         notifyResponse();
     }
 
@@ -787,14 +753,12 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
 
     @Override
     public void lookedUpFriendships(ResponseList<Friendship> friendships) {
-        this.friendships = friendships;
         notifyResponse();
     }
 
 
     @Override
     public void updatedFriendship(Relationship relationship) {
-        this.relationship = relationship;
         notifyResponse();
     }
 
@@ -832,19 +796,16 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
 
     @Override
     public void gotAccountTotals(AccountTotals totals) {
-        this.totals = totals;
         notifyResponse();
     }
 
     @Override
     public void gotAccountSettings(AccountSettings settings) {
-        this.settings = settings;
         notifyResponse();
     }
 
     @Override
     public void updatedAccountSettings(AccountSettings settings) {
-        this.settings = settings;
         notifyResponse();
     }
 
@@ -958,7 +919,6 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
      */
     @Override
     public void gotAvailableTrends(ResponseList<Location> locations) {
-        this.locations = locations;
         notifyResponse();
     }
 
@@ -968,38 +928,32 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
      */
     @Override
     public void gotLocationTrends(Trends trends) {
-        this.trends = trends;
         notifyResponse();
     }
 
     /*Geo Methods*/
     @Override
     public void searchedPlaces(ResponseList<Place> places) {
-        this.places = places;
         notifyResponse();
     }
 
     @Override
     public void gotSimilarPlaces(SimilarPlaces places) {
-        this.places = places;
         notifyResponse();
     }
 
     @Override
     public void gotReverseGeoCode(ResponseList<Place> places) {
-        this.places = places;
         notifyResponse();
     }
 
     @Override
     public void gotGeoDetails(Place place) {
-        this.place = place;
         notifyResponse();
     }
 
     @Override
     public void createdPlace(Place place) {
-        this.place = place;
         notifyResponse();
     }
 
@@ -1028,26 +982,22 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
      */
     @Override
     public void gotRelatedResults(RelatedResults relatedResults) {
-        this.relatedResults = relatedResults;
         notifyResponse();
     }
 
     /*Help Methods*/
     @Override
     public void tested(boolean test) {
-        this.test = test;
         notifyResponse();
     }
 
     @Override
     public void gotAPIConfiguration(TwitterAPIConfiguration conf) {
-        this.apiConf = conf;
         notifyResponse();
     }
 
     @Override
     public void gotLanguages(ResponseList<HelpMethods.Language> languages) {
-        this.languages = languages;
         notifyResponse();
     }
 
