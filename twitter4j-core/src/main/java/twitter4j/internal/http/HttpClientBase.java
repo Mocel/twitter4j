@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 import twitter4j.internal.logging.Logger;
 
+@SuppressWarnings("serial")
 public class HttpClientBase implements Serializable {
     private static final Logger logger = Logger.getLogger(HttpClientBase.class);
     protected final HttpClientConfiguration CONF;

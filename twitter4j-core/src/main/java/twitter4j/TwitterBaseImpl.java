@@ -226,6 +226,7 @@ abstract class TwitterBaseImpl implements java.io.Serializable, OAuthSupport, Ht
         out.writeObject(serializableRateLimitStatusListeners);
     }
 
+    @SuppressWarnings("unchecked")
     private void readObject(ObjectInputStream stream)
             throws IOException, ClassNotFoundException {
         conf = (Configuration) stream.readObject();

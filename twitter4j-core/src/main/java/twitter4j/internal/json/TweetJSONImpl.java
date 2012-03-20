@@ -43,7 +43,8 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.getUnescapedString;
  *
  * @author Yusuke Yamamoto - yusuke at mac.com
  */
-/*package*/ final class TweetJSONImpl implements Tweet, java.io.Serializable {
+/*package*/ @SuppressWarnings("deprecation")
+final class TweetJSONImpl implements Tweet, java.io.Serializable {
     private static final long serialVersionUID = 3019285230338056113L;
     private String text;
     private long toUserId = -1;

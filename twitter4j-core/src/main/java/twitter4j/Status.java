@@ -161,4 +161,10 @@ public interface Status extends Comparable<Status>, TwitterResponse,
      * @deprecated Annotations is not available for now. <a href="http://groups.google.com/group/twitter-development-talk/browse_thread/thread/4d5ff2ec4d2ce4a7">Annotations - Twitter Development Talk | Google Groups</a>
      */
     Annotations getAnnotations();
+
+    /**
+     * Returns the status if the authorized user retweeted this.
+     * @return Retweeted Status
+     */
+    public Status getMyRetweetedStatus();
 }
