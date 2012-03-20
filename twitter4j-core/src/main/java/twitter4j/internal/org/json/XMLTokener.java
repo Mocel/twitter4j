@@ -1,5 +1,7 @@
 package twitter4j.internal.org.json;
 
+import java.util.HashMap;
+
 /*
 Copyright (c) 2002 JSON.org
 
@@ -34,20 +36,19 @@ SOFTWARE.
 public class XMLTokener extends JSONTokener {
 
 
-    /**
-     * The table of entity values. It initially contains Character values for
-     * amp, apos, gt, lt, quot.
-     */
-    public static final java.util.HashMap entity;
+   /** The table of entity values. It initially contains Character values for
+    * amp, apos, gt, lt, quot.
+    */
+   public static final HashMap<String, Character> entity;
 
-    static {
-        entity = new java.util.HashMap(8);
-        entity.put("amp", XML.AMP);
-        entity.put("apos", XML.APOS);
-        entity.put("gt", XML.GT);
-        entity.put("lt", XML.LT);
-        entity.put("quot", XML.QUOT);
-    }
+   static {
+       entity = new HashMap<String, Character>(8, 1.0f);
+       entity.put("amp",  XML.AMP);
+       entity.put("apos", XML.APOS);
+       entity.put("gt",   XML.GT);
+       entity.put("lt",   XML.LT);
+       entity.put("quot", XML.QUOT);
+   }
 
     /**
      * Construct an XMLTokener from a string.

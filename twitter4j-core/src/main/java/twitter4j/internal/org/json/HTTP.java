@@ -24,7 +24,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import java.util.Iterator;
 
 /**
  * Convert an HTTP header to a JSONObject and back.
@@ -130,8 +129,6 @@ public class HTTP {
      *                       information.
      */
     public static String toString(JSONObject jo) throws JSONException {
-        Iterator keys = jo.keys();
-        String string;
         StringBuilder sb = new StringBuilder();
         if (jo.has("Status-Code") && jo.has("Reason-Phrase")) {
             sb.append(jo.getString("HTTP-Version"));
@@ -151,14 +148,13 @@ public class HTTP {
             throw new JSONException("Not enough material for an HTTP header.");
         }
         sb.append(CRLF);
-        while (keys.hasNext()) {
-            string = keys.next().toString();
-            if (!string.equals("HTTP-Version") && !string.equals("Status-Code") &&
-                    !string.equals("Reason-Phrase") && !string.equals("Method") &&
-                    !string.equals("Request-URI") && !jo.isNull(string)) {
-                sb.append(string);
+        for (String key : jo) {
+            if (!key.equals("HTTP-Version")      && !key.equals("Status-Code") &&
+                    !key.equals("Reason-Phrase") && !key.equals("Method") &&
+                    !key.equals("Request-URI")   && !jo.isNull(key)) {
+                sb.append(key);
                 sb.append(": ");
-                sb.append(jo.getString(string));
+                sb.append(jo.getString(key));
                 sb.append(CRLF);
             }
         }

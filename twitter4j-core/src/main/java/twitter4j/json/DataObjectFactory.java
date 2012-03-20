@@ -16,20 +16,38 @@
 
 package twitter4j.json;
 
-import twitter4j.*;
-import twitter4j.internal.org.json.JSONArray;
-import twitter4j.internal.org.json.JSONException;
-import twitter4j.internal.org.json.JSONObject;
-
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
+import twitter4j.AccountTotals;
+import twitter4j.Category;
+import twitter4j.DirectMessage;
+import twitter4j.IDs;
+import twitter4j.Location;
+import twitter4j.Place;
+import twitter4j.RateLimitStatus;
+import twitter4j.RelatedResults;
+import twitter4j.Relationship;
+import twitter4j.SavedSearch;
+import twitter4j.Status;
+import twitter4j.StatusDeletionNotice;
+import twitter4j.Trend;
+import twitter4j.Trends;
+import twitter4j.Tweet;
+import twitter4j.TwitterException;
+import twitter4j.User;
+import twitter4j.UserList;
+import twitter4j.internal.org.json.JSONArray;
+import twitter4j.internal.org.json.JSONException;
+import twitter4j.internal.org.json.JSONObject;
+
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
  * @since Twitter4J 2.1.7
  */
+@SuppressWarnings("unchecked")
 public final class DataObjectFactory {
     private DataObjectFactory() {
         throw new AssertionError("not intended to be instantiated.");
@@ -112,10 +130,10 @@ public final class DataObjectFactory {
         }
     }
 
-    private static final ThreadLocal<Map> rawJsonMap = new ThreadLocal<Map>() {
+    private static final ThreadLocal<Map<Object, Object>> rawJsonMap = new ThreadLocal<Map<Object, Object>>() {
         @Override
-        protected Map initialValue() {
-            return new HashMap();
+        protected Map<Object, Object> initialValue() {
+            return new HashMap<Object, Object>();
         }
     };
 

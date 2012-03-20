@@ -196,7 +196,7 @@ public class DAOTest extends TwitterTestBase {
                 "size",
         };
         url = "http://api.twitter.com/1/users/suggestions.json";
-        List categories = CategoryJSONImpl.createCategoriesList(validateJSONArraySchema(url, schema), null, conf);
+        List<Category> categories = CategoryJSONImpl.createCategoriesList(validateJSONArraySchema(url, schema), null, conf);
         Assert.assertEquals(20, categories.size());
 
         schema = new String[]{
@@ -404,7 +404,7 @@ public class DAOTest extends TwitterTestBase {
             }
         }
 
-        Iterator ite = json.keys();
+        Iterator<String> ite = json.keys();
         while (ite.hasNext()) {
             String name = (String) ite.next();
             boolean found = false;
