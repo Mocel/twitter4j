@@ -16,13 +16,14 @@
 
 package twitter4j;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import java.io.ByteArrayInputStream;
 
 import java.io.ByteArrayInputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
 
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
@@ -38,8 +39,7 @@ public class SizeofStatusChecker {
         before = Runtime.getRuntime().freeMemory();
         for (int i = 0; i < count; i++) {
             Document doc = builder.parse(new ByteArrayInputStream(statusXML.getBytes()));
-            Element elem = doc.getDocumentElement();
-            elem.hashCode();
+            doc.getDocumentElement();
         }
         System.out.println((before - Runtime.getRuntime().freeMemory()) / count);
     }

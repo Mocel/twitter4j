@@ -178,7 +178,7 @@ public class DAOTest extends TwitterTestBase {
                 "name",
                 "size",
         };
-        url = "http://api.twitter.com/1.1/users/suggestions.json";
+        url = "http://api.twitter.com/1/users/suggestions.json";
         List<Category> categories = CategoryJSONImpl.createCategoriesList(validateJSONArraySchema(url, schema), null, conf);
         Assert.assertEquals(20, categories.size());
 

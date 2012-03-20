@@ -143,4 +143,17 @@ public interface Tweet extends Comparable<Tweet>, EntitySupport,
      * @return The place associated with the post
      */
     Place getPlace();
+
+    /**
+     * Returns the annotations of the tweet.
+     * At the moment this code is written (2010-08-18), Twitter Search API does
+     * not support annotations yet (so even annotated tweets are returned without the annotations).
+     * This method is included here for completeness and for future use.
+     *
+     * @return the annotations
+     * @since Twitter4J 2.1.4
+     */
+    @SuppressWarnings("deprecation")
+    Annotations getAnnotations();
+
 }

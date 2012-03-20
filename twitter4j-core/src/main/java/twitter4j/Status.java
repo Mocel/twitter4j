@@ -24,7 +24,6 @@ import java.util.Date;
  * @author Yusuke Yamamoto - yusuke at mac.com
  */
 public interface Status extends Comparable<Status>, TwitterResponse,
-        EntitySupport, java.io.Serializable {
     /**
      * Return the created_at
      *
@@ -170,4 +169,10 @@ public interface Status extends Comparable<Status>, TwitterResponse,
      * @since Twitter4J 3.0.0
      */
     boolean isPossiblySensitive();
+
+    /**
+     * Returns the status if the authorized user retweeted this.
+     * @return Retweeted Status
+     */
+    public Status getMyRetweetedStatus();
 }

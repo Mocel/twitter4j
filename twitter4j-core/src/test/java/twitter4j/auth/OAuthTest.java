@@ -34,7 +34,11 @@ import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
 import twitter4j.conf.ConfigurationContext;
 import twitter4j.conf.PropertyConfiguration;
-import twitter4j.internal.http.*;
+import twitter4j.internal.http.HttpClientImpl;
+import twitter4j.internal.http.HttpParameter;
+import twitter4j.internal.http.HttpRequest;
+import twitter4j.internal.http.HttpResponse;
+import twitter4j.internal.http.RequestMethod;
 
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
@@ -88,7 +92,6 @@ public class OAuthTest extends TwitterTestBase {
         http = new HttpClientImpl();
 
         // desktop client - requiring pin
-        Twitter unauthenticated = new TwitterFactory().getInstance();
         unauthenticated.setOAuthConsumer(desktopConsumerKey, desktopConsumerSecret);
         rt = unauthenticated.getOAuthRequestToken();
         rt.hashCode();

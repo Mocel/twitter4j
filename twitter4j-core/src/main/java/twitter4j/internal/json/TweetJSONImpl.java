@@ -16,7 +16,15 @@
 
 package twitter4j.internal.json;
 
-import twitter4j.*;
+import twitter4j.Annotations;
+import twitter4j.GeoLocation;
+import twitter4j.HashtagEntity;
+import twitter4j.MediaEntity;
+import twitter4j.Place;
+import twitter4j.Tweet;
+import twitter4j.TwitterException;
+import twitter4j.URLEntity;
+import twitter4j.UserMentionEntity;
 import twitter4j.conf.Configuration;
 import twitter4j.internal.org.json.JSONArray;
 import twitter4j.internal.org.json.JSONException;
@@ -25,14 +33,17 @@ import twitter4j.internal.org.json.JSONObject;
 import java.util.Arrays;
 import java.util.Date;
 
-import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
+import static twitter4j.internal.util.z_T4JInternalParseUtil.getDate;
+import static twitter4j.internal.util.z_T4JInternalParseUtil.getLong;
+import static twitter4j.internal.util.z_T4JInternalParseUtil.getRawString;
+import static twitter4j.internal.util.z_T4JInternalParseUtil.getUnescapedString;
 
 /**
  * A data class representing a Tweet in the search response
  *
  * @author Yusuke Yamamoto - yusuke at mac.com
  */
-/*package*/
+/*package*/ @SuppressWarnings("deprecation")
 final class TweetJSONImpl implements Tweet, java.io.Serializable {
     private static final long serialVersionUID = 3019285230338056113L;
     private String text;
@@ -52,6 +63,7 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     private Place place;
 
     private GeoLocation geoLocation = null;
+    private Annotations annotations = null;
     private UserMentionEntity[] userMentionEntities;
     private URLEntity[] urlEntities;
     private HashtagEntity[] hashtagEntities;
@@ -73,6 +85,13 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
         createdAt = getDate("created_at", tweet, "EEE, dd MMM yyyy HH:mm:ss z");
         location = getRawString("location", tweet);
         geoLocation = z_T4JInternalJSONImplFactory.createGeoLocation(tweet);
+        if (!tweet.isNull("annotations")) {
+            try {
+                JSONArray annotationsArray = tweet.getJSONArray("annotations");
+                annotations = new Annotations(annotationsArray);
+            } catch (JSONException ignore) {
+            }
+        }
         if (!tweet.isNull("place")) {
             try {
                 place = new PlaceJSONImpl(tweet.getJSONObject("place"));
@@ -134,7 +153,6 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
         }
     }
 
-    @Override
     public int compareTo(Tweet that) {
         long delta = this.id - that.getId();
         if (delta < Integer.MIN_VALUE) {
@@ -148,7 +166,6 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     /**
      * {@inheritDoc}
      */
-    @Override
     public String getText() {
         return text;
     }
@@ -156,7 +173,6 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     /**
      * {@inheritDoc}
      */
-    @Override
     public long getToUserId() {
         return toUserId;
     }
@@ -164,7 +180,6 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     /**
      * {@inheritDoc}
      */
-    @Override
     public String getToUser() {
         return toUser;
     }
@@ -172,7 +187,6 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     /**
      * {@inheritDoc}
      */
-    @Override
     public String getToUserName() {
         return toUserName;
     }
@@ -180,7 +194,6 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     /**
      * {@inheritDoc}
      */
-    @Override
     public String getFromUser() {
         return fromUser;
     }
@@ -188,7 +201,6 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     /**
      * {@inheritDoc}
      */
-    @Override
     public String getFromUserName() {
         return fromUserName;
     }
@@ -196,7 +208,6 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     /**
      * {@inheritDoc}
      */
-    @Override
     public long getId() {
         return id;
     }
@@ -204,7 +215,6 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     /**
      * {@inheritDoc}
      */
-    @Override
     public long getFromUserId() {
         return fromUserId;
     }
@@ -212,7 +222,6 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     /**
      * {@inheritDoc}
      */
-    @Override
     public String getIsoLanguageCode() {
         return isoLanguageCode;
     }
@@ -220,7 +229,6 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     /**
      * {@inheritDoc}
      */
-    @Override
     public String getSource() {
         return source;
     }
@@ -228,7 +236,6 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     /**
      * {@inheritDoc}
      */
-    @Override
     public long getInReplyToStatusId() {
         return inReplyToStatusId;
     }
@@ -236,7 +243,6 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     /**
      * {@inheritDoc}
      */
-    @Override
     public String getProfileImageUrl() {
         return profileImageUrl;
     }
@@ -244,7 +250,6 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     /**
      * {@inheritDoc}
      */
-    @Override
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -252,7 +257,6 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     /**
      * {@inheritDoc}
      */
-    @Override
     public GeoLocation getGeoLocation() {
         return geoLocation;
     }
@@ -260,7 +264,6 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     /**
      * {@inheritDoc}
      */
-    @Override
     public String getLocation() {
         return location;
     }
@@ -268,7 +271,6 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     /**
      * {@inheritDoc}
      */
-    @Override
     public Place getPlace() {
         return place;
     }
@@ -276,7 +278,6 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     /**
      * {@inheritDoc}
      */
-    @Override
     public UserMentionEntity[] getUserMentionEntities() {
         return userMentionEntities;
     }
@@ -284,7 +285,6 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     /**
      * {@inheritDoc}
      */
-    @Override
     public URLEntity[] getURLEntities() {
         return urlEntities;
     }
@@ -292,7 +292,6 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     /**
      * {@inheritDoc}
      */
-    @Override
     public HashtagEntity[] getHashtagEntities() {
         return hashtagEntities;
     }
@@ -300,9 +299,15 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     /**
      * {@inheritDoc}
      */
-    @Override
     public MediaEntity[] getMediaEntities() {
         return mediaEntities;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Annotations getAnnotations() {
+        return annotations;
     }
 
     @Override
@@ -335,6 +340,7 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
         result = 31 * result + (location != null ? location.hashCode() : 0);
         result = 31 * result + (place != null ? place.hashCode() : 0);
         result = 31 * result + (geoLocation != null ? geoLocation.hashCode() : 0);
+        result = 31 * result + (annotations != null ? annotations.hashCode() : 0);
         result = 31 * result + (userMentionEntities != null ? Arrays.hashCode(userMentionEntities) : 0);
         result = 31 * result + (urlEntities != null ? Arrays.hashCode(urlEntities) : 0);
         result = 31 * result + (hashtagEntities != null ? Arrays.hashCode(hashtagEntities) : 0);
@@ -361,6 +367,7 @@ final class TweetJSONImpl implements Tweet, java.io.Serializable {
                 ", location='" + location + '\'' +
                 ", place=" + place +
                 ", geoLocation=" + geoLocation +
+                ", annotations=" + annotations +
                 ", userMentionEntities=" + (userMentionEntities == null ? null : Arrays.asList(userMentionEntities)) +
                 ", urlEntities=" + (urlEntities == null ? null : Arrays.asList(urlEntities)) +
                 ", hashtagEntities=" + (hashtagEntities == null ? null : Arrays.asList(hashtagEntities)) +

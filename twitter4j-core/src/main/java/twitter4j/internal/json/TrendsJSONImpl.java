@@ -16,6 +16,11 @@
 
 package twitter4j.internal.json;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+
 import twitter4j.Location;
 import twitter4j.ResponseList;
 import twitter4j.Trend;
@@ -26,13 +31,9 @@ import twitter4j.internal.http.HttpResponse;
 import twitter4j.internal.org.json.JSONArray;
 import twitter4j.internal.org.json.JSONException;
 import twitter4j.internal.org.json.JSONObject;
+import twitter4j.internal.util.z_T4JInternalParseUtil;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Iterator;
-
-import static twitter4j.internal.json.z_T4JInternalParseUtil.getDate;
+import static twitter4j.internal.util.z_T4JInternalParseUtil.getDate;
 
 /**
  * A data class representing Trends.
@@ -47,7 +48,6 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.getDate;
     private Location location;
     private static final long serialVersionUID = -7151479143843312309L;
 
-    @Override
     public int compareTo(Trends that) {
         return this.trendAt.compareTo(that.getTrendAt());
     }
@@ -167,7 +167,6 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.getDate;
     /**
      * {@inheritDoc}
      */
-    @Override
     public Trend[] getTrends() {
         return this.trends;
     }
@@ -175,7 +174,6 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.getDate;
     /**
      * {@inheritDoc}
      */
-    @Override
     public Location getLocation() {
         return location;
     }
@@ -183,7 +181,6 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.getDate;
     /**
      * {@inheritDoc}
      */
-    @Override
     public Date getAsOf() {
         return asOf;
     }
@@ -191,7 +188,6 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.getDate;
     /**
      * {@inheritDoc}
      */
-    @Override
     public Date getTrendAt() {
         return trendAt;
     }
