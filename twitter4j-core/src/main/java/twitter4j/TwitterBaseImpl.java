@@ -226,7 +226,7 @@ abstract class TwitterBaseImpl implements TwitterBase, java.io.Serializable, OAu
     }
 
     @SuppressWarnings("unchecked")
-	private void readObject(ObjectInputStream stream)
+    private void readObject(ObjectInputStream stream)
             throws IOException, ClassNotFoundException {
         // http://docs.oracle.com/javase/6/docs/platform/serialization/spec/input.html#2971
         stream.readFields();

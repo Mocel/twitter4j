@@ -224,7 +224,7 @@ public final class HttpParameter implements Comparable<HttpParameter>, java.io.S
         int compared;
         compared = name.compareTo(that.name);
         if (0 == compared) {
-            compared = value.compareTo(that.value);
+            compared = value.compareTo(o.value);
         }
         return compared;
     }
