@@ -184,7 +184,6 @@ class TwitterImpl extends TwitterBaseImpl implements Twitter {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("deprecation")
     public ResponseList<Status> getFriendsTimeline(Paging paging) throws
             TwitterException {
         ensureAuthorizationEnabled();
@@ -1989,6 +1988,7 @@ class TwitterImpl extends TwitterBaseImpl implements Twitter {
         }
     }
 
+    @SuppressWarnings("unused")
     private HttpResponse delete(String url) throws TwitterException {
         if (!conf.isMBeanEnabled()) {
             return http.delete(url, auth);

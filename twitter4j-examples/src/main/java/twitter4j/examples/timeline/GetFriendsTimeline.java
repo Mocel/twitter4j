@@ -39,7 +39,8 @@ public class GetFriendsTimeline {
         Twitter twitter = new TwitterFactory().getInstance();
         try {
             User user = twitter.verifyCredentials();
-            List<Status> statuses = twitter.getFriendsTimeline();
+            @SuppressWarnings("deprecation")
+			List<Status> statuses = twitter.getFriendsTimeline();
             System.out.println("Showing @" + user.getScreenName() + "'s friends timeline.");
             for (Status status : statuses) {
                 System.out.println("@" + status.getUser().getScreenName() + " - " + status.getText());

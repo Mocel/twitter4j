@@ -16,14 +16,14 @@
 
 package twitter4j.media;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+
 import junit.framework.TestCase;
 import twitter4j.TwitterException;
 import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 
 /**
  * @author Takao Nakaguchi - takao.nakaguchi at gmail.com
@@ -53,24 +53,34 @@ public class MediaUploadTest extends TestCase {
         ImageUploadFactory factory;
         conf = new ConfigurationBuilder().setMediaProvider(MediaProvider.TWITTER.getName()).build();
         factory = new ImageUploadFactory(conf);
+        assertNotNull(factory);
         conf = new ConfigurationBuilder().setMediaProvider(MediaProvider.IMG_LY.getName()).build();
         factory = new ImageUploadFactory(conf);
+        assertNotNull(factory);
         conf = new ConfigurationBuilder().setMediaProvider(MediaProvider.PLIXI.getName()).build();
         factory = new ImageUploadFactory(conf);
+        assertNotNull(factory);
         conf = new ConfigurationBuilder().setMediaProvider(MediaProvider.TWIPPLE.getName()).build();
         factory = new ImageUploadFactory(conf);
+        assertNotNull(factory);
         conf = new ConfigurationBuilder().setMediaProvider(MediaProvider.TWITGOO.getName()).build();
         factory = new ImageUploadFactory(conf);
+        assertNotNull(factory);
         conf = new ConfigurationBuilder().setMediaProvider(MediaProvider.TWITPIC.getName()).build();
         factory = new ImageUploadFactory(conf);
+        assertNotNull(factory);
         conf = new ConfigurationBuilder().setMediaProvider(MediaProvider.YFROG.getName()).build();
         factory = new ImageUploadFactory(conf);
+        assertNotNull(factory);
         conf = new ConfigurationBuilder().setMediaProvider(MediaProvider.MOBYPICTURE.getName()).build();
         factory = new ImageUploadFactory(conf);
+        assertNotNull(factory);
         conf = new ConfigurationBuilder().setMediaProvider(MediaProvider.TWIPL.getName()).build();
         factory = new ImageUploadFactory(conf);
+        assertNotNull(factory);
         conf = new ConfigurationBuilder().setMediaProvider(MediaProvider.POSTEROUS.getName()).build();
         factory = new ImageUploadFactory(conf);
+        assertNotNull(factory);
     }
 
     public void testNonexistingFileUpload() throws Exception {
@@ -79,6 +89,7 @@ public class MediaUploadTest extends TestCase {
         ImageUpload upload = factory.getInstance(MediaProvider.TWITPIC);
         try {
             String url = upload.upload(new File("foobar"));
+            assertNotNull(url);
         } catch (TwitterException te) {
             if (!(te.getCause() instanceof FileNotFoundException)) {
                 fail("expecting FileNotFoundException");

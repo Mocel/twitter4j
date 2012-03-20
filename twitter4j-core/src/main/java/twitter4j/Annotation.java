@@ -68,9 +68,9 @@ public class Annotation implements Comparable<Annotation>, java.io.Serializable 
     Annotation(JSONObject jsonObject) {
         String typ = null;
         Map<String, String> attrs = null;
-        Iterator it = jsonObject.keys();
+        Iterator<String> it = jsonObject.keys();
         if (it.hasNext()) {
-            typ = (String) it.next();
+            typ = it.next();
             // we expect only one key - the type; if there are more it's a malformed JSON object
             if (it.hasNext()) {
                 type = null;
@@ -80,7 +80,7 @@ public class Annotation implements Comparable<Annotation>, java.io.Serializable 
                     attrs = new LinkedHashMap<String, String>();
                     it = jo.keys();
                     while (it.hasNext()) {
-                        String key = (String) it.next();
+                        String key = it.next();
                         String value = jo.getString(key);
                         attrs.put(key, value);
                     }
@@ -272,7 +272,7 @@ public class Annotation implements Comparable<Annotation>, java.io.Serializable 
             return false;
         }
         Annotation other = (Annotation) obj;
-        // Map comparison ignores the order of the map entries - 
+        // Map comparison ignores the order of the map entries -
         // which is exactly what we want here for the attributes
         return ((this.getType().equals(other.getType())) &&
                 (this.getAttributes().equals(other.getAttributes())));
