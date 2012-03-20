@@ -322,6 +322,7 @@ public class ConfigurationTest extends TestCase {
         conf = builder.build();
 
         Configuration t = (Configuration) serializeDeserialize(conf);
+        assertNotNull(t);
 
         assertEquals(conf, (Configuration) serializeDeserialize(conf));
 

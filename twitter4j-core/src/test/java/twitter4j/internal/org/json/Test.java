@@ -1,11 +1,11 @@
 package twitter4j.internal.org.json;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.io.StringWriter;
+
 import junit.framework.TestCase;
 
 /*
@@ -84,7 +84,6 @@ public class Test extends TestCase {
 
     public void testJSON() throws Exception {
     	double       eps = 2.220446049250313e-16;
-        Iterator     iterator;
         JSONArray    jsonarray;
         JSONObject   jsonobject;
         JSONStringer jsonstringer;
@@ -1251,7 +1250,7 @@ public class Test extends TestCase {
                 "    \"9223372036854775808\"\n" +
                 "]", jsonarray.toString(4));
 
-        List expectedKeys = new ArrayList(6);
+        List<String> expectedKeys = new ArrayList<String>(6);
         expectedKeys.add("int");
         expectedKeys.add("string");
         expectedKeys.add("longer");
@@ -1259,13 +1258,10 @@ public class Test extends TestCase {
         expectedKeys.add("double");
         expectedKeys.add("long");
 
-        iterator = jsonobject.keys();
-        while (iterator.hasNext()) {
-            string = (String) iterator.next();
-            assertTrue(expectedKeys.remove(string));
+        for (String key : jsonobject) {
+            assertTrue(expectedKeys.remove(key));
         }
         assertEquals(0, expectedKeys.size());
-
 
         // accumulate
         jsonobject = new JSONObject();
@@ -1344,8 +1340,8 @@ public class Test extends TestCase {
         assertEquals("<book><chapter>Content of the first chapter</chapter><chapter>Content of the second chapter<chapter>Content of the first subchapter</chapter><chapter>Content of the second subchapter</chapter></chapter><chapter>Third Chapter</chapter></book>",
                 JSONML.toString(jsonarray));
 
-        Collection collection = null;
-        Map map = null;
+        Collection<?> collection = null;
+        Map<String, ?> map = null;
 
         jsonobject = new JSONObject(map);
         jsonarray = new JSONArray(collection);

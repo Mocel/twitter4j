@@ -58,7 +58,7 @@ public class StreamAPITest extends TwitterTestBase implements StatusListener, Co
     }
 
     public void testEquality() throws Exception {
-        Map map = new HashMap();
+        Map<TwitterStream, String> map = new HashMap<TwitterStream, String>();
         TwitterStream twitterStream1 = new TwitterStreamFactory().getInstance();
         TwitterStream twitterStream2 = new TwitterStreamFactory().getInstance();
         map.put(twitterStream1, "value");

@@ -43,7 +43,8 @@ public class MediaProvider implements java.io.Serializable {
 
     private final String name;
 
-    private MediaProvider() {
+    @SuppressWarnings("unused")
+	private MediaProvider() {
         throw new AssertionError();
     }
 

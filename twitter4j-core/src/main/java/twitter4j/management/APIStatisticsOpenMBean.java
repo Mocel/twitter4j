@@ -29,7 +29,7 @@ import java.util.Iterator;
 public class APIStatisticsOpenMBean implements DynamicMBean {
     // metadata
     private static final String[] ITEM_NAMES = {"methodName", "callCount", "errorCount", "totalTime", "avgTime"};
-    private static final OpenType[] ITEM_TYPES =
+    private static final OpenType<?>[] ITEM_TYPES =
             {SimpleType.STRING, SimpleType.LONG, SimpleType.LONG, SimpleType.LONG, SimpleType.LONG};
     private static final String[] ITEM_DESCRIPTIONS =
             {"The method name",
