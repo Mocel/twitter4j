@@ -322,7 +322,7 @@ public class ConfigurationTest extends TestCase {
         conf = builder.build();
 
         Configuration t = (Configuration) serializeDeserialize(conf);
-        t.hashCode();
+        assertNotNull(t);
 
         assertEquals(conf, (Configuration) serializeDeserialize(conf));
 
