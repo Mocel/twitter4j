@@ -324,7 +324,7 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
             throw new IllegalStateException("StatusListener is not set.");
         }
         this.handler = handler;
-        this.handler.start();
+        getDispatcher().invokeLater(this.handler);
         numberOfHandlers++;
     }
 
@@ -405,17 +405,18 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
 
     static int count = 0;
 
-    abstract class TwitterStreamConsumer extends Thread {
+    abstract class TwitterStreamConsumer implements Runnable {
         private StreamImplementation stream = null;
         private final String NAME = "Twitter Stream consumer-" + (++count);
         private volatile boolean closed = false;
 
         TwitterStreamConsumer() {
             super();
-            setName(NAME + "[initializing]");
         }
 
         public void run() {
+            Thread.currentThread().setName(NAME + "[initializing]");
+
             int timeToSleep = NO_WAIT;
             boolean connected = false;
             while (!closed) {
@@ -561,7 +562,7 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
 
         private void setStatus(String message) {
             String actualMessage = NAME + message;
-            setName(actualMessage);
+            Thread.currentThread().setName(actualMessage);
             logger.debug(actualMessage);
         }
 
