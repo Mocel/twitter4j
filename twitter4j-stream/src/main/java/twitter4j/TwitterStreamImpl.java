@@ -27,10 +27,6 @@ import twitter4j.internal.util.z_T4JInternalStringUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import static twitter4j.internal.http.HttpResponseCode.FORBIDDEN;
 import static twitter4j.internal.http.HttpResponseCode.NOT_ACCEPTABLE;
@@ -339,7 +335,7 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     private synchronized void startHandler(TwitterStreamConsumer handler) {
         cleanUp();
         this.handler = handler;
-        this.handler.start();
+        getDispatcher().invokeLater(this.handler);
         numberOfHandlers++;
     }
 
@@ -435,7 +431,7 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
 
     static int count = 0;
 
-    abstract class TwitterStreamConsumer extends Thread {
+    abstract class TwitterStreamConsumer implements Runnable {
         private StatusStreamBase stream = null;
         private final String NAME = "Twitter Stream consumer-" + (++count);
         private volatile boolean closed = false;
@@ -444,13 +440,14 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
 
         TwitterStreamConsumer(List<StreamListener> streamListeners, List<RawStreamListener> rawStreamListeners) {
             super();
-            setName(NAME + "[initializing]");
             this.streamListeners = streamListeners.toArray(new StreamListener[streamListeners.size()]);
             this.rawStreamListeners = rawStreamListeners.toArray(new RawStreamListener[rawStreamListeners.size()]);
         }
 
         @Override
         public void run() {
+            Thread.currentThread().setName(NAME + "[initializing]");
+
             int timeToSleep = NO_WAIT;
             boolean connected = false;
             while (!closed) {
@@ -602,7 +599,7 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
 
         private void setStatus(String message) {
             String actualMessage = NAME + message;
-            setName(actualMessage);
+            Thread.currentThread().setName(actualMessage);
             logger.debug(actualMessage);
         }
 
