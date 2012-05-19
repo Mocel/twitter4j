@@ -147,12 +147,11 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.getUnescapedString;
                     JSONArray userMentionsArray = entities.getJSONArray("user_mentions");
                     len = userMentionsArray.length();
                     userMentionEntities = new UserMentionEntity[len];
-                    for (int i = 0; i < len; ++i) {
+                    for (int i = 0; i < len; i++) {
                         userMentionEntities[i] = new UserMentionEntityJSONImpl(userMentionsArray.getJSONObject(i));
                     }
 
                 }
-
                 if (!entities.isNull("urls")) {
                     JSONArray urlsArray = entities.getJSONArray("urls");
                     len = urlsArray.length();

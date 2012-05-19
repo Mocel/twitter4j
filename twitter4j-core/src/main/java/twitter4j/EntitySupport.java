@@ -16,7 +16,7 @@
 package twitter4j;
 
 /**
- * @author Yusuke Yamamoto - yusule at mac.com
+ * @author Yusuke Yamamoto - yusuke at mac.com
  * @since Twitter4J 2.2.5
  */
 public interface EntitySupport {
@@ -47,7 +47,7 @@ public interface EntitySupport {
     /**
      * Returns an array of MediaEntities if medias are available in the tweet, or null if no media is included in the tweet.
      *
-     * @return An array of MediaEntities.
+     * @return an array of MediaEntities.
      * @since Twitter4J 2.2.3
      */
     MediaEntity[] getMediaEntities();

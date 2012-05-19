@@ -1472,20 +1472,20 @@ class TwitterImpl extends TwitterBaseImpl implements Twitter {
      * {@inheritDoc}
      */
     public ResponseList<Status> getFavorites(Paging paging) throws TwitterException {
-      ensureAuthorizationEnabled();
-      return factory.createStatusList(get(conf.getRestBaseURL() + "favorites.json",
-              mergeParameters(paging.asPostParameterArray()
-                      , INCLUDE_ENTITIES)));
+        ensureAuthorizationEnabled();
+        return factory.createStatusList(get(conf.getRestBaseURL() + "favorites.json",
+                mergeParameters(paging.asPostParameterArray()
+                        , INCLUDE_ENTITIES)));
     }
 
     /**
      * {@inheritDoc}
      */
     public ResponseList<Status> getFavorites(String id, Paging paging) throws TwitterException {
-      ensureAuthorizationEnabled();
-      return factory.createStatusList(get(conf.getRestBaseURL() + "favorites/"+ id +".json",
-              mergeParameters(paging.asPostParameterArray()
-                      , INCLUDE_ENTITIES)));
+        ensureAuthorizationEnabled();
+        return factory.createStatusList(get(conf.getRestBaseURL() + "favorites/" + id + ".json",
+                mergeParameters(paging.asPostParameterArray()
+                        , INCLUDE_ENTITIES)));
     }
 
 
@@ -1760,10 +1760,10 @@ class TwitterImpl extends TwitterBaseImpl implements Twitter {
      * {@inheritDoc}
      */
     public ResponseList<Place> reverseGeoCode(GeoQuery query) throws TwitterException {
-        try{
+        try {
             return factory.createPlaceList(get(conf.getRestBaseURL()
                     + "geo/reverse_geocode.json", query.asHttpParameterArray()));
-        }catch(TwitterException te){
+        } catch (TwitterException te) {
             if (te.getStatusCode() == 404) {
                 return factory.createEmptyResponseList();
             } else {
