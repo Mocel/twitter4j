@@ -23,7 +23,7 @@ import java.util.Date;
  *
  * @author Yusuke Yamamoto - yusuke at mac.com
  */
-public interface Tweet extends Comparable<Tweet>, EntitySupport,
+public interface Tweet extends Comparable<Tweet>, EntitySupport, Twt,
         java.io.Serializable {
     /**
      * returns the text

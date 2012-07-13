@@ -17,8 +17,11 @@
 package twitter4j.conf;
 
 import twitter4j.Version;
+import twitter4j.internal.logging.Logger;
+import twitter4j.internal.util.z_T4JInternalStringUtil;
 
 import java.io.ObjectStreamException;
+import java.lang.reflect.Field;
 import java.util.*;
 
 /**
@@ -98,7 +101,7 @@ class ConfigurationBase implements Configuration, java.io.Serializable {
     private static final String DEFAULT_SEARCH_BASE_URL = "http://search.twitter.com/";
     private static final String DEFAULT_STREAM_BASE_URL = "https://stream.twitter.com/1/";
     private static final String DEFAULT_USER_STREAM_BASE_URL = "https://userstream.twitter.com/2/";
-    private static final String DEFAULT_SITE_STREAM_BASE_URL = "https://sitestream.twitter.com/2b/";
+    private static final String DEFAULT_SITE_STREAM_BASE_URL = "https://sitestream.twitter.com";
     private static final String DEFAULT_UPLOAD_BASE_URL = "http://upload.twitter.com/1/";
 
     private boolean IS_DALVIK;
@@ -182,7 +185,7 @@ class ConfigurationBase implements Configuration, java.io.Serializable {
         setDispatcherImpl("twitter4j.internal.async.DispatcherImpl");
 
         setIncludeRTsEnbled(true);
-        setUserStreamRepliesAllEnabled(true);
+        setUserStreamRepliesAllEnabled(false);
         String isDalvik;
         try {
             isDalvik = System.getProperty(DALVIK, dalvikDetected);
@@ -204,6 +207,30 @@ class ConfigurationBase implements Configuration, java.io.Serializable {
         setMediaProvider("TWITTER");
         setMediaProviderAPIKey(null);
         setMediaProviderParameters(null);
+    }
+
+    public void dumpConfiguration(){
+        Logger log = Logger.getLogger(ConfigurationBase.class);
+        if (debug) {
+            Field[] fields = ConfigurationBase.class.getDeclaredFields();
+            for (Field field : fields) {
+                try {
+                    Object value = field.get(this);
+                    String strValue = String.valueOf(value);
+                    if (value != null && field.getName().matches("oAuthConsumerSecret|oAuthAccessTokenSecret|password")) {
+                        strValue = z_T4JInternalStringUtil.maskString(String.valueOf(value));
+                    }
+                    log.debug(field.getName() + ": " + strValue);
+                } catch (IllegalAccessException ignore) {
+                }
+            }
+        }
+        if(!includeRTsEnabled){
+            log.warn("includeRTsEnabled is set to false. This configuration may not take effect after May 14th, 2012. https://dev.twitter.com/blog/api-housekeeping");
+        }
+        if(!includeEntitiesEnabled){
+            log.warn("includeEntitiesEnabled is set to false. This configuration may not take effect after May 14th, 2012. https://dev.twitter.com/blog/api-housekeeping");
+        }
     }
 
     public final boolean isDalvik() {
