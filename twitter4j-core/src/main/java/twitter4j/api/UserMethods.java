@@ -17,7 +17,6 @@
 package twitter4j.api;
 
 import twitter4j.Category;
-import twitter4j.PagableResponseList;
 import twitter4j.ProfileImage;
 import twitter4j.ResponseList;
 import twitter4j.TwitterException;

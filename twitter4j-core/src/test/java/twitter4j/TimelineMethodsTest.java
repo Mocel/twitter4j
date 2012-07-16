@@ -15,10 +15,9 @@
  */
 package twitter4j;
 
-import twitter4j.conf.ConfigurationBuilder;
-import twitter4j.json.DataObjectFactory;
-
 import java.util.List;
+
+import twitter4j.json.DataObjectFactory;
 
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com

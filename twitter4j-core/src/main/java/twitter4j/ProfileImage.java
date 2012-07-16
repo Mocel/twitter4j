@@ -16,10 +16,6 @@
 
 package twitter4j;
 
-import java.io.ObjectStreamException;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
  * @since Twitter4J 2.1.7

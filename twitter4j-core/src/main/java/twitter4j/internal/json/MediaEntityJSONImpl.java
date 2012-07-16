@@ -92,22 +92,17 @@ public class MediaEntityJSONImpl implements MediaEntity {
             throw new TwitterException(jsone);
         }
     }
-    
+
     private void addMediaEntitySizeIfNotNull(Map<Integer, MediaEntity.Size> sizes, JSONObject sizes_json, Integer size, String key) throws JSONException {
         JSONObject size_json = sizes_json.optJSONObject(key);
     	if(size_json != null) {
     		sizes.put(size, new Size(size_json));
     	}
     }
-    
+
     /* For serialization purposes only. */
     /* package */ MediaEntityJSONImpl() {
-    	
-    }
-    
-    /* For serialization purposes only. */
-    /* package */ MediaEntityJSONImpl() {
-    	
+
     }
 
     /**

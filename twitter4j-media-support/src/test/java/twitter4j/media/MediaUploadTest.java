@@ -71,6 +71,7 @@ public class MediaUploadTest extends TestCase {
         factory = new ImageUploadFactory(conf);
         conf = new ConfigurationBuilder().setMediaProvider(MediaProvider.POSTEROUS.name()).build();
         factory = new ImageUploadFactory(conf);
+        assertNotNull(factory);
     }
 
     public void testNonexistingFileUpload() throws Exception {
@@ -79,6 +80,7 @@ public class MediaUploadTest extends TestCase {
         ImageUpload upload = factory.getInstance(MediaProvider.TWITPIC);
         try {
             String url = upload.upload(new File("foobar"));
+            assertNotNull(url);
         } catch (TwitterException te) {
             if (!(te.getCause() instanceof FileNotFoundException)) {
                 fail("expecting FileNotFoundException");
