@@ -70,7 +70,7 @@ public class MediaUploadTest extends TestCase {
         factory = new ImageUploadFactory(conf);
         conf = new ConfigurationBuilder().setMediaProvider(MediaProvider.POSTEROUS.name()).build();
         factory = new ImageUploadFactory(conf);
-        factory.hashCode();
+        assertNotNull(factory);
     }
 
     public void testNonexistingFileUpload() throws Exception {
