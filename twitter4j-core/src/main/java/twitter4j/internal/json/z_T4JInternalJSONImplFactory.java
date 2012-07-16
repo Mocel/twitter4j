@@ -16,31 +16,7 @@
  */
 package twitter4j.internal.json;
 
-import twitter4j.AccountSettings;
-import twitter4j.AccountTotals;
-import twitter4j.Category;
-import twitter4j.DirectMessage;
-import twitter4j.Friendship;
-import twitter4j.GeoLocation;
-import twitter4j.IDs;
-import twitter4j.Location;
-import twitter4j.PagableResponseList;
-import twitter4j.Place;
-import twitter4j.ProfileImage;
-import twitter4j.Query;
-import twitter4j.QueryResult;
-import twitter4j.RateLimitStatus;
-import twitter4j.RelatedResults;
-import twitter4j.Relationship;
-import twitter4j.ResponseList;
-import twitter4j.SavedSearch;
-import twitter4j.SimilarPlaces;
-import twitter4j.Status;
-import twitter4j.Trends;
-import twitter4j.TwitterAPIConfiguration;
-import twitter4j.TwitterException;
-import twitter4j.User;
-import twitter4j.UserList;
+import twitter4j.*;
 import twitter4j.api.HelpResources;
 import twitter4j.conf.Configuration;
 import twitter4j.internal.http.HttpResponse;
@@ -55,7 +31,6 @@ import java.util.Map;
  * @author Yusuke Yamamoto - yusuke at mac.com
  * @since Twitter4J 2.2.4
  */
-@SuppressWarnings("serial")
 public class z_T4JInternalJSONImplFactory implements z_T4JInternalFactory {
     private static final long serialVersionUID = 5217622295050444866L;
     private Configuration conf;

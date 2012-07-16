@@ -27,6 +27,10 @@ import twitter4j.internal.util.z_T4JInternalStringUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static twitter4j.internal.http.HttpResponseCode.FORBIDDEN;
 import static twitter4j.internal.http.HttpResponseCode.NOT_ACCEPTABLE;

@@ -329,11 +329,12 @@ public class JSONObject implements Iterable<String> {
         ResourceBundle r = ResourceBundle.getBundle(baseName, locale,
                 Thread.currentThread().getContextClassLoader());
 
-        // Iterate through the keys in the bundle.
+// Iterate through the keys in the bundle.
 
         Enumeration<String> keys = r.getKeys();
         while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
+            Object key = keys.nextElement();
+            if (key instanceof String) {
 
 // Go through the path, ensuring that there is a nested JSONObject for each
 // segment except the last. Add the value using the last segment's name into
@@ -352,9 +353,8 @@ public class JSONObject implements Iterable<String> {
                     }
                     target = nextTarget;
                 }
-                target = nextTarget;
+                target.put(path[last], r.getString((String) key));
             }
-            target.put(path[last], r.getString(key));
         }
     }
 

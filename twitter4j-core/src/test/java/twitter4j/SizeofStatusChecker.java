@@ -16,12 +16,12 @@
 
 package twitter4j;
 
-import java.io.ByteArrayInputStream;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
+import java.io.ByteArrayInputStream;
 
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
