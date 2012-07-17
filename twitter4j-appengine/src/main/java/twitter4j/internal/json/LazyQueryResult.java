@@ -16,11 +16,7 @@
 
 package twitter4j.internal.json;
 
-import twitter4j.Query;
-import twitter4j.QueryResult;
-import twitter4j.Tweet;
-import twitter4j.TwitterException;
-import twitter4j.TwitterRuntimeException;
+import twitter4j.*;
 
 import java.util.List;
 
@@ -31,6 +27,7 @@ import java.util.List;
  * @since Twitter4J 2.2.4
  */
 final class LazyQueryResult implements twitter4j.QueryResult {
+    private static final long serialVersionUID = 1469029015622811726L;
     private twitter4j.internal.http.HttpResponse res;
     private z_T4JInternalFactory factory;
     private QueryResult target = null;
@@ -95,6 +92,16 @@ final class LazyQueryResult implements twitter4j.QueryResult {
 
     public List<Tweet> getTweets() {
         return getTarget().getTweets();
+    }
+
+    @Override
+    public Query nextQuery() {
+        return getTarget().nextQuery();
+    }
+
+    @Override
+    public boolean hasNext() {
+        return getTarget().hasNext();
     }
 
 

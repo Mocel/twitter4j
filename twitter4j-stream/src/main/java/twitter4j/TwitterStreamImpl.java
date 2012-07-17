@@ -48,10 +48,15 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     private List<ConnectionLifeCycleListener> lifeCycleListeners = new ArrayList<ConnectionLifeCycleListener>(0);
     private TwitterStreamConsumer handler = null;
 
+    private String stallWarningsGetParam;
+    private HttpParameter stallWarningsParam;
+
     /*package*/
     TwitterStreamImpl(Configuration conf, Authorization auth) {
         super(conf, auth);
         http = new HttpClientWrapper(new StreamingReadTimeoutConfiguration(conf));
+        stallWarningsGetParam = "stall_warnings=" + (conf.isStallWarningsEnabled() ? "true" : "false");
+        stallWarningsParam = new HttpParameter("stall_warnings", conf.isStallWarningsEnabled());
     }
 
     /* Streaming API */
@@ -59,11 +64,13 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void firehose(final int count) {
         ensureAuthorizationEnabled();
         ensureListenerIsSet();
         ensureStatusStreamListenerIsSet();
         startHandler(new TwitterStreamConsumer() {
+            @Override
             public StatusStream getStream() throws TwitterException {
                 return getFirehoseStream(count);
             }
@@ -73,6 +80,7 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     /**
      * {@inheritDoc}
      */
+    @Override
     public StatusStream getFirehoseStream(int count) throws TwitterException {
         ensureAuthorizationEnabled();
         return getCountStream("statuses/firehose.json", count);
@@ -81,11 +89,13 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void links(final int count) {
         ensureAuthorizationEnabled();
         ensureListenerIsSet();
         ensureStatusStreamListenerIsSet();
         startHandler(new TwitterStreamConsumer() {
+            @Override
             public StatusStream getStream() throws TwitterException {
                 return getLinksStream(count);
             }
@@ -95,6 +105,7 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     /**
      * {@inheritDoc}
      */
+    @Override
     public StatusStream getLinksStream(int count) throws TwitterException {
         ensureAuthorizationEnabled();
         return getCountStream("statuses/links.json", count);
@@ -104,7 +115,8 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
         ensureAuthorizationEnabled();
         try {
             return new StatusStreamImpl(getDispatcher(), http.post(conf.getStreamBaseURL() + relativeUrl
-                    , new HttpParameter[]{new HttpParameter("count", String.valueOf(count))}, auth), conf);
+                    , new HttpParameter[]{new HttpParameter("count", String.valueOf(count))
+                    , stallWarningsParam}, auth), conf);
         } catch (IOException e) {
             throw new TwitterException(e);
         }
@@ -113,11 +125,13 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void retweet() {
         ensureAuthorizationEnabled();
         ensureListenerIsSet();
         ensureStatusStreamListenerIsSet();
         startHandler(new TwitterStreamConsumer() {
+            @Override
             public StatusStream getStream() throws TwitterException {
                 return getRetweetStream();
             }
@@ -127,11 +141,12 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     /**
      * {@inheritDoc}
      */
+    @Override
     public StatusStream getRetweetStream() throws TwitterException {
         ensureAuthorizationEnabled();
         try {
             return new StatusStreamImpl(getDispatcher(), http.post(conf.getStreamBaseURL() + "statuses/retweet.json"
-                    , new HttpParameter[]{}, auth), conf);
+                    , new HttpParameter[]{stallWarningsParam}, auth), conf);
         } catch (IOException e) {
             throw new TwitterException(e);
         }
@@ -140,11 +155,13 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void sample() {
         ensureAuthorizationEnabled();
         ensureListenerIsSet();
         ensureStatusStreamListenerIsSet();
         startHandler(new TwitterStreamConsumer() {
+            @Override
             public StatusStream getStream() throws TwitterException {
                 return getSampleStream();
             }
@@ -154,11 +171,12 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     /**
      * {@inheritDoc}
      */
+    @Override
     public StatusStream getSampleStream() throws TwitterException {
         ensureAuthorizationEnabled();
         try {
-            return new StatusStreamImpl(getDispatcher(), http.get(conf.getStreamBaseURL() + "statuses/sample.json"
-                    , auth), conf);
+            return new StatusStreamImpl(getDispatcher(), http.get(conf.getStreamBaseURL() + "statuses/sample.json?"
+                    + stallWarningsGetParam, auth), conf);
         } catch (IOException e) {
             throw new TwitterException(e);
         }
@@ -167,6 +185,7 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void user() {
         user(null);
     }
@@ -174,6 +193,7 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void user(final String[] track) {
         ensureAuthorizationEnabled();
         ensureListenerIsSet();
@@ -183,6 +203,7 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
             }
         }
         startHandler(new TwitterStreamConsumer() {
+            @Override
             public UserStream getStream() throws TwitterException {
                 return getUserStream(track);
             }
@@ -192,6 +213,7 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     /**
      * {@inheritDoc}
      */
+    @Override
     public UserStream getUserStream() throws TwitterException {
         return getUserStream(null);
     }
@@ -199,10 +221,12 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     /**
      * {@inheritDoc}
      */
+    @Override
     public UserStream getUserStream(String[] track) throws TwitterException {
         ensureAuthorizationEnabled();
         try {
             List<HttpParameter> params = new ArrayList<HttpParameter>();
+            params.add(stallWarningsParam);
             if (conf.isUserStreamRepliesAllEnabled()) {
                 params.add(new HttpParameter("replies", "all"));
             }
@@ -220,19 +244,21 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     /**
      * {@inheritDoc}
      */
+    @Override
     public StreamController site(final boolean withFollowings, final long[] follow) {
         ensureOAuthEnabled();
         ensureListenerIsSet();
-        final StreamController cs = new StreamController(http,auth);
+        final StreamController cs = new StreamController(http, auth);
         for (StreamListener listener : streamListeners) {
             if (!(listener instanceof SiteStreamsListener)) {
                 throw new IllegalStateException("Only SiteStreamListener is supported. found: " + listener.getClass());
             }
         }
         startHandler(new TwitterStreamConsumer() {
+            @Override
             public StreamImplementation getStream() throws TwitterException {
                 try {
-                    return new SiteStreamsImpl(getDispatcher(), getSiteStream(withFollowings, follow), conf,cs);
+                    return new SiteStreamsImpl(getDispatcher(), getSiteStream(withFollowings, follow), conf, cs);
                 } catch (IOException e) {
                     throw new TwitterException(e);
                 }
@@ -262,18 +288,20 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
         return http.post(conf.getSiteStreamBaseURL() + "/2b/site.json",
                 new HttpParameter[]{
                         new HttpParameter("with", withFollowings ? "followings" : "user")
-                        , new HttpParameter("follow", z_T4JInternalStringUtil.join(follow))}
-                , auth).asStream();
+                        , new HttpParameter("follow", z_T4JInternalStringUtil.join(follow))
+                        , stallWarningsParam}, auth).asStream();
     }
 
     /**
      * {@inheritDoc}
      */
+    @Override
     public void filter(final FilterQuery query) {
         ensureAuthorizationEnabled();
         ensureListenerIsSet();
         ensureStatusStreamListenerIsSet();
         startHandler(new TwitterStreamConsumer() {
+            @Override
             public StatusStream getStream() throws TwitterException {
                 return getFilterStream(query);
             }
@@ -283,12 +311,13 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     /**
      * {@inheritDoc}
      */
+    @Override
     public StatusStream getFilterStream(FilterQuery query) throws TwitterException {
         ensureAuthorizationEnabled();
         try {
             return new StatusStreamImpl(getDispatcher(), http.post(conf.getStreamBaseURL()
                     + "statuses/filter.json"
-                    , query.asHttpParameterArray(), auth), conf);
+                    , query.asHttpParameterArray(stallWarningsParam), auth), conf);
         } catch (IOException e) {
             throw new TwitterException(e);
         }
@@ -330,6 +359,7 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     /**
      * {@inheritDoc}
      */
+    @Override
     public synchronized void cleanUp() {
         if (handler != null) {
             handler.close();
@@ -340,6 +370,7 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     /**
      * {@inheritDoc}
      */
+    @Override
     public synchronized void shutdown() {
         super.shutdown();
         cleanUp();
@@ -356,6 +387,7 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addConnectionLifeCycleListener(ConnectionLifeCycleListener listener) {
         this.lifeCycleListeners.add(listener);
     }
@@ -363,6 +395,7 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addListener(UserStreamListener listener) {
         addListener((StreamListener) listener);
     }
@@ -370,6 +403,7 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addListener(StatusListener listener) {
         addListener((StreamListener) listener);
     }
@@ -377,6 +411,7 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
     /**
      * {@inheritDoc}
      */
+    @Override
     public void addListener(SiteStreamsListener listener) {
         addListener((StreamListener) listener);
     }
@@ -414,6 +449,7 @@ class TwitterStreamImpl extends TwitterBaseImpl implements TwitterStream {
             setName(NAME + "[initializing]");
         }
 
+        @Override
         public void run() {
             int timeToSleep = NO_WAIT;
             boolean connected = false;
@@ -616,47 +652,58 @@ class StreamingReadTimeoutConfiguration implements HttpClientWrapperConfiguratio
         this.nestedConf = httpConf;
     }
 
+    @Override
     public String getHttpProxyHost() {
         return nestedConf.getHttpProxyHost();
     }
 
+    @Override
     public int getHttpProxyPort() {
         return nestedConf.getHttpProxyPort();
     }
 
+    @Override
     public String getHttpProxyUser() {
         return nestedConf.getHttpProxyUser();
     }
 
+    @Override
     public String getHttpProxyPassword() {
         return nestedConf.getHttpProxyPassword();
     }
 
+    @Override
     public int getHttpConnectionTimeout() {
         return nestedConf.getHttpConnectionTimeout();
     }
 
+    @Override
     public int getHttpReadTimeout() {
         // this is the trick that overrides connection timeout
         return nestedConf.getHttpStreamingReadTimeout();
     }
 
+    @Override
     public int getHttpRetryCount() {
         return nestedConf.getHttpRetryCount();
     }
 
+    @Override
     public int getHttpRetryIntervalSeconds() {
         return nestedConf.getHttpRetryIntervalSeconds();
     }
 
+    @Override
     public int getHttpMaxTotalConnections() {
         return nestedConf.getHttpMaxTotalConnections();
     }
 
+    @Override
     public int getHttpDefaultMaxPerRoute() {
         return nestedConf.getHttpDefaultMaxPerRoute();
     }
 
+    @Override
     public Map<String, String> getRequestHeaders() {
         // turning off keepalive connection explicitly because Streaming API doesn't need keepalive connection.
         // and this will reduce the shutdown latency of streaming api connection
@@ -666,10 +713,12 @@ class StreamingReadTimeoutConfiguration implements HttpClientWrapperConfiguratio
         return headers;
     }
 
+    @Override
     public boolean isPrettyDebugEnabled() {
         return nestedConf.isPrettyDebugEnabled();
     }
 
+    @Override
     public boolean isGZIPEnabled() {
         return nestedConf.isGZIPEnabled();
     }

@@ -43,12 +43,22 @@ public final class Query implements java.io.Serializable {
     private String until = null;
     private String resultType = null;
     private static final long serialVersionUID = -8108425822233599808L;
+    private String nextPageQuery = null;
 
     public Query() {
     }
 
     public Query(String query) {
         this.query = query;
+    }
+
+    // edit with caution!!!
+    // this method is referenced by twitter4j.internal.json.QueryResultJSONImpl using reflection API in order to make this method invisible to library users
+    // you must run twitter4j.SearchAPITest#testEasyPaging to ensure you're doing right to make any changes to this method
+    private static Query createWithNextPageQuery(String nextPageQuery) {
+        Query query = new Query();
+        query.nextPageQuery = nextPageQuery;
+        return query;
     }
 
     /**
@@ -402,7 +412,7 @@ public final class Query implements java.io.Serializable {
     }
 
     /**
-     * If specified, returns tweets included popular or real time or both in the responce
+     * If specified, returns tweets included popular or real time or both in the response
      *
      * @param resultType resultType
      * @return the instance
@@ -415,8 +425,8 @@ public final class Query implements java.io.Serializable {
 
     private static HttpParameter WITH_TWITTER_USER_ID = new HttpParameter("with_twitter_user_id", "true");
 
-    /*package*/ HttpParameter[] asHttpParameterArray(HttpParameter includeEntities) {
-        ArrayList<HttpParameter> params = new ArrayList<HttpParameter>();
+    /*package*/ HttpParameter[] asHttpParameterArray() {
+        ArrayList<HttpParameter> params = new ArrayList<HttpParameter>(12);
         appendParameter("q", query, params);
         appendParameter("lang", lang, params);
         appendParameter("locale", locale, params);
@@ -429,7 +439,6 @@ public final class Query implements java.io.Serializable {
         appendParameter("until", until, params);
         appendParameter("result_type", resultType, params);
         params.add(WITH_TWITTER_USER_ID);
-        params.add(includeEntities);
         HttpParameter[] paramArray = new HttpParameter[params.size()];
         return params.toArray(paramArray);
     }
@@ -446,6 +455,10 @@ public final class Query implements java.io.Serializable {
         }
     }
 
+    /*package*/ String nextPage(){
+        return nextPageQuery;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -457,20 +470,15 @@ public final class Query implements java.io.Serializable {
         if (page != query1.page) return false;
         if (rpp != query1.rpp) return false;
         if (sinceId != query1.sinceId) return false;
-        if (geocode != null ? !geocode.equals(query1.geocode) : query1.geocode != null)
+        if (geocode != null ? !geocode.equals(query1.geocode) : query1.geocode != null) return false;
+        if (lang != null ? !lang.equals(query1.lang) : query1.lang != null) return false;
+        if (locale != null ? !locale.equals(query1.locale) : query1.locale != null) return false;
+        if (nextPageQuery != null ? !nextPageQuery.equals(query1.nextPageQuery) : query1.nextPageQuery != null)
             return false;
-        if (lang != null ? !lang.equals(query1.lang) : query1.lang != null)
-            return false;
-        if (locale != null ? !locale.equals(query1.locale) : query1.locale != null)
-            return false;
-        if (query != null ? !query.equals(query1.query) : query1.query != null)
-            return false;
-        if (since != null ? !since.equals(query1.since) : query1.since != null)
-            return false;
-        if (until != null ? !until.equals(query1.until) : query1.until != null)
-            return false;
-        if (resultType != null ? !resultType.equals(query1.resultType) : query1.resultType != null)
-            return false;
+        if (query != null ? !query.equals(query1.query) : query1.query != null) return false;
+        if (resultType != null ? !resultType.equals(query1.resultType) : query1.resultType != null) return false;
+        if (since != null ? !since.equals(query1.since) : query1.since != null) return false;
+        if (until != null ? !until.equals(query1.until) : query1.until != null) return false;
 
         return true;
     }
@@ -488,6 +496,7 @@ public final class Query implements java.io.Serializable {
         result = 31 * result + (geocode != null ? geocode.hashCode() : 0);
         result = 31 * result + (until != null ? until.hashCode() : 0);
         result = 31 * result + (resultType != null ? resultType.hashCode() : 0);
+        result = 31 * result + (nextPageQuery != null ? nextPageQuery.hashCode() : 0);
         return result;
     }
 
@@ -505,6 +514,7 @@ public final class Query implements java.io.Serializable {
                 ", geocode='" + geocode + '\'' +
                 ", until='" + until + '\'' +
                 ", resultType='" + resultType + '\'' +
+                ", nextPageQuery='" + nextPageQuery + '\'' +
                 '}';
     }
 }

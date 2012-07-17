@@ -16,15 +16,7 @@
 
 package twitter4j.examples.stream;
 
-import twitter4j.DirectMessage;
-import twitter4j.Status;
-import twitter4j.StatusDeletionNotice;
-import twitter4j.TwitterException;
-import twitter4j.TwitterStream;
-import twitter4j.TwitterStreamFactory;
-import twitter4j.User;
-import twitter4j.UserList;
-import twitter4j.UserStreamListener;
+import twitter4j.*;
 
 /**
  * <p>
@@ -44,26 +36,37 @@ public final class PrintUserStream {
     }
 
     static UserStreamListener listener = new UserStreamListener() {
+        @Override
         public void onStatus(Status status) {
             System.out.println("onStatus @" + status.getUser().getScreenName() + " - " + status.getText());
         }
 
+        @Override
         public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
             System.out.println("Got a status deletion notice id:" + statusDeletionNotice.getStatusId());
         }
 
+        @Override
         public void onDeletionNotice(long directMessageId, long userId) {
             System.out.println("Got a direct message deletion notice id:" + directMessageId);
         }
 
+        @Override
         public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
             System.out.println("Got a track limitation notice:" + numberOfLimitedStatuses);
         }
 
+        @Override
         public void onScrubGeo(long userId, long upToStatusId) {
             System.out.println("Got scrub_geo event userId:" + userId + " upToStatusId:" + upToStatusId);
         }
 
+        @Override
+        public void onStallWarning(StallWarning warning) {
+            System.out.println("Got stall warning:" + warning);
+        }
+
+        @Override
         public void onFriendList(long[] friendIds) {
             System.out.print("onFriendList");
             for (long friendId : friendIds) {

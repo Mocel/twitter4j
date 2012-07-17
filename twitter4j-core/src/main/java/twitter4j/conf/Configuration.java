@@ -104,15 +104,13 @@ public interface Configuration extends HttpClientConfiguration
 
     String getUploadBaseURL();
 
-    boolean isIncludeRTsEnabled();
-
-    boolean isIncludeEntitiesEnabled();
-
     boolean isJSONStoreEnabled();
 
     boolean isMBeanEnabled();
 
     boolean isUserStreamRepliesAllEnabled();
+
+    boolean isStallWarningsEnabled();
 
     String getMediaProvider();
 

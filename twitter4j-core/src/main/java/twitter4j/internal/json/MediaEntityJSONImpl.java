@@ -45,7 +45,7 @@ public class MediaEntityJSONImpl implements MediaEntity {
     private Map<Integer, MediaEntity.Size> sizes;
     private String type;
 
-    public MediaEntityJSONImpl(JSONObject json) throws TwitterException {
+    MediaEntityJSONImpl(JSONObject json) throws TwitterException {
         try {
             JSONArray indicesArray = json.getJSONArray("indices");
             this.start = indicesArray.getInt(0);
@@ -92,17 +92,17 @@ public class MediaEntityJSONImpl implements MediaEntity {
             throw new TwitterException(jsone);
         }
     }
-    
+
     private void addMediaEntitySizeIfNotNull(Map<Integer, MediaEntity.Size> sizes, JSONObject sizes_json, Integer size, String key) throws JSONException {
         JSONObject size_json = sizes_json.optJSONObject(key);
-    	if(size_json != null) {
-    		sizes.put(size, new Size(size_json));
-    	}
+        if (size_json != null) {
+            sizes.put(size, new Size(size_json));
+        }
     }
-    
+
     /* For serialization purposes only. */
     /* package */ MediaEntityJSONImpl() {
-    	
+
     }
     
     /* For serialization purposes only. */
@@ -113,6 +113,7 @@ public class MediaEntityJSONImpl implements MediaEntity {
     /**
      * {@inheritDoc}
      */
+    @Override
     public long getId() {
         return id;
     }
@@ -120,6 +121,7 @@ public class MediaEntityJSONImpl implements MediaEntity {
     /**
      * {@inheritDoc}
      */
+    @Override
     public URL getMediaURL() {
         return mediaURL;
     }
@@ -127,6 +129,7 @@ public class MediaEntityJSONImpl implements MediaEntity {
     /**
      * {@inheritDoc}
      */
+    @Override
     public URL getMediaURLHttps() {
         return mediaURLHttps;
     }
@@ -134,6 +137,7 @@ public class MediaEntityJSONImpl implements MediaEntity {
     /**
      * {@inheritDoc}
      */
+    @Override
     public URL getURL() {
         return url;
     }
@@ -141,6 +145,7 @@ public class MediaEntityJSONImpl implements MediaEntity {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getDisplayURL() {
         return displayURL;
     }
@@ -148,10 +153,12 @@ public class MediaEntityJSONImpl implements MediaEntity {
     /**
      * {@inheritDoc}
      */
+    @Override
     public URL getExpandedURL() {
         return expandedURL;
     }
 
+    @Override
     public Map<Integer, MediaEntity.Size> getSizes() {
         return sizes;
     }
@@ -159,6 +166,7 @@ public class MediaEntityJSONImpl implements MediaEntity {
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getType() {
         return type;
     }
@@ -166,6 +174,7 @@ public class MediaEntityJSONImpl implements MediaEntity {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getStart() {
         return start;
     }
@@ -173,6 +182,7 @@ public class MediaEntityJSONImpl implements MediaEntity {
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getEnd() {
         return end;
     }
@@ -189,14 +199,17 @@ public class MediaEntityJSONImpl implements MediaEntity {
             resize = "fit".equals(json.getString("resize")) ? MediaEntity.Size.FIT : MediaEntity.Size.CROP;
         }
 
+        @Override
         public int getWidth() {
             return width;
         }
 
+        @Override
         public int getHeight() {
             return height;
         }
 
+        @Override
         public int getResize() {
             return resize;
         }

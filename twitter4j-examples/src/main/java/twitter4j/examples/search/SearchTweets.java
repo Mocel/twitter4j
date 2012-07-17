@@ -16,12 +16,7 @@
 
 package twitter4j.examples.search;
 
-import twitter4j.Query;
-import twitter4j.QueryResult;
-import twitter4j.Tweet;
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.TwitterFactory;
+import twitter4j.*;
 
 import java.util.List;
 
@@ -42,11 +37,15 @@ public class SearchTweets {
         }
         Twitter twitter = new TwitterFactory().getInstance();
         try {
-            QueryResult result = twitter.search(new Query(args[0]));
-            List<Tweet> tweets = result.getTweets();
-            for (Tweet tweet : tweets) {
-                System.out.println("@" + tweet.getFromUser() + " - " + tweet.getText());
-            }
+            Query query = new Query(args[0]);
+            QueryResult result;
+            do {
+                result = twitter.search(query);
+                List<Tweet> tweets = result.getTweets();
+                for (Tweet tweet : tweets) {
+                    System.out.println("@" + tweet.getFromUser() + " - " + tweet.getText());
+                }
+            } while ((query = result.nextQuery()) != null);
             System.exit(0);
         } catch (TwitterException te) {
             te.printStackTrace();

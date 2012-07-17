@@ -26,15 +26,12 @@ import twitter4j.internal.org.json.JSONArray;
 import twitter4j.internal.org.json.JSONException;
 import twitter4j.internal.org.json.JSONObject;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import static twitter4j.internal.util.z_T4JInternalParseUtil.getDouble;
-import static twitter4j.internal.util.z_T4JInternalParseUtil.getInt;
-import static twitter4j.internal.util.z_T4JInternalParseUtil.getLong;
-import static twitter4j.internal.util.z_T4JInternalParseUtil.getRawString;
-import static twitter4j.internal.util.z_T4JInternalParseUtil.getURLDecodedString;
-import static twitter4j.internal.util.z_T4JInternalParseUtil.getUnescapedString;
+import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
 
 /**
  * A data class representing search API response
@@ -53,6 +50,25 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.getUnescapedString;
     private String query;
     private List<Tweet> tweets;
     private static final long serialVersionUID = -9059136565234613286L;
+    private String nextPage;
+
+    // private static factory method to instantiate Query class with "next_page"
+    // http://jira.twitter4j.org/browse/TFJ-549
+    static Method queryFactoryMethod;
+
+    static {
+        Method[] methods = Query.class.getDeclaredMethods();
+        for (Method method : methods) {
+            if (method.getName().equals("createWithNextPageQuery")) {
+                queryFactoryMethod = method;
+                queryFactoryMethod.setAccessible(true);
+                break;
+            }
+        }
+        if (queryFactoryMethod == null) {
+            throw new ExceptionInInitializerError(new NoSuchMethodException("twitter4j.Query.createWithNextPageQuery(java.lang.String)"));
+        }
+    }
 
     /*package*/ QueryResultJSONImpl(HttpResponse res, Configuration conf) throws TwitterException {
         JSONObject json = res.asJSONObject();
@@ -75,6 +91,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.getUnescapedString;
                 JSONObject tweet = array.getJSONObject(i);
                 tweets.add(new TweetJSONImpl(tweet, conf));
             }
+            nextPage = json.has("next_page") ? json.getString("next_page") : null;
         } catch (JSONException jsone) {
             throw new TwitterException(jsone.getMessage() + ":" + json.toString(), jsone);
         }
@@ -91,6 +108,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.getUnescapedString;
     /**
      * {@inheritDoc}
      */
+    @Override
     public long getSinceId() {
         return sinceId;
     }
@@ -98,6 +116,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.getUnescapedString;
     /**
      * {@inheritDoc}
      */
+    @Override
     public long getMaxId() {
         return maxId;
     }
@@ -105,6 +124,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.getUnescapedString;
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getRefreshUrl() {
         return refreshUrl;
     }
@@ -112,6 +132,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.getUnescapedString;
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getResultsPerPage() {
         return resultsPerPage;
     }
@@ -119,6 +140,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.getUnescapedString;
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getWarning() {
         return warning;
     }
@@ -126,6 +148,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.getUnescapedString;
     /**
      * {@inheritDoc}
      */
+    @Override
     public double getCompletedIn() {
         return completedIn;
     }
@@ -133,6 +156,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.getUnescapedString;
     /**
      * {@inheritDoc}
      */
+    @Override
     public int getPage() {
         return page;
     }
@@ -140,6 +164,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.getUnescapedString;
     /**
      * {@inheritDoc}
      */
+    @Override
     public String getQuery() {
         return query;
     }
@@ -147,8 +172,34 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.getUnescapedString;
     /**
      * {@inheritDoc}
      */
+    @Override
     public List<Tweet> getTweets() {
         return tweets;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Query nextQuery() {
+        if (nextPage == null) {
+            return null;
+        }
+        try {
+            return (Query) queryFactoryMethod.invoke(null, new String[]{nextPage});
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean hasNext() {
+        return nextPage != null;
     }
 
     @Override
