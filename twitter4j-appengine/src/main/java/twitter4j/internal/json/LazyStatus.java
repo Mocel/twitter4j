@@ -242,7 +242,7 @@ final class LazyStatus implements twitter4j.Status {
     public boolean isRetweetedByMe() {
         return getTarget().isRetweetedByMe();
     }
-    
+
     /**
      * Returns the authenticating user's retweet's id of this tweet, or -1L when the tweet was created
      * before this feature was enabled.
@@ -331,11 +331,6 @@ final class LazyStatus implements twitter4j.Status {
         return "LazyStatus{" +
                 "target=" + getTarget() +
                 "}";
-    }
-
-    @Override
-    public Status getMyRetweetedStatus() {
-        return getTarget().getMyRetweetedStatus();
     }
 
 }
