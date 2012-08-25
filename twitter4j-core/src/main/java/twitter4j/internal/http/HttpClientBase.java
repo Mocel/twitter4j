@@ -6,10 +6,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 
-import twitter4j.internal.logging.Logger;
-
-@SuppressWarnings("serial")
-public class HttpClientBase implements Serializable {
+public abstract class HttpClientBase implements HttpClient, Serializable {
     private static final Logger logger = Logger.getLogger(HttpClientBase.class);
     private static final long serialVersionUID = 6944924907755685265L;
     protected final HttpClientConfiguration CONF;

@@ -8,9 +8,6 @@ import java.util.Map;
 
 import junit.framework.TestCase;
 
-import java.io.StringWriter;
-import java.util.*;
-
 /*
 Copyright (c) 2002 JSON.org
 

@@ -22,6 +22,7 @@ import twitter4j.TwitterResponse;
  * @author Yusuke Yamamoto - yusuke at mac.com
  * @since Twitter4J 2.2.4
  */
+@SuppressWarnings("serial")
 abstract class LazyPagableResponseList<T extends TwitterResponse> extends LazyResponseList<T> implements PagableResponseList<T> {
 	private static final long serialVersionUID = 1L;
 

@@ -19,6 +19,7 @@ package twitter4j.examples.stream;
 import java.util.Date;
 
 import twitter4j.DirectMessage;
+import twitter4j.StallWarning;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.TwitterException;
