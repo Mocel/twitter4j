@@ -37,8 +37,6 @@ import twitter4j.internal.org.json.JSONArray;
 import twitter4j.internal.org.json.JSONException;
 import twitter4j.internal.org.json.JSONObject;
 
-import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
-
 /**
  * A data class representing one single status of a user.
  *
