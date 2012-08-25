@@ -120,6 +120,7 @@ public class SearchAPITest extends TwitterTestBase {
 
         query = new Query("\\u5e30%u5e30 <%}& foobar").rpp(100).page(1);
         QueryResult result = twitter1.search(query);
+        assertNotNull(result);
     }
 
     public void testEasyPaging() throws Exception {

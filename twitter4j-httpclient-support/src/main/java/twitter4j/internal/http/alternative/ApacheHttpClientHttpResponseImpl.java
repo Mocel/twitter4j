@@ -19,6 +19,8 @@ package twitter4j.internal.http.alternative;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpResponse;
+import org.apache.http.util.EntityUtils;
+
 import twitter4j.internal.http.HttpClientConfiguration;
 
 import java.io.IOException;
@@ -83,7 +85,7 @@ final class ApacheHttpClientHttpResponseImpl extends twitter4j.internal.http.Htt
     @Override
     public void disconnect() throws IOException {
         if (res != null) {
-            res.getEntity().consumeContent();
+        	EntityUtils.consume(res.getEntity());
         }
     }
 }

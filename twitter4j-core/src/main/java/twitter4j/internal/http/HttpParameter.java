@@ -220,7 +220,7 @@ public final class HttpParameter implements Comparable<HttpParameter>, java.io.S
     }
 
     @Override
-    public int compareTo(Object o) {
+    public int compareTo(HttpParameter o) {
         int compared;
         compared = name.compareTo(o.name);
         if (0 == compared) {
