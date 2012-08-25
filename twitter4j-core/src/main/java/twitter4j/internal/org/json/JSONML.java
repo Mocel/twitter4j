@@ -313,14 +313,14 @@ public class JSONML {
         int i;
         JSONObject jo;
         String key;
-        Iterator keys;
+        Iterator<String> keys;
         int length;
         Object object;
         StringBuilder sb = new StringBuilder();
         String tagName;
         String value;
 
-// Emit <tagName	    
+// Emit <tagName
 
         tagName = ja.getString(0);
         XML.noSpace(tagName);
@@ -397,7 +397,7 @@ public class JSONML {
         int i;
         JSONArray ja;
         String key;
-        Iterator keys;
+        Iterator<String> keys;
         int length;
         Object object;
         String tagName;

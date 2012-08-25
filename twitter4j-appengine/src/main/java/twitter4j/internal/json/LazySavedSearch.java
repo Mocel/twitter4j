@@ -30,6 +30,7 @@ import java.util.Date;
  * @author Yusuke Yamamoto - yusuke at mac.com
  * @since Twitter4J 2.0.8
  */
+@SuppressWarnings("serial")
 @Generated(
         value = "generate-lazy-objects.sh",
         comments = "This is Tool Generated Code. DO NOT EDIT",

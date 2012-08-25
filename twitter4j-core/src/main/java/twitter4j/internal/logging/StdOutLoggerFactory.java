@@ -27,7 +27,7 @@ final class StdOutLoggerFactory extends LoggerFactory {
      * {@inheritDoc}
      */
     @Override
-    public Logger getLogger(Class clazz) {
+    public Logger getLogger(Class<?> clazz) {
         return SINGLETON;
     }
 }

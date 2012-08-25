@@ -23,6 +23,7 @@ import twitter4j.*;
  * @author Yusuke Yamamoto - yusuke at mac.com
  * @since Twitter4J 2.1.7
  */
+@SuppressWarnings("serial")
 final class LazySimilarPlaces extends LazyResponseList<Place> implements SimilarPlaces {
     private twitter4j.internal.http.HttpResponse res;
     private z_T4JInternalFactory factory;

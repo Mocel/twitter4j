@@ -168,6 +168,7 @@ public class SiteStreamsTest extends TwitterTestBase implements SiteStreamsListe
             twit4j.retweetStatus(status.getId());
             waitForStatus();
             DirectMessage dm = twit4j.sendDirectMessage(42419133, "test " + new Date());
+            assertNotNull(dm);
             waitForStatus();
 
             twitter2.destroyStatus(status.getId());

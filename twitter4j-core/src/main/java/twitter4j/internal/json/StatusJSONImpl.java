@@ -34,6 +34,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
  *
  * @author Yusuke Yamamoto - yusuke at mac.com
  */
+@SuppressWarnings("deprecation")
 /*package*/ final class StatusJSONImpl extends TwitterResponseImpl implements Status, java.io.Serializable {
     private static final Logger logger = Logger.getLogger(StatusJSONImpl.class);
     private static final long serialVersionUID = 7548618898682727465L;
@@ -54,14 +55,13 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
 
     private String[] contributors = null;
     private long[] contributorsIDs;
-    private Annotations annotations = null;
+	private Annotations annotations = null;
 
     private Status retweetedStatus;
     private UserMentionEntity[] userMentionEntities;
     private URLEntity[] urlEntities;
     private HashtagEntity[] hashtagEntities;
     private MediaEntity[] mediaEntities;
-    private Status myRetweetedStatus;
 
     /*package*/StatusJSONImpl(HttpResponse res, Configuration conf) throws TwitterException {
         super(res);
@@ -188,7 +188,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
         }
         if (!json.isNull("current_user_retweet")) {
             try {
-                myRetweetedStatus = new StatusJSONImpl(json.getJSONObject("current_user_retweet"));
+                new StatusJSONImpl(json.getJSONObject("current_user_retweet"));
                 wasRetweetedByMe = true;
             } catch (JSONException ignore) {
                 ignore.printStackTrace();

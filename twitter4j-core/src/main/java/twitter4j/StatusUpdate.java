@@ -27,6 +27,7 @@ import java.util.List;
  * @author Yusuke Yamamoto - yusuke at mac.com
  * @since Twitter4J 2.1.1
  */
+@SuppressWarnings("deprecation")
 public final class StatusUpdate implements java.io.Serializable {
 
     private String status;
@@ -171,7 +172,7 @@ public final class StatusUpdate implements java.io.Serializable {
         return this;
     }
 
-    public void addAnnotation(Annotation annotation) {
+	public void addAnnotation(Annotation annotation) {
         if (null == annotations) {
             this.annotations = new Annotations();
         }

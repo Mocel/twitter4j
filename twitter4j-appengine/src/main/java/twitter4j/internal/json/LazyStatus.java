@@ -26,6 +26,7 @@ import java.util.Date;
  *
  * @author Yusuke Yamamoto - yusuke at mac.com
  */
+@SuppressWarnings("serial")
 @Generated(
         value = "generate-lazy-objects.sh",
         comments = "This is Tool Generated Code. DO NOT EDIT",
@@ -270,7 +271,8 @@ final class LazyStatus implements twitter4j.Status {
      *
      * @since Twitter4J 2.1.4
      */
-    public Annotations getAnnotations() {
+    @SuppressWarnings("deprecation")
+	public Annotations getAnnotations() {
         return getTarget().getAnnotations();
     }
 

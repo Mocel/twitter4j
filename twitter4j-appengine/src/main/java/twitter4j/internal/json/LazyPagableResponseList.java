@@ -23,20 +23,22 @@ import twitter4j.TwitterResponse;
  * @since Twitter4J 2.2.4
  */
 abstract class LazyPagableResponseList<T extends TwitterResponse> extends LazyResponseList<T> implements PagableResponseList<T> {
-    public boolean hasPrevious() {
-        return ((PagableResponseList) getTarget()).hasPrevious();
+	private static final long serialVersionUID = 1L;
+
+	public boolean hasPrevious() {
+        return ((PagableResponseList<T>) getTarget()).hasPrevious();
     }
 
     public long getPreviousCursor() {
-        return ((PagableResponseList) getTarget()).getPreviousCursor();
+        return ((PagableResponseList<T>) getTarget()).getPreviousCursor();
     }
 
     public boolean hasNext() {
-        return ((PagableResponseList) getTarget()).hasNext();
+        return ((PagableResponseList<T>) getTarget()).hasNext();
     }
 
     public long getNextCursor() {
-        return ((PagableResponseList) getTarget()).getNextCursor();
+        return ((PagableResponseList<T>) getTarget()).getNextCursor();
     }
 
 }

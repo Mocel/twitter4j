@@ -186,7 +186,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
             return null;
         }
         try {
-            return (Query) queryFactoryMethod.invoke(null, new String[]{nextPage});
+            return (Query) queryFactoryMethod.invoke(null, nextPage);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         } catch (InvocationTargetException e) {

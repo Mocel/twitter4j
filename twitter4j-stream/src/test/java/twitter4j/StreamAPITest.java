@@ -31,7 +31,6 @@ public class StreamAPITest extends TwitterTestBase implements StatusListener, Co
     protected Properties p = new Properties();
     private long userId;
     private long upToStatusId;
-    private StallWarning warning;
 
     public StreamAPITest(String name) {
         super(name);
@@ -59,7 +58,7 @@ public class StreamAPITest extends TwitterTestBase implements StatusListener, Co
     }
 
     public void testEquality() throws Exception {
-        Map map = new HashMap();
+        Map<TwitterStream, String> map = new HashMap<TwitterStream, String>();
         TwitterStream twitterStream1 = new TwitterStreamFactory().getInstance();
         TwitterStream twitterStream2 = new TwitterStreamFactory().getInstance();
         map.put(twitterStream1, "value");
@@ -210,6 +209,7 @@ public class StreamAPITest extends TwitterTestBase implements StatusListener, Co
         try {
             twitterStream = new TwitterStreamFactory().getInstance();
             StatusStream stream = twitterStream.getFirehoseStream(0);
+            assertNotNull(stream);
             fail();
         } catch (IllegalStateException ise) {
         } catch (TwitterException te) {
@@ -218,6 +218,7 @@ public class StreamAPITest extends TwitterTestBase implements StatusListener, Co
         try {
             twitterStream = new TwitterStreamFactory().getInstance();
             StatusStream stream = twitterStream.getFilterStream(new FilterQuery(new long[]{6358482}));
+            assertNotNull(stream);
             fail();
         } catch (IllegalStateException ise) {
         } catch (TwitterException te) {
@@ -293,7 +294,6 @@ public class StreamAPITest extends TwitterTestBase implements StatusListener, Co
 
     @Override
     public void onStallWarning(StallWarning warning) {
-        this.warning = warning;
     }
 
     Exception ex;

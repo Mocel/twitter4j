@@ -29,6 +29,7 @@ import java.util.Date;
  * @author Yusuke Yamamoto - yusuke at mac.com
  * @see <a href="https://dev.twitter.com/docs/rate-limiting">Rate Limiting | Twitter Developers</a>
  */
+@SuppressWarnings("serial")
 @Generated(
         value = "generate-lazy-objects.sh",
         comments = "This is Tool Generated Code. DO NOT EDIT",

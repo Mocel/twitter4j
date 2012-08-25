@@ -45,8 +45,8 @@ public class OAuthTest extends TwitterTestBase {
     }
 
     public void testDeterministic() throws Exception {
-        ArrayList list1 = new ArrayList();
-        ArrayList list2 = new ArrayList();
+        ArrayList<Object> list1 = new ArrayList<Object>();
+        ArrayList<Object> list2 = new ArrayList<Object>();
         assertEquals(list1, list2);
         Twitter twitter1 = new TwitterFactory().getInstance();
         twitter1.setOAuthConsumer(browserConsumerKey, browserConsumerSecret);
@@ -404,6 +404,7 @@ public class OAuthTest extends TwitterTestBase {
             Configuration conf = new PropertyConfiguration(props);
             twitter = new TwitterFactory(conf).getInstance();
             AccessToken at = twitter.getOAuthAccessToken(id1.screenName, id1.password);
+            assertNotNull(at);
             twitter.updateStatus(new Date() + ": xAuth test.");
 
             twitter = new TwitterFactory().getInstance();

@@ -134,6 +134,7 @@ public class UserStreamTest extends TwitterTestBase implements UserStreamListene
         twitter1.retweetStatus(status.getId());
         waitForStatus();
         DirectMessage dm = twitter1.sendDirectMessage(id2.id, "test " + new Date());
+        assertNotNull(dm);
         waitForStatus();
 
         twitter2.destroyStatus(status.getId());

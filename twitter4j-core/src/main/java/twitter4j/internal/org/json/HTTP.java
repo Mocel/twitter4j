@@ -130,7 +130,7 @@ public class HTTP {
      *                       information.
      */
     public static String toString(JSONObject jo) throws JSONException {
-        Iterator keys = jo.keys();
+        Iterator<String> keys = jo.keys();
         String string;
         StringBuilder sb = new StringBuilder();
         if (jo.has("Status-Code") && jo.has("Reason-Phrase")) {

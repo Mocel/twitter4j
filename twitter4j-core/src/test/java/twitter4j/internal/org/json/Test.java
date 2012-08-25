@@ -81,7 +81,6 @@ public class Test extends TestCase {
 
     public void testJSON() throws Exception {
         double eps = 2.220446049250313e-16;
-        Iterator iterator;
         JSONArray jsonarray;
         JSONObject jsonobject;
         JSONStringer jsonstringer;
@@ -1248,7 +1247,7 @@ public class Test extends TestCase {
                 "    \"9223372036854775808\"\n" +
                 "]", jsonarray.toString(4));
 
-        List expectedKeys = new ArrayList(6);
+        List<String> expectedKeys = new ArrayList<String>(6);
         expectedKeys.add("int");
         expectedKeys.add("string");
         expectedKeys.add("longer");
@@ -1256,10 +1255,8 @@ public class Test extends TestCase {
         expectedKeys.add("double");
         expectedKeys.add("long");
 
-        iterator = jsonobject.keys();
-        while (iterator.hasNext()) {
-            string = (String) iterator.next();
-            assertTrue(expectedKeys.remove(string));
+        for (String string2 : expectedKeys) {
+            assertTrue(expectedKeys.remove(string2));
         }
         assertEquals(0, expectedKeys.size());
 
@@ -1341,8 +1338,8 @@ public class Test extends TestCase {
         assertEquals("<book><chapter>Content of the first chapter</chapter><chapter>Content of the second chapter<chapter>Content of the first subchapter</chapter><chapter>Content of the second subchapter</chapter></chapter><chapter>Third Chapter</chapter></book>",
                 JSONML.toString(jsonarray));
 
-        Collection collection = null;
-        Map map = null;
+        Collection<Object> collection = null;
+        Map<String, String> map = null;
 
         jsonobject = new JSONObject(map);
         jsonarray = new JSONArray(collection);

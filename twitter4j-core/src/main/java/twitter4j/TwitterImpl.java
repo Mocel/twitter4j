@@ -1788,7 +1788,8 @@ class TwitterImpl extends TwitterBaseImpl implements Twitter {
         }
     }
 
-    private HttpResponse delete(String url) throws TwitterException {
+    @SuppressWarnings("unused")
+	private HttpResponse delete(String url) throws TwitterException {
         if (!conf.isMBeanEnabled()) {
             return http.delete(url, auth);
         } else {

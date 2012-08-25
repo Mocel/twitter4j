@@ -33,6 +33,7 @@ import java.lang.reflect.InvocationTargetException;
  * @author Yusuke Yamamoto - yusuke at mac.com
  * @since Twitter4J 2.1.0
  */
+@SuppressWarnings("unchecked")
 public final class TwitterFactory implements java.io.Serializable {
     private static final Constructor<Twitter> TWITTER_CONSTRUCTOR;
     /*AsyncTwitterFactory and TWitterStream will access this field*/
@@ -55,10 +56,10 @@ public final class TwitterFactory implements java.io.Serializable {
             className = "twitter4j.TwitterImpl";
         }
         Constructor<Twitter> constructor;
-        Class clazz;
+        Class<?> clazz;
         try {
             clazz = Class.forName(className);
-            constructor = clazz.getDeclaredConstructor(Configuration.class, Authorization.class);
+            constructor = (Constructor<Twitter>) clazz.getDeclaredConstructor(Configuration.class, Authorization.class);
         } catch (NoSuchMethodException e) {
             throw new AssertionError(e);
         } catch (ClassNotFoundException e) {

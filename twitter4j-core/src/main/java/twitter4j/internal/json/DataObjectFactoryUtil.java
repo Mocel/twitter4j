@@ -72,7 +72,8 @@ public class DataObjectFactoryUtil {
     /**
      * provides a public access to {DAOFactory#registerJSONObject}
      */
-    public static <T> T registerJSONObject(T key, Object json) {
+    @SuppressWarnings("unchecked")
+	public static <T> T registerJSONObject(T key, Object json) {
         try {
             return (T) REGISTER_JSON_OBJECT.invoke(null, key, json);
         } catch (IllegalAccessException e) {

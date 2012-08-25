@@ -29,6 +29,7 @@ import javax.annotation.Generated;
         comments = "This is Tool Generated Code. DO NOT EDIT",
         date = "2011-07-13"
 )
+@SuppressWarnings("serial")
 final class LazyAccountSettings implements twitter4j.AccountSettings {
     private twitter4j.internal.http.HttpResponse res;
     private z_T4JInternalFactory factory;

@@ -30,6 +30,7 @@ import java.util.Map;
  * @author Yusuke Yamamoto - yusuke at mac.com
  * @since Twitter4J 2.1.7
  */
+@SuppressWarnings("unchecked")
 public final class DataObjectFactory {
     private DataObjectFactory() {
         throw new AssertionError("not intended to be instantiated.");
@@ -112,10 +113,10 @@ public final class DataObjectFactory {
         }
     }
 
-    private static final ThreadLocal<Map> rawJsonMap = new ThreadLocal<Map>() {
+    private static final ThreadLocal<Map<Object, Object>> rawJsonMap = new ThreadLocal<Map<Object, Object>>() {
         @Override
-        protected Map initialValue() {
-            return new HashMap();
+        protected Map<Object, Object> initialValue() {
+            return new HashMap<Object, Object>();
         }
     };
 

@@ -11,6 +11,7 @@ import twitter4j.internal.org.json.JSONObject;
  * @author Yusuke Yamamoto - yusuke at mac.com
  * @since Twitter4J 2.2.4
  */
+@SuppressWarnings("serial")
 public class z_T4JInternalLazyFactory implements z_T4JInternalFactory {
     private final z_T4JInternalFactory factory;
     private final Configuration conf;

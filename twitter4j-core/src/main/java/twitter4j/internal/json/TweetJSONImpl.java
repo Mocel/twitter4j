@@ -32,6 +32,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
  *
  * @author Yusuke Yamamoto - yusuke at mac.com
  */
+@SuppressWarnings("deprecation")
 /*package*/ final class TweetJSONImpl implements Tweet, java.io.Serializable {
     private static final long serialVersionUID = 3019285230338056113L;
     private String text;
@@ -57,7 +58,8 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
     private HashtagEntity[] hashtagEntities;
     private MediaEntity[] mediaEntities;
 
-    /*package*/ TweetJSONImpl(JSONObject tweet) throws TwitterException {
+    /*package*/
+	TweetJSONImpl(JSONObject tweet) throws TwitterException {
         text = getUnescapedString("text", tweet);
         toUserId = getLong("to_user_id", tweet);
         toUser = getRawString("to_user", tweet);
