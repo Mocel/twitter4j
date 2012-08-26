@@ -35,6 +35,9 @@ import javax.annotation.Generated;
         date = "2011-07-13"
 )
 final class LazyIDs implements twitter4j.IDs {
+
+    private static final long serialVersionUID = 1L;
+
     private twitter4j.internal.http.HttpResponse res;
     private z_T4JInternalFactory factory;
     private IDs target = null;

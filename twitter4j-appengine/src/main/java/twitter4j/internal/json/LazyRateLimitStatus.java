@@ -35,6 +35,9 @@ import java.util.Date;
         date = "2011-07-13"
 )
 final class LazyRateLimitStatus implements twitter4j.RateLimitStatus {
+
+    private static final long serialVersionUID = 1L;
+
     private twitter4j.internal.http.HttpResponse res;
     private z_T4JInternalFactory factory;
     private RateLimitStatus target = null;

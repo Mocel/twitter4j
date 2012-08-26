@@ -14,6 +14,9 @@ import javax.annotation.Generated;
         date = "2011-07-13"
 )
 final class LazyPlace implements twitter4j.Place {
+
+    private static final long serialVersionUID = 1L;
+
     private twitter4j.internal.http.HttpResponse res;
     private z_T4JInternalFactory factory;
     private Place target = null;

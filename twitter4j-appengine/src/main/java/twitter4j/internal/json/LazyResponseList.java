@@ -81,7 +81,7 @@ abstract class LazyResponseList<T> implements ResponseList<T> {
         return getTarget().toArray();
     }
 
-    public <T> T[] toArray(T[] ts) {
+    public <E> E[] toArray(E[] ts) {
         return getTarget().toArray(ts);
     }
 
