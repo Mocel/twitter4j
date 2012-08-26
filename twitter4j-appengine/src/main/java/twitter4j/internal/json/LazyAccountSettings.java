@@ -16,9 +16,14 @@
 
 package twitter4j.internal.json;
 
-import twitter4j.*;
-
 import javax.annotation.Generated;
+
+import twitter4j.AccountSettings;
+import twitter4j.Location;
+import twitter4j.RateLimitStatus;
+import twitter4j.TimeZone;
+import twitter4j.TwitterException;
+import twitter4j.TwitterRuntimeException;
 
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
@@ -31,6 +36,9 @@ import javax.annotation.Generated;
 )
 @SuppressWarnings("serial")
 final class LazyAccountSettings implements twitter4j.AccountSettings {
+
+    private static final long serialVersionUID = 1L;
+
     private twitter4j.internal.http.HttpResponse res;
     private z_T4JInternalFactory factory;
     private AccountSettings target = null;

@@ -31,7 +31,6 @@ import java.util.Map;
  * @author Yusuke Yamamoto - yusuke at mac.com
  * @since Twitter4J 2.2.4
  */
-@SuppressWarnings("serial")
 public class z_T4JInternalJSONImplFactory implements z_T4JInternalFactory {
     private static final long serialVersionUID = 5217622295050444866L;
     private Configuration conf;
