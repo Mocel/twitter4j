@@ -25,6 +25,9 @@ import twitter4j.*;
  */
 @SuppressWarnings("serial")
 final class LazySimilarPlaces extends LazyResponseList<Place> implements SimilarPlaces {
+
+    private static final long serialVersionUID = 1L;
+
     private twitter4j.internal.http.HttpResponse res;
     private z_T4JInternalFactory factory;
 

@@ -34,6 +34,9 @@ import java.util.Date;
         date = "2011-07-13"
 )
 final class LazyUser implements twitter4j.User {
+
+    private static final long serialVersionUID = 1L;
+
     private twitter4j.internal.http.HttpResponse res;
     private z_T4JInternalFactory factory;
     private User target = null;

@@ -33,6 +33,9 @@ import java.net.URI;
         date = "2011-07-13"
 )
 final class LazyUserList implements twitter4j.UserList {
+
+    private static final long serialVersionUID = 1L;
+
     private twitter4j.internal.http.HttpResponse res;
     private z_T4JInternalFactory factory;
     private UserList target = null;
