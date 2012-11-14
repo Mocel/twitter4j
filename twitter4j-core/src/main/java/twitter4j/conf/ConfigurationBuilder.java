@@ -187,12 +187,6 @@ public final class ConfigurationBuilder {
         return this;
     }
 
-    public ConfigurationBuilder setSearchBaseURL(String searchBaseURL) {
-        checkNotBuilt();
-        configurationBean.setSearchBaseURL(searchBaseURL);
-        return this;
-    }
-
     public ConfigurationBuilder setStreamBaseURL(String streamBaseURL) {
         checkNotBuilt();
         configurationBean.setStreamBaseURL(streamBaseURL);
@@ -214,6 +208,12 @@ public final class ConfigurationBuilder {
     public ConfigurationBuilder setAsyncNumThreads(int asyncNumThreads) {
         checkNotBuilt();
         configurationBean.setAsyncNumThreads(asyncNumThreads);
+        return this;
+    }
+
+    public ConfigurationBuilder setContributingTo(long contributingTo) {
+        checkNotBuilt();
+        configurationBean.setContributingTo(contributingTo);
         return this;
     }
 
@@ -244,6 +244,12 @@ public final class ConfigurationBuilder {
     public ConfigurationBuilder setIncludeEntitiesEnabled(boolean enabled) {
         checkNotBuilt();
         configurationBean.setIncludeEntitiesEnbled(enabled);
+        return this;
+    }
+
+    public ConfigurationBuilder setIncludeMyRetweetEnabled(boolean enabled) {
+        checkNotBuilt();
+        configurationBean.setIncludeMyRetweetEnabled(enabled);
         return this;
     }
 

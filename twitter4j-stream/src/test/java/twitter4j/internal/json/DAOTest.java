@@ -75,23 +75,6 @@ public class DAOTest extends TwitterTestBase {
         assertDeserializedFormIsEqual(trends);
     }
 
-    public void testTweet() throws Exception {
-        JSONObject json = new JSONObject("{\"profile_image_url\":\"http://a3.twimg.com/profile_images/554278229/twitterProfilePhoto_normal.jpg\",\"created_at\":\"Thu, 24 Dec 2009 18:30:56 +0000\",\"from_user\":\"pskh\",\"to_user_id\":null,\"text\":\"test\",\"id\":7007483122,\"from_user_id\":215487,\"geo\":{\"type\":\"Point\",\"coordinates\":[37.78029, -122.39697]},\"source\":\"&lt;a href=&quot;http://twitter4j.org/&quot; rel=&quot;nofollow&quot;&gt;Twitter4J&lt;/a&gt;\"}");
-        Tweet tweet = new TweetJSONImpl(json, conf);
-        GeoLocation geo = tweet.getGeoLocation();
-        assertNotNull(geo);
-        assertEquals(37.78029, geo.getLatitude());
-        assertEquals(-122.39697, geo.getLongitude());
-
-        JSONObject json2 = new JSONObject("{\"from_user_id_str\": \"178849153\", \"profile_image_url\": \"http://a2.twimg.com/sticky/default_profile_images/default_profile_1_normal.png\", \"created_at\": \"Thu, 24 Feb 2011 16:52:19 +0000\", \"from_user\": \"jscottdawson\", \"id_str\": \"40816302931181569\", \"metadata\": {\"result_type\": \"recent\"}, \"to_user_id\": null, \"text\": \"Schluzz and stuff\", \"id\": 40816302931181570, \"from_user_id\": 178849153, \"geo\": null, \"iso_language_code\": \"de\", \"place\": {\"id\": \"33fe3f451651a7c1\", \"type\": \"neighborhood\", \"full_name\": \"Old Town West, Fort Collins\"}, \"to_user_id_str\": null, \"source\": \"&lt;a href=&quot;http://twitter.com/&quot;&gt;web&lt;/a&gt;\"}");
-        Tweet tweet2 = new TweetJSONImpl(json2, conf);
-        Place place = tweet2.getPlace();
-        assertNotNull(place);
-        assertEquals("33fe3f451651a7c1", place.getId());
-        assertEquals("neighborhood", place.getPlaceType());
-        assertEquals("Old Town West, Fort Collins", place.getFullName());
-    }
-
     public void testLocation() throws Exception {
         JSONArray array = getJSONArrayFromClassPath("/dao/trends-available.json");
         ResponseList<Location> locations = LocationJSONImpl.createLocationList(array, conf.isJSONStoreEnabled());
@@ -111,23 +94,23 @@ public class DAOTest extends TwitterTestBase {
         String str;
         str = "";
         try {
-            DataObjectFactory.createTweet(str);
+            DataObjectFactory.createStatus(str);
             fail("should fail");
         } catch (TwitterException expected) {
         } catch (Error notExpected) {
             fail("failed" + notExpected.getMessage());
         }
         try {
-            DataObjectFactory.createTweet(str);
+            DataObjectFactory.createStatus(str);
             fail("should fail");
         } catch (TwitterException expected) {
         } catch (Error notExpected) {
             fail("failed" + notExpected.getMessage());
         }
-        str = "{\"in_reply_to_status_id_str\":null,\"place\":null,\"in_reply_to_user_id\":null,\"text\":\"working\",\"contributors\":null,\"retweet_count\":0,\"in_reply_to_user_id_str\":null,\"retweeted\":false,\"id_str\":\"794626207\",\"source\":\"\\u003Ca href=\\\"http:\\/\\/twitterhelp.blogspot.com\\/2008\\/05\\/twitter-via-mobile-web-mtwittercom.html\\\" rel=\\\"nofollow\\\"\\u003Emobile web\\u003C\\/a\\u003E\",\"truncated\":false,\"geo\":null,\"in_reply_to_status_id\":null,\"favorited\":false,\"user\":{\"show_all_inline_media\":false,\"geo_enabled\":false,\"profile_background_tile\":false,\"time_zone\":null,\"favourites_count\":0,\"description\":null,\"friends_count\":0,\"profile_link_color\":\"0084B4\",\"location\":null,\"profile_sidebar_border_color\":\"C0DEED\",\"id_str\":\"14481043\",\"url\":null,\"follow_request_sent\":false,\"statuses_count\":1,\"profile_use_background_image\":true,\"lang\":\"en\",\"profile_background_color\":\"C0DEED\",\"profile_image_url\":\"http:\\/\\/a3.twimg.com\\/a\\/1292975674\\/images\\/default_profile_3_normal.png\",\"profile_background_image_url\":\"http:\\/\\/a3.twimg.com\\/a\\/1292975674\\/images\\/themes\\/theme1\\/bg.png\",\"followers_count\":44,\"protected\":false,\"contributors_enabled\":false,\"notifications\":false,\"screen_name\":\"Yusuke\",\"name\":\"Yusuke\",\"is_translator\":false,\"listed_count\":1,\"following\":false,\"verified\":false,\"profile_text_color\":\"333333\",\"id\":14481043,\"utc_offset\":null,\"created_at\":\"Tue Apr 22 21:49:13 +0000 2008\",\"profile_sidebar_fill_color\":\"DDEEF6\"},\"id\":794626207,\"coordinates\":null,\"in_reply_to_screen_name\":null,\"created_at\":\"Tue Apr 2200 21:49:34 +0000 2008\"}";
+        str = "{\"in_reply_to_status_id_str\":null,\"place\":null,\"in_reply_to_user_id\":null,\"text\":\"working\",\"contributors\":null,\"retweet_count\":0,\"in_reply_to_user_id_str\":null,\"retweeted\":false,\"id_str\":\"794626207\",\"source\":\"\\u003Ca href=\\\"http:\\/\\/twitterhelp.blogspot.com\\/2008\\/05\\/twitter-via-mobile-web-mtwittercom.html\\\" rel=\\\"nofollow\\\"\\u003Emobile web\\u003C\\/a\\u003E\",\"truncated\":false,\"geo\":null,\"in_reply_to_status_id\":null,\"favorited\":false,\"user\":{\"show_all_inline_media\":false,\"geo_enabled\":false,\"profile_background_tile\":false,\"time_zone\":null,\"favourites_count\":0,\"description\":null,\"friends_count\":0,\"profile_link_color\":\"0084B4\",\"location\":null,\"profile_sidebar_border_color\":\"C0DEED\",\"id_str\":\"14481043\",\"url\":null,\"follow_request_sent\":false,\"statuses_count\":1,\"profile_use_background_image\":true,\"lang\":\"en\",\"profile_background_color\":\"C0DEED\",\"profile_image_url\":\"http:\\/\\/a3.twimg.com\\/a\\/1292975674\\/images\\/default_profile_3_normal.png\",\"profile_background_image_url\":\"http:\\/\\/a3.twimg.com\\/a\\/1292975674\\/images\\/themes\\/theme1\\/bg.png\",\"followers_count\":44,\"protected\":false,\"contributors_enabled\":false,\"notifications\":false,\"screen_name\":\"Yusuke\",\"name\":\"Yusuke\",\"is_translator\":false,\"listed_count\":1,\"following\":false,\"verified\":false,\"profile_text_color\":\"333333\",\"id\":14481043,\"utc_offset\":null,\"created_at\":\"Tue Apr 22 21:49:13 +0000 2008\",\"profile_sidebar_fill_color\":\"DDEEF6\"},\"id\":794626207,\"coordinates\":null,\"in_reply_to_screen_name\":null,\"created_at\":\"Tue Apr 2200 21:49:34 +0000 2008\"";
 
         try {
-            DataObjectFactory.createTweet(str);
+            DataObjectFactory.createCategory(str);
             fail("should fail");
         } catch (TwitterException expected) {
             expected.printStackTrace();
@@ -135,7 +118,7 @@ public class DAOTest extends TwitterTestBase {
             fail("failed" + notExpected.getMessage());
         }
         try {
-            DataObjectFactory.createTweet(str);
+            DataObjectFactory.createCategory(str);
             fail("should fail");
         } catch (TwitterException expected) {
         } catch (Error notExpected) {
@@ -182,7 +165,7 @@ public class DAOTest extends TwitterTestBase {
         // Location
 
 //        schema = new String[]{"url","country","woeid","placeType/name","placeType/code","name","countryCode"};
-//        url = "http://api.twitter.com/1/trends/available.json";
+//        url = "http://api.twitter.com/1.1/trends/available.json";
 //        validateJSONArraySchema(url, schema);
         // Place
         if (!Boolean.valueOf(System.getProperties().getProperty("twitter4j.test.schema"))) {
@@ -195,8 +178,8 @@ public class DAOTest extends TwitterTestBase {
                 "name",
                 "size",
         };
-        url = "http://api.twitter.com/1/users/suggestions.json";
-        List<Category> categories = CategoryJSONImpl.createCategoriesList(validateJSONArraySchema(url, schema), null, conf);
+        url = "http://api.twitter.com/1.1/users/suggestions.json";
+        List categories = CategoryJSONImpl.createCategoriesList(validateJSONArraySchema(url, schema), null, conf);
         Assert.assertEquals(20, categories.size());
 
         schema = new String[]{
@@ -206,7 +189,7 @@ public class DAOTest extends TwitterTestBase {
                 "categories/*",
                 "users/*"
         };
-        url = "http://api.twitter.com/1/users/suggestions/art-design.json";
+        url = "http://api.twitter.com/1.1/users/suggestions/art-design.json";
         validateJSONObjectSchema(url, schema);
 
 
@@ -243,7 +226,7 @@ public class DAOTest extends TwitterTestBase {
                 "query/params/coordinates/coordinates/*",
                 "query/params/accuracy",
         };
-        url = "http://api.twitter.com/1/geo/reverse_geocode.json?lat=37.78215&long=-122.40060";
+        url = "http://api.twitter.com/1.1/geo/reverse_geocode.json?lat=37.78215&long=-122.40060";
         validateJSONObjectSchema(url, schema);
 
 
@@ -266,7 +249,7 @@ public class DAOTest extends TwitterTestBase {
                 "lists/following",
 
         };
-        url = "http://api.twitter.com/1/twit4j2/lists.json";
+        url = "http://api.twitter.com/1.1/twit4j2/lists.json";
         validateJSONObjectSchema(url, schema);
 
         schema = new String[]{
@@ -284,7 +267,7 @@ public class DAOTest extends TwitterTestBase {
                 "following",
 
         };
-        url = "http://api.twitter.com/1/twit4j2/lists/9499823.json";
+        url = "http://api.twitter.com/1.1/twit4j2/lists/9499823.json";
         UserList userList = new UserListJSONImpl(validateJSONObjectSchema(url, schema));
         Assert.assertEquals("", userList.getDescription());
         Assert.assertEquals("@twit4j2/test", userList.getFullName());
@@ -321,9 +304,8 @@ public class DAOTest extends TwitterTestBase {
                 "retweet_count"
 
         };
-        url = "http://api.twitter.com/1/statuses/show/2245071380.json";
+        url = "http://api.twitter.com/1.1/statuses/show/2245071380.json";
         Status status = new StatusJSONImpl(validateJSONObjectSchema(url, schema));
-        assertNotNull(status);
 
         schema = new String[]{
                 "profile_background_image_url",
@@ -362,9 +344,8 @@ public class DAOTest extends TwitterTestBase {
                 "is_translator",
                 "show_all_inline_media"};
 
-        url = "http://api.twitter.com/1/users/show/yusukey.json";
+        url = "http://api.twitter.com/1.1/users/show/yusukey.json";
         User user = new UserJSONImpl(validateJSONObjectSchema(url, schema));
-        assertNotNull(user);
     }
 
     private JSONObject validateJSONObjectSchema(String url, String[] knownNames) throws Exception {
@@ -404,7 +385,7 @@ public class DAOTest extends TwitterTestBase {
             }
         }
 
-        Iterator<String> ite = json.keys();
+        Iterator ite = json.keys();
         while (ite.hasNext()) {
             String name = (String) ite.next();
             boolean found = false;
@@ -474,6 +455,18 @@ public class DAOTest extends TwitterTestBase {
         builder.setUser(id1.screenName);
         builder.setPassword(id1.password);
         return getJSONObjectFromGetURL(url, builder.build());
+    }
+
+    private static JSONObject getJSONObjectFromPostURL(String url, Configuration conf) throws Exception {
+        HttpClientWrapper http = new HttpClientWrapper(conf);
+        return http.post(url).asJSONObject();
+    }
+
+    private JSONObject getJSONObjectFromPostURL(String url) throws Exception {
+        ConfigurationBuilder builder = new ConfigurationBuilder();
+        builder.setUser(id1.screenName);
+        builder.setPassword(id1.password);
+        return getJSONObjectFromPostURL(url, builder.build());
     }
 
     private JSONObject getJSONObjectFromGetURL(String url, Configuration conf) throws Exception {
@@ -548,7 +541,7 @@ public class DAOTest extends TwitterTestBase {
         Assert.assertTrue(0 <= user.getFriendsCount());
         Assert.assertNotNull(user.getCreatedAt());
         Assert.assertNotNull(user.getTimeZone());
-        Assert.assertNotNull(user.getProfileBackgroundImageUrl());
+        Assert.assertNotNull(user.getProfileBackgroundImageURL());
 
         Assert.assertTrue(0 <= user.getStatusesCount());
         Assert.assertNotNull(user.getProfileBackgroundColor());
@@ -637,7 +630,7 @@ public class DAOTest extends TwitterTestBase {
         Assert.assertEquals("2b6ff8c22edd9576", place.getId());
         Assert.assertEquals("", place.getCountry());
         Assert.assertEquals("neighborhood", place.getPlaceType());
-        Assert.assertEquals("http://api.twitter.com/1/geo/id/2b6ff8c22edd9576.json", place.getURL());
+        Assert.assertEquals("http://api.twitter.com/1.1/geo/id/2b6ff8c22edd9576.json", place.getURL());
         Assert.assertEquals("SoMa, San Francisco", place.getFullName());
         Assert.assertEquals("Polygon", place.getBoundingBoxType());
         GeoLocation[][] boundingBox = place.getBoundingBoxCoordinates();
@@ -663,7 +656,7 @@ public class DAOTest extends TwitterTestBase {
         Assert.assertEquals("5a110d312052166f", containedWithin.getId());
         Assert.assertEquals("", containedWithin.getCountry());
         Assert.assertEquals("city", containedWithin.getPlaceType());
-        Assert.assertEquals("http://api.twitter.com/1/geo/id/5a110d312052166f.json", containedWithin.getURL());
+        Assert.assertEquals("http://api.twitter.com/1.1/geo/id/5a110d312052166f.json", containedWithin.getURL());
         Assert.assertEquals("San Francisco", containedWithin.getFullName());
         boundingBox = containedWithin.getBoundingBoxCoordinates();
         Assert.assertEquals("Polygon", place.getBoundingBoxType());
@@ -713,8 +706,8 @@ public class DAOTest extends TwitterTestBase {
     }
 
     public void testTwitterMethod() throws Exception {
-        assertDeserializedFormIsSingleton(TwitterMethod.ADD_LIST_MEMBER);
-        assertDeserializedFormIsSingleton(TwitterMethod.BLOCKING_USERS);
+        assertDeserializedFormIsSingleton(TwitterMethod.CREATE_LIST_MEMBER);
+        assertDeserializedFormIsSingleton(TwitterMethod.BLOCK_LIST);
     }
 
     /**

@@ -86,8 +86,6 @@ public interface Configuration extends HttpClientConfiguration
 
     String getRestBaseURL();
 
-    String getSearchBaseURL();
-
     String getStreamBaseURL();
 
     String getOAuthRequestTokenURL();
@@ -102,7 +100,7 @@ public interface Configuration extends HttpClientConfiguration
 
     String getSiteStreamBaseURL();
 
-    String getUploadBaseURL();
+	boolean isIncludeMyRetweetEnabled();
 
     boolean isJSONStoreEnabled();
 
@@ -119,6 +117,8 @@ public interface Configuration extends HttpClientConfiguration
     Properties getMediaProviderParameters();
 
     int getAsyncNumThreads();
+
+    long getContributingTo();
 
     String getDispatcherImpl();
 }

@@ -65,13 +65,12 @@ public final class PropertyConfiguration extends ConfigurationBase implements ja
     public static final String OAUTH_AUTHENTICATION_URL = "oauth.authenticationURL";
 
     public static final String REST_BASE_URL = "restBaseURL";
-    public static final String SEARCH_BASE_URL = "searchBaseURL";
     public static final String STREAM_BASE_URL = "streamBaseURL";
     public static final String USER_STREAM_BASE_URL = "userStreamBaseURL";
     public static final String SITE_STREAM_BASE_URL = "siteStreamBaseURL";
-    public static final String UPLOAD_BASE_URL = "uploadBaseURL";
 
     public static final String ASYNC_NUM_THREADS = "async.numThreads";
+    public static final String CONTRIBUTING_TO = "contributingTo";
     public static final String ASYNC_DISPATCHER_IMPL = "async.dispatcherImpl";
     public static final String INCLUDE_RTS = "includeRTs";
     public static final String INCLUDE_ENTITIES = "includeEntities";
@@ -291,6 +290,9 @@ public final class PropertyConfiguration extends ConfigurationBase implements ja
         if (notNull(props, prefix, ASYNC_NUM_THREADS)) {
             setAsyncNumThreads(getIntProperty(props, prefix, ASYNC_NUM_THREADS));
         }
+        if (notNull(props, prefix, CONTRIBUTING_TO)) {
+            setContributingTo(getLongProperty(props, prefix, CONTRIBUTING_TO));
+        }
         if (notNull(props, prefix, ASYNC_DISPATCHER_IMPL)) {
             setDispatcherImpl(getString(props, prefix, ASYNC_DISPATCHER_IMPL));
         }
@@ -324,10 +326,6 @@ public final class PropertyConfiguration extends ConfigurationBase implements ja
             setRestBaseURL(getString(props, prefix, REST_BASE_URL));
         }
 
-        if (notNull(props, prefix, SEARCH_BASE_URL)) {
-            setSearchBaseURL(getString(props, prefix, SEARCH_BASE_URL));
-        }
-
         if (notNull(props, prefix, STREAM_BASE_URL)) {
             setStreamBaseURL(getString(props, prefix, STREAM_BASE_URL));
         }
@@ -336,9 +334,6 @@ public final class PropertyConfiguration extends ConfigurationBase implements ja
         }
         if (notNull(props, prefix, SITE_STREAM_BASE_URL)) {
             setSiteStreamBaseURL(getString(props, prefix, SITE_STREAM_BASE_URL));
-        }
-        if (notNull(props, prefix, UPLOAD_BASE_URL)) {
-            setUploadBaseURL(getString(props, prefix, UPLOAD_BASE_URL));
         }
         if (notNull(props, prefix, INCLUDE_RTS)) {
             setIncludeRTsEnbled(getBoolean(props, prefix, INCLUDE_RTS));
@@ -387,6 +382,15 @@ public final class PropertyConfiguration extends ConfigurationBase implements ja
             return Integer.parseInt(value);
         } catch (NumberFormatException nfe) {
             return -1;
+        }
+    }
+
+    protected long getLongProperty(Properties props, String prefix, String name) {
+        String value = props.getProperty(prefix + name);
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException nfe) {
+            return -1L;
         }
     }
 

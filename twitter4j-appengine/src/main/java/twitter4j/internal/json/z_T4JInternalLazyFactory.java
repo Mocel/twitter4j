@@ -1,11 +1,13 @@
 package twitter4j.internal.json;
 
 import twitter4j.*;
-import twitter4j.api.HelpMethods;
+import twitter4j.api.HelpResources;
 import twitter4j.conf.Configuration;
 import twitter4j.internal.http.HttpResponse;
 import twitter4j.internal.org.json.JSONException;
 import twitter4j.internal.org.json.JSONObject;
+
+import java.util.Map;
 
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
@@ -13,6 +15,7 @@ import twitter4j.internal.org.json.JSONObject;
  */
 @SuppressWarnings("serial")
 public class z_T4JInternalLazyFactory implements z_T4JInternalFactory {
+    private static final long serialVersionUID = 8032710811910749119L;
     private final z_T4JInternalFactory factory;
     private final Configuration conf;
 
@@ -37,8 +40,8 @@ public class z_T4JInternalLazyFactory implements z_T4JInternalFactory {
         return new DirectMessageJSONImpl(json);
     }
 
-    public RateLimitStatus createRateLimitStatus(HttpResponse res) throws TwitterException {
-        return new LazyRateLimitStatus(res, factory);
+    public Map<String ,RateLimitStatus> createRateLimitStatuses(HttpResponse res) throws TwitterException {
+        return factory.createRateLimitStatuses(res);
     }
 
     public Status createStatus(HttpResponse res) throws TwitterException {
@@ -151,10 +154,6 @@ public class z_T4JInternalLazyFactory implements z_T4JInternalFactory {
         };
     }
 
-    public ProfileImage createProfileImage(HttpResponse res) throws TwitterException {
-        return new ProfileImageImpl(res);
-    }
-
     public DirectMessage createDirectMessage(HttpResponse res) throws TwitterException {
         return new LazyDirectMessage(res, factory);
     }
@@ -240,10 +239,10 @@ public class z_T4JInternalLazyFactory implements z_T4JInternalFactory {
         return new LazyTwitterAPIConfiguration(res, factory);
     }
 
-    public ResponseList<HelpMethods.Language> createLanguageList(final HttpResponse res) throws TwitterException {
-        return new LazyResponseList<HelpMethods.Language>() {
+    public ResponseList<HelpResources.Language> createLanguageList(final HttpResponse res) throws TwitterException {
+        return new LazyResponseList<HelpResources.Language>() {
             @Override
-            protected ResponseList<HelpMethods.Language> createActualResponseList() throws TwitterException {
+            protected ResponseList<HelpResources.Language> createActualResponseList() throws TwitterException {
                 return LanguageJSONImpl.createLanguageList(res, conf);
             }
         };

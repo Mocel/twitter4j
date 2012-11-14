@@ -26,7 +26,6 @@ import java.util.Date;
  *
  * @author Yusuke Yamamoto - yusuke at mac.com
  */
-@SuppressWarnings("serial")
 @Generated(
         value = "generate-lazy-objects.sh",
         comments = "This is Tool Generated Code. DO NOT EDIT",
@@ -232,6 +231,11 @@ final class LazyStatus implements twitter4j.Status {
         return getTarget().isRetweetedByMe();
     }
 
+    @Override
+    public boolean isPossiblySensitive() {
+        return getTarget().isPossiblySensitive();
+    }
+
 
     /**
      * Returns an array of user mentions in the tweet, or null if no users were mentioned.
@@ -264,18 +268,6 @@ final class LazyStatus implements twitter4j.Status {
     public HashtagEntity[] getHashtagEntities() {
         return getTarget().getHashtagEntities();
     }
-
-
-    /**
-     * Returns the annotations, or null if no annotations are associated with this status.
-     *
-     * @since Twitter4J 2.1.4
-     */
-    @SuppressWarnings("deprecation")
-	public Annotations getAnnotations() {
-        return getTarget().getAnnotations();
-    }
-
 
     /**
      * Returns an array of MediaEntities if medias are available in the tweet, or null if no media is included in the tweet.

@@ -64,6 +64,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
     private String timeZone;
     private String profileBackgroundImageUrl;
     private String profileBackgroundImageUrlHttps;
+    private String profileBannerImageUrl;
     private boolean profileBackgroundTiled;
     private String lang;
     private int statusesCount;
@@ -127,6 +128,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
             timeZone = getRawString("time_zone", json);
             profileBackgroundImageUrl = getRawString("profile_background_image_url", json);
             profileBackgroundImageUrlHttps = getRawString("profile_background_image_url_https", json);
+            profileBannerImageUrl = getRawString("profile_banner_url", json);
             profileBackgroundTiled = getBoolean("profile_background_tile", json);
             lang = getRawString("lang", json);
             statusesCount = getInt("statuses_count", json);
@@ -198,12 +200,34 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
      * {@inheritDoc}
      */
     @Override
-    public URL getProfileImageURL() {
-        try {
-            return new URL(profileImageUrl);
-        } catch (MalformedURLException ex) {
-            return null;
+    public String getProfileImageURL() {
+        return profileImageUrl;
+    }
+
+    @Override
+    public String getBiggerProfileImageURL() {
+        return toResizedURL(profileImageUrl, "_bigger");
+    }
+
+    @Override
+    public String getMiniProfileImageURL() {
+        return toResizedURL(profileImageUrl, "_mini");
+    }
+
+    @Override
+    public String getOriginalProfileImageURL() {
+        return toResizedURL(profileImageUrl, "");
+    }
+
+    private String toResizedURL(String originalURL, String sizeSuffix) {
+        if(null != originalURL){
+            int index = originalURL.lastIndexOf("_");
+            int suffixIndex = originalURL.lastIndexOf(".");
+            return originalURL.substring(0,index)
+                    +sizeSuffix
+                    +originalURL.substring(suffixIndex);
         }
+        return null;
     }
 
     /**
@@ -211,25 +235,38 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
      */
     @Override
     public URL getProfileImageUrlHttps() {
-        if (null == profileImageUrlHttps)
-            return null;
         try {
             return new URL(profileImageUrlHttps);
-        } catch (MalformedURLException ex) {
+        } catch (MalformedURLException e) {
             return null;
         }
+    }
+    @Override
+    public String getProfileImageURLHttps() {
+        return profileImageUrlHttps;
+    }
+
+    @Override
+    public String getBiggerProfileImageURLHttps() {
+        return toResizedURL(profileImageUrlHttps, "_bigger");
+    }
+
+    @Override
+    public String getMiniProfileImageURLHttps() {
+        return toResizedURL(profileImageUrlHttps, "_mini");
+    }
+
+    @Override
+    public String getOriginalProfileImageURLHttps() {
+        return toResizedURL(profileImageUrlHttps, "");
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public URL getURL() {
-        try {
-            return new URL(url);
-        } catch (MalformedURLException ex) {
-            return null;
-        }
+    public String getURL() {
+        return url;
     }
 
     /**
@@ -355,6 +392,14 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
      */
     @Override
     public String getProfileBackgroundImageUrl() {
+        return getProfileBackgroundImageURL();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getProfileBackgroundImageURL() {
         return profileBackgroundImageUrl;
     }
 
@@ -364,6 +409,39 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
     @Override
     public String getProfileBackgroundImageUrlHttps() {
         return profileBackgroundImageUrlHttps;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getProfileBannerURL() {
+        return profileBannerImageUrl != null ? profileBannerImageUrl+"/web" : null;
+    }
+
+    @Override
+    public String getProfileBannerRetinaURL() {
+        return profileBannerImageUrl != null ? profileBannerImageUrl + "/web_retina" : null;
+    }
+
+    @Override
+    public String getProfileBannerIPadURL() {
+        return profileBannerImageUrl != null ? profileBannerImageUrl + "/ipad" : null;
+    }
+
+    @Override
+    public String getProfileBannerIPadRetinaURL() {
+        return profileBannerImageUrl != null ? profileBannerImageUrl + "/ipad_retina" : null;
+    }
+
+    @Override
+    public String getProfileBannerMobileURL() {
+        return profileBannerImageUrl != null ? profileBannerImageUrl + "/mobile" : null;
+    }
+
+    @Override
+    public String getProfileBannerMobileRetinaURL() {
+        return profileBannerImageUrl != null ? profileBannerImageUrl + "/ipad_retina" : null;
     }
 
     /**

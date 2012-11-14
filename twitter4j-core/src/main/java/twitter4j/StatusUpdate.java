@@ -27,15 +27,13 @@ import java.util.List;
  * @author Yusuke Yamamoto - yusuke at mac.com
  * @since Twitter4J 2.1.1
  */
-@SuppressWarnings("deprecation")
 public final class StatusUpdate implements java.io.Serializable {
 
     private String status;
-    private long inReplyToStatusId = -1l;
+    private long inReplyToStatusId = -1L;
     private GeoLocation location = null;
     private String placeId = null;
     private boolean displayCoordinates = true;
-    private Annotations annotations = null;
     private boolean possiblySensitive;
     private String mediaName;
     private transient InputStream mediaBody;
@@ -159,31 +157,6 @@ public final class StatusUpdate implements java.io.Serializable {
         return possiblySensitive;
     }
 
-    public Annotations getAnnotations() {
-        return annotations;
-    }
-
-    public void setAnnotations(Annotations annotations) {
-        this.annotations = annotations;
-    }
-
-    public StatusUpdate annotations(Annotations annotations) {
-        setAnnotations(annotations);
-        return this;
-    }
-
-	public void addAnnotation(Annotation annotation) {
-        if (null == annotations) {
-            this.annotations = new Annotations();
-        }
-        this.annotations.addAnnotation(annotation);
-    }
-
-    public StatusUpdate annotation(Annotation annotation) {
-        addAnnotation(annotation);
-        return this;
-    }
-
     /*package*/ HttpParameter[] asHttpParameterArray() {
         ArrayList<HttpParameter> params = new ArrayList<HttpParameter>();
         appendParameter("status", status, params);
@@ -199,9 +172,6 @@ public final class StatusUpdate implements java.io.Serializable {
         if (!displayCoordinates) {
             appendParameter("display_coordinates", "false", params);
         }
-        if ((annotations != null) && (!annotations.isEmpty())) {
-            appendParameter("annotations", annotations.asParameterValue(), params);
-        }
         if (null != mediaFile) {
             params.add(new HttpParameter("media[]", mediaFile));
             params.add(new HttpParameter("possibly_sensitive", possiblySensitive));
@@ -209,7 +179,6 @@ public final class StatusUpdate implements java.io.Serializable {
             params.add(new HttpParameter("media[]", mediaName, mediaBody));
             params.add(new HttpParameter("possibly_sensitive", possiblySensitive));
         }
-
         HttpParameter[] paramArray = new HttpParameter[params.size()];
         return params.toArray(paramArray);
     }
@@ -238,7 +207,6 @@ public final class StatusUpdate implements java.io.Serializable {
         if (displayCoordinates != that.displayCoordinates) return false;
         if (inReplyToStatusId != that.inReplyToStatusId) return false;
         if (possiblySensitive != that.possiblySensitive) return false;
-        if (annotations != null ? !annotations.equals(that.annotations) : that.annotations != null) return false;
         if (location != null ? !location.equals(that.location) : that.location != null) return false;
         if (mediaBody != null ? !mediaBody.equals(that.mediaBody) : that.mediaBody != null) return false;
         if (mediaFile != null ? !mediaFile.equals(that.mediaFile) : that.mediaFile != null) return false;
@@ -256,7 +224,6 @@ public final class StatusUpdate implements java.io.Serializable {
         result = 31 * result + (location != null ? location.hashCode() : 0);
         result = 31 * result + (placeId != null ? placeId.hashCode() : 0);
         result = 31 * result + (displayCoordinates ? 1 : 0);
-        result = 31 * result + (annotations != null ? annotations.hashCode() : 0);
         result = 31 * result + (possiblySensitive ? 1 : 0);
         result = 31 * result + (mediaName != null ? mediaName.hashCode() : 0);
         result = 31 * result + (mediaBody != null ? mediaBody.hashCode() : 0);
@@ -272,7 +239,6 @@ public final class StatusUpdate implements java.io.Serializable {
                 ", location=" + location +
                 ", placeId='" + placeId + '\'' +
                 ", displayCoordinates=" + displayCoordinates +
-                ", annotations=" + annotations +
                 ", possiblySensitive=" + possiblySensitive +
                 ", mediaName='" + mediaName + '\'' +
                 ", mediaBody=" + mediaBody +

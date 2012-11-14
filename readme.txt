@@ -34,8 +34,10 @@ Jenny Loomis <jenny at rockmelt.com>
 John Corwin <jcorwin at twitter.com> @johnxorz
 John Sirois <jsirois at twitter.com> @johnsirois
 Julien Letrouit <julien.letrouit at gmail.com> @jletroui
+Komiya Atsushi <komiya.atsushi at gmail.com> @komiya_atsushi
 Ludovico Fischer @ludovicofischer
 marr-masaaki <marr fiveflavors at gmail.com> @marr
+Max Penet <m at qbits.cc> @mpenet
 Mocel <docel77 at gmail.com> @Mocel
 Nobutoshi Ogata <n-ogata at cnt.biglobe.co.jp> @nobu666
 Nicholas Dellamaggiore <nick.dellamaggiore at gmail.com> @nickdella

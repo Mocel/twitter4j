@@ -34,7 +34,6 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
  *
  * @author Yusuke Yamamoto - yusuke at mac.com
  */
-@SuppressWarnings("deprecation")
 /*package*/ final class StatusJSONImpl extends TwitterResponseImpl implements Status, java.io.Serializable {
     private static final Logger logger = Logger.getLogger(StatusJSONImpl.class);
     private static final long serialVersionUID = 7548618898682727465L;
@@ -52,16 +51,16 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
     private Place place = null;
     private long retweetCount;
     private boolean wasRetweetedByMe;
+    private boolean isPossiblySensitive;
 
-    private String[] contributors = null;
     private long[] contributorsIDs;
-	private Annotations annotations = null;
 
     private Status retweetedStatus;
     private UserMentionEntity[] userMentionEntities;
     private URLEntity[] urlEntities;
     private HashtagEntity[] hashtagEntities;
     private MediaEntity[] mediaEntities;
+    private Status myRetweetedStatus;
 
     /*package*/StatusJSONImpl(HttpResponse res, Configuration conf) throws TwitterException {
         super(res);
@@ -69,6 +68,14 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
         init(json);
         if (conf.isJSONStoreEnabled()) {
             DataObjectFactoryUtil.clearThreadLocalMap();
+            DataObjectFactoryUtil.registerJSONObject(this, json);
+        }
+    }
+
+    /*package*/StatusJSONImpl(JSONObject json, Configuration conf) throws TwitterException {
+        super();
+        init(json);
+        if (conf.isJSONStoreEnabled()) {
             DataObjectFactoryUtil.registerJSONObject(this, json);
         }
     }
@@ -94,6 +101,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
         isFavorited = getBoolean("favorited", json);
         inReplyToScreenName = getUnescapedString("in_reply_to_screen_name", json);
         retweetCount = getLong("retweet_count", json);
+        isPossiblySensitive = getBoolean("possibly_sensitive", json);
         try {
             if (!json.isNull("user")) {
                 user = new UserJSONImpl(json.getJSONObject("user"));
@@ -134,7 +142,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
                 logger.warn("failed to parse contributors:" + json);
             }
         } else {
-            contributors = null;
+            contributorsIDs = new long[0];
         }
         if (!json.isNull("entities")) {
             try {
@@ -147,7 +155,6 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
                     for (int i = 0; i < len; i++) {
                         userMentionEntities[i] = new UserMentionEntityJSONImpl(userMentionsArray.getJSONObject(i));
                     }
-
                 }
                 if (!entities.isNull("urls")) {
                     JSONArray urlsArray = entities.getJSONArray("urls");
@@ -179,16 +186,22 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
                 throw new TwitterException(jsone);
             }
         }
-        if (!json.isNull("annotations")) {
-            try {
-                JSONArray annotationsArray = json.getJSONArray("annotations");
-                annotations = new Annotations(annotationsArray);
-            } catch (JSONException ignore) {
-            }
+        if (userMentionEntities == null) {
+            userMentionEntities = new UserMentionEntity[0];
         }
+        if (urlEntities == null) {
+            urlEntities = new URLEntity[0];
+        }
+        if (hashtagEntities == null) {
+            hashtagEntities = new HashtagEntity[0];
+        }
+        if (mediaEntities == null) {
+            mediaEntities = new MediaEntity[0];
+        }
+
         if (!json.isNull("current_user_retweet")) {
             try {
-                new StatusJSONImpl(json.getJSONObject("current_user_retweet"));
+                myRetweetedStatus = new StatusJSONImpl(json.getJSONObject("current_user_retweet"));
                 wasRetweetedByMe = true;
             } catch (JSONException ignore) {
                 ignore.printStackTrace();
@@ -294,29 +307,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
      */
     @Override
     public long[] getContributors() {
-        if (contributors != null) {
-            // http://twitter4j.org/jira/browse/TFJ-592
-            // preserving serialized form compatibility with older versions
-            contributorsIDs = new long[contributors.length];
-            for (int i = 0; i < contributors.length; i++) {
-                try {
-                    contributorsIDs[i] = Long.parseLong(contributors[i]);
-                } catch (NumberFormatException nfe) {
-                    nfe.printStackTrace();
-                    logger.warn("failed to parse contributors:" + nfe);
-                }
-            }
-            contributors = null;
-        }
         return contributorsIDs;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public Annotations getAnnotations() {
-        return annotations;
     }
 
     /**
@@ -368,6 +359,14 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
     @Override
     public boolean isRetweetedByMe() {
         return wasRetweetedByMe;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isPossiblySensitive() {
+        return isPossiblySensitive;
     }
 
     /**
@@ -462,12 +461,14 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
                 ", place=" + place +
                 ", retweetCount=" + retweetCount +
                 ", wasRetweetedByMe=" + wasRetweetedByMe +
-                ", contributors=" + (contributorsIDs == null ? null : Arrays.asList(contributorsIDs)) +
-                ", annotations=" + annotations +
+                ", isPossiblySensitive=" + isPossiblySensitive +
+                ", contributorsIDs=" + contributorsIDs +
                 ", retweetedStatus=" + retweetedStatus +
                 ", userMentionEntities=" + (userMentionEntities == null ? null : Arrays.asList(userMentionEntities)) +
                 ", urlEntities=" + (urlEntities == null ? null : Arrays.asList(urlEntities)) +
                 ", hashtagEntities=" + (hashtagEntities == null ? null : Arrays.asList(hashtagEntities)) +
+                ", mediaEntities=" + (mediaEntities == null ? null : Arrays.asList(mediaEntities)) +
+                ", myRetweetedStatus=" + myRetweetedStatus +
                 ", user=" + user +
                 '}';
     }

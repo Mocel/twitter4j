@@ -32,9 +32,8 @@ class PagableResponseListImpl<T extends TwitterResponse> extends ResponseListImp
     private final long nextCursor;
     private static final long serialVersionUID = 1531950333538983361L;
 
-    PagableResponseListImpl(RateLimitStatus rateLimitStatus, RateLimitStatus featureSpecificRateLimitStatus,
-                            int accessLevel) {
-        super(rateLimitStatus, featureSpecificRateLimitStatus, accessLevel);
+    PagableResponseListImpl(RateLimitStatus rateLimitStatus, int accessLevel) {
+        super(rateLimitStatus, accessLevel);
         previousCursor = 0;
         nextCursor = 0;
     }

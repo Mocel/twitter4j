@@ -22,6 +22,7 @@ import twitter4j.internal.org.json.JSONException;
 import twitter4j.internal.org.json.JSONObject;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,14 +39,13 @@ public final class DataObjectFactory {
 
     private static final Constructor<Status> statusConstructor;
     private static final Constructor<User> userConstructor;
-    private static final Constructor<Tweet> tweetConstructor;
     private static final Constructor<Relationship> relationshipConstructor;
     private static final Constructor<Place> placeConstructor;
     private static final Constructor<SavedSearch> savedSearchConstructor;
     private static final Constructor<Trend> trendConstructor;
     private static final Constructor<Trends> trendsConstructor;
     private static final Constructor<IDs> IDsConstructor;
-    private static final Constructor<RateLimitStatus> rateLimitStatusConstructor;
+    private static final Method rateLimitStatusConstructor;
     private static final Constructor<Category> categoryConstructor;
     private static final Constructor<DirectMessage> directMessageConstructor;
     private static final Constructor<Location> locationConstructor;
@@ -61,9 +61,6 @@ public final class DataObjectFactory {
 
             userConstructor = (Constructor<User>) Class.forName("twitter4j.internal.json.UserJSONImpl").getDeclaredConstructor(JSONObject.class);
             userConstructor.setAccessible(true);
-
-            tweetConstructor = (Constructor<Tweet>) Class.forName("twitter4j.internal.json.TweetJSONImpl").getDeclaredConstructor(JSONObject.class);
-            tweetConstructor.setAccessible(true);
 
             relationshipConstructor = (Constructor<Relationship>) Class.forName("twitter4j.internal.json.RelationshipJSONImpl").getDeclaredConstructor(JSONObject.class);
             relationshipConstructor.setAccessible(true);
@@ -83,7 +80,7 @@ public final class DataObjectFactory {
             IDsConstructor = (Constructor<IDs>) Class.forName("twitter4j.internal.json.IDsJSONImpl").getDeclaredConstructor(String.class);
             IDsConstructor.setAccessible(true);
 
-            rateLimitStatusConstructor = (Constructor<RateLimitStatus>) Class.forName("twitter4j.internal.json.RateLimitStatusJSONImpl").getDeclaredConstructor(JSONObject.class);
+            rateLimitStatusConstructor = Class.forName("twitter4j.internal.json.RateLimitStatusJSONImpl").getDeclaredMethod("createRateLimitStatuses",JSONObject.class);
             rateLimitStatusConstructor.setAccessible(true);
 
             categoryConstructor = (Constructor<Category>) Class.forName("twitter4j.internal.json.CategoryJSONImpl").getDeclaredConstructor(JSONObject.class);
@@ -198,29 +195,6 @@ public final class DataObjectFactory {
         try {
             JSONObject json = new JSONObject(rawJSON);
             return accountTotalsConstructor.newInstance(json);
-        } catch (InstantiationException e) {
-            throw new TwitterException(e);
-        } catch (IllegalAccessException e) {
-            throw new AssertionError(e);
-        } catch (InvocationTargetException e) {
-            throw new TwitterException(e);
-        } catch (JSONException e) {
-            throw new TwitterException(e);
-        }
-    }
-
-    /**
-     * Constructs a Tweet object from rawJSON string.
-     *
-     * @param rawJSON raw JSON form as String
-     * @return Tweet
-     * @throws TwitterException when provided string is not a valid JSON string.
-     * @since Twitter4J 2.1.7
-     */
-    public static Tweet createTweet(String rawJSON) throws TwitterException {
-        try {
-            JSONObject json = new JSONObject(rawJSON);
-            return tweetConstructor.newInstance(json);
         } catch (InstantiationException e) {
             throw new TwitterException(e);
         } catch (IllegalAccessException e) {
@@ -372,11 +346,11 @@ public final class DataObjectFactory {
      * @throws TwitterException when provided string is not a valid JSON string.
      * @since Twitter4J 2.1.7
      */
-    public static RateLimitStatus createRateLimitStatus(String rawJSON) throws TwitterException {
+    public static Map<String ,RateLimitStatus> createRateLimitStatus(String rawJSON) throws TwitterException {
         try {
             JSONObject json = new JSONObject(rawJSON);
-            return rateLimitStatusConstructor.newInstance(json);
-        } catch (InstantiationException e) {
+            return (Map<String ,RateLimitStatus>)rateLimitStatusConstructor.invoke(Class.forName("twitter4j.internal.json.RateLimitStatusJSONImpl"), json);
+        } catch (ClassNotFoundException e) {
             throw new TwitterException(e);
         } catch (IllegalAccessException e) {
             throw new AssertionError(e);

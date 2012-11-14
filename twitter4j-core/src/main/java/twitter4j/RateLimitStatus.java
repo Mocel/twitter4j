@@ -16,8 +16,6 @@
 
 package twitter4j;
 
-import java.util.Date;
-
 /**
  * A data interface representing Twitter REST API's rate limit status
  *
@@ -31,7 +29,7 @@ public interface RateLimitStatus extends java.io.Serializable {
      *
      * @return the remaining number of API requests available
      */
-    int getRemainingHits();
+    int getRemaining();
 
     /**
      * Returns the current limit in effect<br>
@@ -39,7 +37,7 @@ public interface RateLimitStatus extends java.io.Serializable {
      *
      * @return the current limit in effect
      */
-    int getHourlyLimit();
+    int getLimit();
 
     /**
      * Returns the seconds the current rate limiting period ends.<br>
@@ -58,15 +56,5 @@ public interface RateLimitStatus extends java.io.Serializable {
      * @since Twitter4J 2.1.0
      */
     int getSecondsUntilReset();
-
-
-    /**
-     * Returns the time the current rate limiting period ends.<br>
-     * This value is a java.util.Date-typed variation of the &quot;X-RateLimit-Reset&quot; response header.
-     *
-     * @return the time the current rate limiting period ends
-     * @since Twitter4J 2.0.9
-     */
-    Date getResetTime();
 
 }

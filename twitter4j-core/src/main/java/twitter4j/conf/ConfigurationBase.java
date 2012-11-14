@@ -64,15 +64,17 @@ class ConfigurationBase implements Configuration, java.io.Serializable {
     private String streamBaseURL;
     private String userStreamBaseURL;
     private String siteStreamBaseURL;
-    private String uploadBaseURL;
 
     private String dispatcherImpl;
 
     private int asyncNumThreads;
 
+    private long contributingTo;
     private boolean includeRTsEnabled = true;
 
     private boolean includeEntitiesEnabled = true;
+    
+    private boolean includeMyRetweetEnabled = true;
 
     private boolean jsonStoreEnabled;
 
@@ -99,12 +101,10 @@ class ConfigurationBase implements Configuration, java.io.Serializable {
     private static final String DEFAULT_OAUTH_ACCESS_TOKEN_URL = "http://api.twitter.com/oauth/access_token";
     private static final String DEFAULT_OAUTH_AUTHENTICATION_URL = "http://api.twitter.com/oauth/authenticate";
 
-    private static final String DEFAULT_REST_BASE_URL = "http://api.twitter.com/1/";
-    private static final String DEFAULT_SEARCH_BASE_URL = "http://search.twitter.com/";
-    private static final String DEFAULT_STREAM_BASE_URL = "https://stream.twitter.com/1/";
-    private static final String DEFAULT_USER_STREAM_BASE_URL = "https://userstream.twitter.com/2/";
-    private static final String DEFAULT_SITE_STREAM_BASE_URL = "https://sitestream.twitter.com";
-    private static final String DEFAULT_UPLOAD_BASE_URL = "http://upload.twitter.com/1/";
+    private static final String DEFAULT_REST_BASE_URL = "http://api.twitter.com/1.1/";
+    private static final String DEFAULT_STREAM_BASE_URL = "https://stream.twitter.com/1.1/";
+    private static final String DEFAULT_USER_STREAM_BASE_URL = "https://userstream.twitter.com/1.1/";
+    private static final String DEFAULT_SITE_STREAM_BASE_URL = "https://sitestream.twitter.com/1.1/";
 
     private boolean IS_DALVIK;
     private boolean IS_GAE;
@@ -156,6 +156,7 @@ class ConfigurationBase implements Configuration, java.io.Serializable {
         setOAuthAccessToken(null);
         setOAuthAccessTokenSecret(null);
         setAsyncNumThreads(1);
+        setContributingTo(-1L);
         setClientVersion(Version.getVersion());
         setClientURL("http://twitter4j.org/en/twitter4j-" + Version.getVersion() + ".xml");
         setUserAgent("twitter4j http://twitter4j.org/ /" + Version.getVersion());
@@ -170,15 +171,9 @@ class ConfigurationBase implements Configuration, java.io.Serializable {
         setOAuthAuthenticationURL(DEFAULT_OAUTH_AUTHENTICATION_URL);
 
         setRestBaseURL(DEFAULT_REST_BASE_URL);
-        // search api tends to fail with SSL as of 12/31/2009
-        // setSearchBaseURL(fixURL(useSSL, "http://search.twitter.com/"));
-        setSearchBaseURL(DEFAULT_SEARCH_BASE_URL);
-        // streaming api doesn't support SSL as of 12/30/2009
-        // setStreamBaseURL(fixURL(useSSL, "http://stream.twitter.com/1/"));
         setStreamBaseURL(DEFAULT_STREAM_BASE_URL);
         setUserStreamBaseURL(DEFAULT_USER_STREAM_BASE_URL);
         setSiteStreamBaseURL(DEFAULT_SITE_STREAM_BASE_URL);
-        setUploadBaseURL(DEFAULT_UPLOAD_BASE_URL);
 
         setDispatcherImpl("twitter4j.internal.async.DispatcherImpl");
 
@@ -475,6 +470,15 @@ class ConfigurationBase implements Configuration, java.io.Serializable {
     }
 
     @Override
+    public final long getContributingTo() {
+        return contributingTo;
+    }
+
+    protected final void setContributingTo(long contributingTo) {
+        this.contributingTo = contributingTo;
+    }
+
+    @Override
     public final String getClientVersion() {
         return clientVersion;
     }
@@ -520,18 +524,6 @@ class ConfigurationBase implements Configuration, java.io.Serializable {
         if (DEFAULT_OAUTH_REQUEST_TOKEN_URL.equals(fixURL(false, oAuthRequestTokenURL))) {
             this.oAuthRequestTokenURL = fixURL(useSSL, oAuthRequestTokenURL);
         }
-        if (DEFAULT_SEARCH_BASE_URL.equals(fixURL(false, searchBaseURL))) {
-            this.searchBaseURL = fixURL(useSSL, searchBaseURL);
-        }
-    }
-
-    @Override
-    public String getSearchBaseURL() {
-        return searchBaseURL;
-    }
-
-    protected final void setSearchBaseURL(String searchBaseURL) {
-        this.searchBaseURL = searchBaseURL;
     }
 
     @Override
@@ -559,22 +551,6 @@ class ConfigurationBase implements Configuration, java.io.Serializable {
 
     protected final void setSiteStreamBaseURL(String siteStreamBaseURL) {
         this.siteStreamBaseURL = siteStreamBaseURL;
-    }
-
-    @Override
-    public String getUploadBaseURL() {
-        return uploadBaseURL;
-    }
-
-    protected final void setUploadBaseURL(String uploadBaseURL) {
-        this.uploadBaseURL = uploadBaseURL;
-        fixUploadBaseURL();
-    }
-
-    private void fixUploadBaseURL() {
-        if (DEFAULT_UPLOAD_BASE_URL.equals(fixURL(false, this.uploadBaseURL))) {
-            this.uploadBaseURL = fixURL(useSSL, this.uploadBaseURL);
-        }
     }
 
     @Override
@@ -633,8 +609,16 @@ class ConfigurationBase implements Configuration, java.io.Serializable {
     protected final void setIncludeEntitiesEnbled(boolean enabled) {
         this.includeEntitiesEnabled = enabled;
     }
+    
+    public boolean isIncludeMyRetweetEnabled() {
+		return this.includeMyRetweetEnabled;
+	}
 
-    public boolean isJSONStoreEnabled() {
+	public void setIncludeMyRetweetEnabled(boolean enabled) {
+		this.includeMyRetweetEnabled = enabled;
+	}
+
+	public boolean isJSONStoreEnabled() {
         return this.jsonStoreEnabled;
     }
 
@@ -783,8 +767,6 @@ class ConfigurationBase implements Configuration, java.io.Serializable {
             return false;
         if (streamBaseURL != null ? !streamBaseURL.equals(that.streamBaseURL) : that.streamBaseURL != null)
             return false;
-        if (uploadBaseURL != null ? !uploadBaseURL.equals(that.uploadBaseURL) : that.uploadBaseURL != null)
-            return false;
         if (user != null ? !user.equals(that.user) : that.user != null) return false;
         if (userAgent != null ? !userAgent.equals(that.userAgent) : that.userAgent != null) return false;
         if (userStreamBaseURL != null ? !userStreamBaseURL.equals(that.userStreamBaseURL) : that.userStreamBaseURL != null)
@@ -826,7 +808,6 @@ class ConfigurationBase implements Configuration, java.io.Serializable {
         result = 31 * result + (streamBaseURL != null ? streamBaseURL.hashCode() : 0);
         result = 31 * result + (userStreamBaseURL != null ? userStreamBaseURL.hashCode() : 0);
         result = 31 * result + (siteStreamBaseURL != null ? siteStreamBaseURL.hashCode() : 0);
-        result = 31 * result + (uploadBaseURL != null ? uploadBaseURL.hashCode() : 0);
         result = 31 * result + (dispatcherImpl != null ? dispatcherImpl.hashCode() : 0);
         result = 31 * result + asyncNumThreads;
         result = 31 * result + (includeRTsEnabled ? 1 : 0);
@@ -880,7 +861,6 @@ class ConfigurationBase implements Configuration, java.io.Serializable {
                 ", streamBaseURL='" + streamBaseURL + '\'' +
                 ", userStreamBaseURL='" + userStreamBaseURL + '\'' +
                 ", siteStreamBaseURL='" + siteStreamBaseURL + '\'' +
-                ", uploadBaseURL='" + uploadBaseURL + '\'' +
                 ", dispatcherImpl='" + dispatcherImpl + '\'' +
                 ", asyncNumThreads=" + asyncNumThreads +
                 ", includeRTsEnabled=" + includeRTsEnabled +
