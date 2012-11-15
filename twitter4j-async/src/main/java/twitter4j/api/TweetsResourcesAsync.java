@@ -16,7 +16,6 @@
 
 package twitter4j.api;
 
-
 import twitter4j.OEmbedRequest;
 import twitter4j.StatusUpdate;
 

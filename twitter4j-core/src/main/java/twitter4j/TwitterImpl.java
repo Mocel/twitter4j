@@ -333,6 +333,16 @@ class TwitterImpl extends TwitterBaseImpl implements Twitter {
      * {@inheritDoc}
      */
     @Override
+    public DirectMessage destroyDirectMessage(long id) throws
+            TwitterException {
+        ensureAuthorizationEnabled();
+        return factory.createDirectMessage(post(conf.getRestBaseURL() + "direct_messages/destroy.json?id=" + id));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public ResponseList<Status> getFollowingTimeline(String screenName,
             Paging paging) throws TwitterException {
         return factory.createStatusList(get(conf.getRestBaseURL() +
@@ -377,11 +387,6 @@ class TwitterImpl extends TwitterBaseImpl implements Twitter {
                 "statuses/following_timeline.json"
                 , new HttpParameter[]{ new HttpParameter("user_id", userId)
                 , INCLUDE_MY_RETWEET }));
-    }
-
-    public DirectMessage destroyDirectMessage(long id) throws
-            TwitterException {
-        return factory.createDirectMessage(post(conf.getRestBaseURL() + "direct_messages/destroy.json?id=" + id));
     }
 
     /**
