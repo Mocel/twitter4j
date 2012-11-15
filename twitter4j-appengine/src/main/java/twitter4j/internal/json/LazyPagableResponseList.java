@@ -24,9 +24,7 @@ import twitter4j.TwitterResponse;
  */
 @SuppressWarnings("serial")
 abstract class LazyPagableResponseList<T extends TwitterResponse> extends LazyResponseList<T> implements PagableResponseList<T> {
-	private static final long serialVersionUID = 1L;
-
-	public boolean hasPrevious() {
+    public boolean hasPrevious() {
         return ((PagableResponseList<T>) getTarget()).hasPrevious();
     }
 
