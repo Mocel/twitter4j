@@ -18,7 +18,6 @@ package twitter4j;
 
 import junit.framework.TestCase;
 import twitter4j.conf.Configuration;
-import twitter4j.conf.ConfigurationBuilder;
 import twitter4j.conf.PropertyConfiguration;
 
 import java.io.InputStream;

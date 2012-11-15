@@ -25,7 +25,6 @@ import twitter4j.internal.org.json.JSONObject;
 
 import java.util.*;
 
-import static twitter4j.internal.util.z_T4JInternalParseUtil.getDate;
 import static twitter4j.internal.util.z_T4JInternalParseUtil.getInt;
 
 /**
@@ -55,12 +54,12 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.getInt;
         Map<String, RateLimitStatus> map = new HashMap<String, RateLimitStatus>();
         try {
             JSONObject resources = json.getJSONObject("resources");
-            Iterator resourceKeys = resources.keys();
+            Iterator<String> resourceKeys = resources.keys();
             while (resourceKeys.hasNext()) {
-                JSONObject resource = resources.getJSONObject((String) resourceKeys.next());
-                Iterator endpointKeys = resource.keys();
+                JSONObject resource = resources.getJSONObject(resourceKeys.next());
+                Iterator<String> endpointKeys = resource.keys();
                 while (endpointKeys.hasNext()) {
-                    String endpoint = (String) endpointKeys.next();
+                    String endpoint = endpointKeys.next();
                     JSONObject rateLimitStatusJSON = resource.getJSONObject(endpoint);
                     RateLimitStatus rateLimitStatus = new RateLimitStatusJSONImpl(rateLimitStatusJSON);
                     map.put(endpoint, rateLimitStatus);

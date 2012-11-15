@@ -186,4 +186,48 @@ public interface TimelinesResources {
      * @since Twitter4J 2.0.10
      */
     ResponseList<Status> getHomeTimeline(Paging paging) throws TwitterException;
+
+    /**
+     * Returns the 20 most recent statuses from non-protected users who are followed by the specified user.
+     * <br>This method calls http://api.twitter.com/1/statuses/following_timeline
+     *
+     * @param screenName specifies the screen name of the user for whom to return the following_timeline
+     * @param paging     controls pagination. Supports since_id, max_id, count and page parameters.
+     * @return list of statuses of the Following Timeline
+     * @throws twitter4j.TwitterException when Twitter service or network is unavailable
+     */
+    ResponseList<Status> getFollowingTimeline(String screenName, Paging paging)
+            throws TwitterException;
+
+    /**
+     * Returns the 20 most recent statuses from non-protected users who are followed by the specified user.
+     * <br>This method calls http://api.twitter.com/1/statuses/following_timeline
+     *
+     * @param userId specifies the ID of the user for whom to return the user_timeline
+     * @param paging controls pagination. Supports since_id, max_id, count and page parameters.
+     * @return list of statuses of the Following Timeline
+     * @throws twitter4j.TwitterException when Twitter service or network is unavailable
+     */
+    ResponseList<Status> getFollowingTimeline(long userId, Paging paging)
+            throws TwitterException;
+
+    /**
+     * Returns the 20 most recent statuses from non-protected users who are followed by the specified user.
+     * <br>This method calls http://api.twitter.com/1/statuses/following_timeline
+     *
+     * @param screenName specifies the screen name of the user for whom to return the following_timeline
+     * @return list of statuses of the Following Timeline
+     * @throws twitter4j.TwitterException when Twitter service or network is unavailable
+     */
+    ResponseList<Status> getFollowingTimeline(String screenName) throws TwitterException;
+
+    /**
+     * Returns the 20 most recent statuses from non-protected users who are followed by the specified user.
+     * <br>This method calls http://api.twitter.com/1/statuses/following_timeline
+     *
+     * @param userId specifies the ID of the user for whom to return the user_timeline
+     * @return list of statuses of the Following Timeline
+     * @throws twitter4j.TwitterException when Twitter service or network is unavailable
+     */
+    ResponseList<Status> getFollowingTimeline(long userId) throws TwitterException;
 }

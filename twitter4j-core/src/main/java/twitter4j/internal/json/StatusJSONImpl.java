@@ -19,7 +19,6 @@ package twitter4j.internal.json;
 import java.util.Arrays;
 import java.util.Date;
 
-import twitter4j.Annotations;
 import twitter4j.GeoLocation;
 import twitter4j.HashtagEntity;
 import twitter4j.MediaEntity;
@@ -38,14 +37,11 @@ import twitter4j.internal.org.json.JSONException;
 import twitter4j.internal.org.json.JSONObject;
 import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
 
-import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
-
 /**
  * A data class representing one single status of a user.
  *
  * @author Yusuke Yamamoto - yusuke at mac.com
  */
-/*package*/ @SuppressWarnings("deprecation")
 final class StatusJSONImpl extends TwitterResponseImpl implements Status, java.io.Serializable {
     private static final Logger logger = Logger.getLogger(StatusJSONImpl.class);
     private static final long serialVersionUID = 7548618898682727465L;

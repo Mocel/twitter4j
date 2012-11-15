@@ -86,7 +86,6 @@ public class SiteStreamsTest extends TwitterTestBase implements SiteStreamsListe
         Assert.assertEquals(4933401l, received.get(0)[1]);
     }
 
-    @SuppressWarnings("deprecation")
     public void testSiteStream() throws Exception {
         InputStream is = SiteStreamsTest.class.getResourceAsStream("/sitestream-test.properties");
         if (null == is) {
@@ -169,7 +168,6 @@ public class SiteStreamsTest extends TwitterTestBase implements SiteStreamsListe
             twit4j.retweetStatus(status.getId());
             waitForStatus();
             twit4j.sendDirectMessage(42419133, "test " + new Date());
-            assertNotNull(dm);
             waitForStatus();
 
             twitter2.destroyStatus(status.getId());

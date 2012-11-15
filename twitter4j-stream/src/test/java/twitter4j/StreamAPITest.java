@@ -294,7 +294,7 @@ public class StreamAPITest extends TwitterTestBase implements StatusListener, Co
 
     @Override
     public void onStallWarning(StallWarning warning) {
-        System.out.println("got stall waring: " + this.warning);
+        System.out.println("got stall waring: " + warning);
     }
 
     Exception ex;

@@ -315,6 +315,16 @@ class TwitterImpl extends TwitterBaseImpl implements Twitter {
      * {@inheritDoc}
      */
     @Override
+    public DirectMessage destroyDirectMessage(long id) throws
+            TwitterException {
+        ensureAuthorizationEnabled();
+        return factory.createDirectMessage(post(conf.getRestBaseURL() + "direct_messages/destroy.json?id=" + id));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public ResponseList<Status> getFollowingTimeline(String screenName,
             Paging paging) throws TwitterException {
         return factory.createStatusList(get(conf.getRestBaseURL() +
@@ -353,17 +363,6 @@ class TwitterImpl extends TwitterBaseImpl implements Twitter {
         return factory.createStatusList(get(conf.getRestBaseURL() +
                 "statuses/following_timeline.json"
                 , new HttpParameter[]{ new HttpParameter("user_id", userId) }));
-    }
-
-    public DirectMessage destroyDirectMessage(long id) throws
-            TwitterException {
-        ensureAuthorizationEnabled();
-        return factory.createDirectMessage(post(conf.getRestBaseURL() + "direct_messages/destroy.json?id=" + id));
-    /**
-     * {@inheritDoc}
-     */
-    public ResponseList<User> getRetweetedBy(long statusId) throws TwitterException {
-        return getRetweetedBy(statusId, new Paging(1, 100));
     }
 
     /**

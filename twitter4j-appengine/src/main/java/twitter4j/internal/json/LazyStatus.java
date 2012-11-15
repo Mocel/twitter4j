@@ -20,7 +20,6 @@ import java.util.Date;
 
 import javax.annotation.Generated;
 
-import twitter4j.Annotations;
 import twitter4j.GeoLocation;
 import twitter4j.HashtagEntity;
 import twitter4j.MediaEntity;

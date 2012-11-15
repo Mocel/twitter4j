@@ -167,16 +167,4 @@ public interface Status extends Comparable<Status>, TwitterResponse,
      * @return Retweeted Status
      */
     public Status getMyRetweetedStatus();
-
-    /**
-     * Returns the status if the authorized user retweeted this.
-     * @return Retweeted Status
-     */
-    public Status getMyRetweetedStatus();
-
-    /**
-     * Returns the status if the authorized user retweeted this.
-     * @return Retweeted Status
-     */
-    public Status getMyRetweetedStatus();
 }

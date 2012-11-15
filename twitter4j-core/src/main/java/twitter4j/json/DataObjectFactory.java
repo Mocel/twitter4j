@@ -36,7 +36,6 @@ import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.Trend;
 import twitter4j.Trends;
-import twitter4j.Tweet;
 import twitter4j.TwitterException;
 import twitter4j.User;
 import twitter4j.UserList;
