@@ -39,12 +39,8 @@ public class TweetsResourcesTest extends TwitterTestBase {
     }
 
     public void testShowStatus() throws Exception {
-//        JSONObject json = new JSONObject();
-//        json.append("text", " <%}&lt; foobar <&Cynthia>");
-//        System.out.println(json.toString());
-//        System.out.println(json.getString("text"));
         Status status;
-        status = DataObjectFactory.createStatus("{\"text\":\"\\\\u5e30%u5e30 &lt;%}& foobar &lt;&Cynthia&gt;\",\"contributors\":null,\"geo\":null,\"retweeted\":false,\"in_reply_to_screen_name\":null,\"truncated\":false,\"entities\":{\"urls\":[],\"hashtags\":[],\"user_mentions\":[]},\"in_reply_to_status_id_str\":null,\"id\":12029015787307008,\"in_reply_to_user_id_str\":null,\"source\":\"web\",\"favorited\":false,\"in_reply_to_status_id\":null,\"in_reply_to_user_id\":null,\"created_at\":\"Tue Dec 07 06:21:55 +0000 2010\",\"retweet_count\":0,\"id_str\":\"12029015787307008\",\"place\":null,\"user\":{\"location\":\"location:\",\"statuses_count\":13405,\"profile_background_tile\":false,\"lang\":\"en\",\"profile_link_color\":\"0000ff\",\"id\":6358482,\"following\":true,\"favourites_count\":2,\"protected\":false,\"profile_text_color\":\"000000\",\"contributors_enabled\":false,\"description\":\"Hi there, I do test a lot!new\",\"verified\":false,\"profile_sidebar_border_color\":\"87bc44\",\"name\":\"twit4j\",\"profile_background_color\":\"9ae4e8\",\"created_at\":\"Sun May 27 09:52:09 +0000 2007\",\"followers_count\":24,\"geo_enabled\":true,\"profile_background_image_url\":\"http://a3.twimg.com/profile_background_images/179009017/t4j-reverse.gif\",\"follow_request_sent\":false,\"url\":\"http://yusuke.homeip.net/twitter4j/\",\"utc_offset\":-32400,\"time_zone\":\"Alaska\",\"notifications\":false,\"friends_count\":4,\"profile_use_background_image\":true,\"profile_sidebar_fill_color\":\"e0ff92\",\"screen_name\":\"twit4j\",\"id_str\":\"6358482\",\"profile_image_url\":\"http://a3.twimg.com/profile_images/1184543043/t4j-reverse_normal.jpeg\",\"show_all_inline_media\":false,\"listed_count\":3},\"coordinates\":null}");
+        status = DataObjectFactory.createStatus("{\"text\":\"\\\\u5e30%u5e30 &lt;%\\u007d& foobar &lt;&Cynthia&gt;\",\"contributors\":null,\"geo\":null,\"retweeted\":false,\"in_reply_to_screen_name\":null,\"truncated\":false,\"entities\":{\"urls\":[],\"hashtags\":[],\"user_mentions\":[]},\"in_reply_to_status_id_str\":null,\"id\":12029015787307008,\"in_reply_to_user_id_str\":null,\"source\":\"web\",\"favorited\":false,\"in_reply_to_status_id\":null,\"in_reply_to_user_id\":null,\"created_at\":\"Tue Dec 07 06:21:55 +0000 2010\",\"retweet_count\":0,\"id_str\":\"12029015787307008\",\"place\":null,\"user\":{\"location\":\"location:\",\"statuses_count\":13405,\"profile_background_tile\":false,\"lang\":\"en\",\"profile_link_color\":\"0000ff\",\"id\":6358482,\"following\":true,\"favourites_count\":2,\"protected\":false,\"profile_text_color\":\"000000\",\"contributors_enabled\":false,\"description\":\"Hi there, I do test a lot!new\",\"verified\":false,\"profile_sidebar_border_color\":\"87bc44\",\"name\":\"twit4j\",\"profile_background_color\":\"9ae4e8\",\"created_at\":\"Sun May 27 09:52:09 +0000 2007\",\"followers_count\":24,\"geo_enabled\":true,\"profile_background_image_url\":\"http://a3.twimg.com/profile_background_images/179009017/t4j-reverse.gif\",\"follow_request_sent\":false,\"url\":\"http://yusuke.homeip.net/twitter4j/\",\"utc_offset\":-32400,\"time_zone\":\"Alaska\",\"notifications\":false,\"friends_count\":4,\"profile_use_background_image\":true,\"profile_sidebar_fill_color\":\"e0ff92\",\"screen_name\":\"twit4j\",\"id_str\":\"6358482\",\"profile_image_url\":\"http://a3.twimg.com/profile_images/1184543043/t4j-reverse_normal.jpeg\",\"show_all_inline_media\":false,\"listed_count\":3},\"coordinates\":null}");
         assertEquals("\\u5e30%u5e30 <%}& foobar <&Cynthia>", status.getText());
 
         status = twitter2.showStatus(1000l);
@@ -75,6 +71,14 @@ public class TweetsResourcesTest extends TwitterTestBase {
         assertEquals(status, DataObjectFactory.createStatus(DataObjectFactory.getRawJSON(status)));
 
         assertTrue(status.getText().matches(dateStr + "test http://t.co/.* @twit4j2 #twitter4jtest"));
+
+        // http://jira.twitter4j.org/browse/TFJ-715
+        // current_user_retweet contains only id
+        Status retweeted = twitter2.retweetStatus(status.getId());
+        List<Status> statuses = twitter2.getHomeTimeline();
+        assertTrue(retweeted.getText().endsWith(status.getText()));
+        assertTrue(-1L !=  statuses.get(0).getCurrentUserRetweetId());
+
         Status status2 = twitter2.updateStatus(new StatusUpdate("@" + id1.screenName + " " + date).inReplyToStatusId(status.getId()));
         assertNotNull(DataObjectFactory.getRawJSON(status2));
         assertEquals(status2, DataObjectFactory.createStatus(DataObjectFactory.getRawJSON(status2)));
@@ -92,7 +96,7 @@ public class TweetsResourcesTest extends TwitterTestBase {
         assertEquals(status, DataObjectFactory.createStatus(DataObjectFactory.getRawJSON(status)));
 
         assertTrue(status.getText().startsWith(date));
-        assertEquals(0, status.getMediaEntities().length);
+        assertEquals(1, status.getMediaEntities().length);
     }
 
     public void testRetweetMethods() throws Exception {
@@ -110,32 +114,30 @@ public class TweetsResourcesTest extends TwitterTestBase {
         }
     }
 
-
     public void testEntities() throws Exception {
-        Status status = twitter2.showStatus(263908367406350337L);
+        Status status = twitter2.showStatus(268294645526708226L);
         assertNotNull(DataObjectFactory.getRawJSON(status));
         assertEquals(status, DataObjectFactory.createStatus(DataObjectFactory.getRawJSON(status)));
 
-        URLEntity[] entities = status.getURLEntities();
-        assertEquals(1, entities.length);
-        assertEquals("http://t.co/tf474NCg", entities[0].getURL().toString());
-        assertEquals("http://twitter4j.org/en/index.html#download", entities[0].getExpandedURL().toString());
-        assertEquals("twitter4j.org/en/index.html#…", entities[0].getDisplayURL());
-        assertTrue(0 < entities[0].getStart());
-        assertTrue(entities[0].getStart() < entities[0].getEnd());
+        URLEntity[] urlEntities = status.getURLEntities();
+        assertEquals(1, urlEntities.length);
+        assertEquals("http://t.co/HwbSpYFr", urlEntities[0].getURL());
+        assertEquals("http://twitter4j.org/en/index.html#download", urlEntities[0].getExpandedURL());
+        assertEquals("twitter4j.org/en/index.html#…", urlEntities[0].getDisplayURL());
+        assertTrue(0 < urlEntities[0].getStart());
+        assertTrue(urlEntities[0].getStart() < urlEntities[0].getEnd());
+        assertEquals(urlEntities[0].getURL(), status.getText().substring(urlEntities[0].getStart(), urlEntities[0].getEnd()));
 
         UserMentionEntity[] userMentions = status.getUserMentionEntities();
         assertEquals(2, userMentions.length);
-        assertEquals(4933401, userMentions[1].getId());
-        assertEquals("yusuke", userMentions[1].getScreenName());
-        assertEquals(28, userMentions[1].getStart());
-        assertEquals(35, userMentions[1].getEnd());
+        assertEquals(72297675, userMentions[1].getId());
+        assertEquals("t4j_news", userMentions[1].getScreenName());
+        assertEquals("@" + userMentions[1].getScreenName(), status.getText().substring(userMentions[1].getStart(), userMentions[1].getEnd()));
 
         HashtagEntity[] hashtags = status.getHashtagEntities();
         assertEquals(1, hashtags.length);
         assertEquals("test", hashtags[0].getText());
-        assertEquals(36, hashtags[0].getStart());
-        assertEquals(41, hashtags[0].getEnd());
+        assertEquals("#" + hashtags[0].getText(), status.getText().substring(hashtags[0].getStart(), hashtags[0].getEnd()));
 
         status = twitter1.showStatus(76360760606986241L);
         assertNotNull(DataObjectFactory.getRawJSON(status));
@@ -145,11 +147,11 @@ public class TweetsResourcesTest extends TwitterTestBase {
         assertEquals(1, medias.length);
         MediaEntity media = medias[0];
         assertEquals("pic.twitter.com/qbJx26r", media.getDisplayURL());
-        assertEquals("http://twitter.com/twitter/status/76360760606986241/photo/1", media.getExpandedURL().toString());
+        assertEquals("http://twitter.com/twitter/status/76360760606986241/photo/1", media.getExpandedURL());
         assertEquals(76360760611180544L, media.getId());
-        assertEquals("http://pbs.twimg.com/media/AQ9JtQsCEAA7dEN.jpg", media.getMediaURL().toString());
-        assertEquals("https://pbs.twimg.com/media/AQ9JtQsCEAA7dEN.jpg", media.getMediaURLHttps().toString());
-        assertEquals("http://t.co/qbJx26r", media.getURL().toString());
+        assertEquals("http://pbs.twimg.com/media/AQ9JtQsCEAA7dEN.jpg", media.getMediaURL());
+        assertEquals("https://pbs.twimg.com/media/AQ9JtQsCEAA7dEN.jpg", media.getMediaURLHttps());
+        assertEquals("http://t.co/qbJx26r", media.getURL());
         assertEquals(34, media.getStart());
         assertEquals(53, media.getEnd());
         assertEquals("photo", media.getType());

@@ -14,29 +14,39 @@
  * limitations under the License.
  */
 
-package twitter4j.internal.http.alternative;
+package twitter4j.internal.json;
 
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
  */
-public final class Version {
-    private static final String VERSION = "3.0.0-SNAPSHOT";
-    private static final String TITLE = "Twitter4J Apache HttpClient support";
+abstract class EntityIndex implements Comparable<EntityIndex> {
+    private int start = -1;
+    private int end = -1;
 
-    private Version() {
-        throw new AssertionError();
+    @Override
+    public int compareTo(EntityIndex that) {
+        long delta = this.start - that.start;
+        if (delta < Integer.MIN_VALUE) {
+            return Integer.MIN_VALUE;
+        } else if (delta > Integer.MAX_VALUE) {
+            return Integer.MAX_VALUE;
+        }
+        return (int) delta;
     }
 
-    public static String getVersion() {
-        return VERSION;
+    void setStart(int start) {
+        this.start = start;
     }
 
-    /**
-     * prints the version string
-     *
-     * @param args will be just ignored.
-     */
-    public static void main(String[] args) {
-        System.out.println(TITLE + " " + VERSION);
+    void setEnd(int end) {
+        this.end = end;
+    }
+
+    int getStart() {
+        return start;
+    }
+
+    int getEnd() {
+        return end;
     }
 }

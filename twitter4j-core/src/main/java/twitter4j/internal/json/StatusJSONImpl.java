@@ -35,7 +35,8 @@ import twitter4j.internal.logging.Logger;
 import twitter4j.internal.org.json.JSONArray;
 import twitter4j.internal.org.json.JSONException;
 import twitter4j.internal.org.json.JSONObject;
-import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
+
+import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
 
 /**
  * A data class representing one single status of a user.
@@ -58,7 +59,6 @@ final class StatusJSONImpl extends TwitterResponseImpl implements Status, java.i
     private GeoLocation geoLocation = null;
     private Place place = null;
     private long retweetCount;
-    private boolean wasRetweetedByMe;
     private boolean isPossiblySensitive;
 
     private long[] contributorsIDs;
@@ -68,7 +68,7 @@ final class StatusJSONImpl extends TwitterResponseImpl implements Status, java.i
     private URLEntity[] urlEntities;
     private HashtagEntity[] hashtagEntities;
     private MediaEntity[] mediaEntities;
-    private Status myRetweetedStatus;
+    private long currentUserRetweetId = -1L;
 
     /*package*/StatusJSONImpl(HttpResponse res, Configuration conf) throws TwitterException {
         super(res);
@@ -100,7 +100,6 @@ final class StatusJSONImpl extends TwitterResponseImpl implements Status, java.i
 
     private void init(JSONObject json) throws TwitterException {
         id = getLong("id", json);
-        text = getUnescapedString("text", json);
         source = getUnescapedString("source", json);
         createdAt = getDate("created_at", json);
         isTruncated = getBoolean("truncated", json);
@@ -206,11 +205,21 @@ final class StatusJSONImpl extends TwitterResponseImpl implements Status, java.i
         if (mediaEntities == null) {
             mediaEntities = new MediaEntity[0];
         }
+        EntityIndex[] entityIndexes = new EntityIndex[userMentionEntities.length
+                + urlEntities.length + hashtagEntities.length + mediaEntities.length];
+        System.arraycopy(userMentionEntities, 0, entityIndexes, 0, userMentionEntities.length);
+        System.arraycopy(urlEntities, 0, entityIndexes, userMentionEntities.length, urlEntities.length);
+        System.arraycopy(hashtagEntities, 0, entityIndexes, userMentionEntities.length + urlEntities.length, hashtagEntities.length);
+        System.arraycopy(mediaEntities, 0, entityIndexes, userMentionEntities.length + urlEntities.length + hashtagEntities.length, mediaEntities.length);
+        try {
+            text = HTMLEntity.unescapeAndSlideEntityIncdices(json.getString("text"), entityIndexes);
+        } catch (JSONException jsone) {
+            throw new TwitterException(jsone);
+        }
 
         if (!json.isNull("current_user_retweet")) {
             try {
-                myRetweetedStatus = new StatusJSONImpl(json.getJSONObject("current_user_retweet"));
-                wasRetweetedByMe = true;
+                currentUserRetweetId = json.getJSONObject("current_user_retweet").getLong("id");
             } catch (JSONException ignore) {
                 ignore.printStackTrace();
                 logger.warn("failed to parse current_user_retweet:" + json);
@@ -366,7 +375,15 @@ final class StatusJSONImpl extends TwitterResponseImpl implements Status, java.i
      */
     @Override
     public boolean isRetweetedByMe() {
-        return wasRetweetedByMe;
+        return currentUserRetweetId != -1L;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public long getCurrentUserRetweetId() {
+    	return currentUserRetweetId;
     }
 
     /**
@@ -409,11 +426,6 @@ final class StatusJSONImpl extends TwitterResponseImpl implements Status, java.i
         return mediaEntities;
     }
 
-    @Override
-    public Status getMyRetweetedStatus() {
-        return myRetweetedStatus;
-    }
-
     /*package*/
     static ResponseList<Status> createStatusList(HttpResponse res, Configuration conf) throws TwitterException {
         try {
@@ -437,8 +449,6 @@ final class StatusJSONImpl extends TwitterResponseImpl implements Status, java.i
             return statuses;
         } catch (JSONException jsone) {
             throw new TwitterException(jsone);
-        } catch (TwitterException te) {
-            throw te;
         }
     }
 
@@ -473,7 +483,6 @@ final class StatusJSONImpl extends TwitterResponseImpl implements Status, java.i
                 ", geoLocation=" + geoLocation +
                 ", place=" + place +
                 ", retweetCount=" + retweetCount +
-                ", wasRetweetedByMe=" + wasRetweetedByMe +
                 ", isPossiblySensitive=" + isPossiblySensitive +
                 ", contributorsIDs=" + contributorsIDs +
                 ", retweetedStatus=" + retweetedStatus +
@@ -481,7 +490,7 @@ final class StatusJSONImpl extends TwitterResponseImpl implements Status, java.i
                 ", urlEntities=" + (urlEntities == null ? null : Arrays.asList(urlEntities)) +
                 ", hashtagEntities=" + (hashtagEntities == null ? null : Arrays.asList(hashtagEntities)) +
                 ", mediaEntities=" + (mediaEntities == null ? null : Arrays.asList(mediaEntities)) +
-                ", myRetweetedStatus=" + myRetweetedStatus +
+                ", currentUserRetweetId=" + currentUserRetweetId +
                 ", user=" + user +
                 '}';
     }

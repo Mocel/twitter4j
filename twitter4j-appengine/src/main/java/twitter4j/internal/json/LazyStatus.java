@@ -242,6 +242,17 @@ final class LazyStatus implements twitter4j.Status {
     public boolean isRetweetedByMe() {
         return getTarget().isRetweetedByMe();
     }
+    
+    /**
+     * Returns the authenticating user's retweet's id of this tweet, or -1L when the tweet was created
+     * before this feature was enabled.
+     *
+     * @return the authenticating user's retweet's id of this tweet
+     * @since Twitter4J 3.0.1
+     */
+    public long getCurrentUserRetweetId() {
+    	return getTarget().getCurrentUserRetweetId();
+    }
 
     @Override
     public boolean isPossiblySensitive() {
