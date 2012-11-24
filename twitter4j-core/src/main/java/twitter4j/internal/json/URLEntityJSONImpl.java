@@ -28,15 +28,12 @@ import twitter4j.internal.org.json.JSONObject;
  * @author Mocel - mocel at guma.jp
  * @since Twitter4J 2.1.9
  */
-/* package */ final class URLEntityJSONImpl implements URLEntity {
+/* package */ final class URLEntityJSONImpl extends EntityIndex implements URLEntity {
 
     private static final long serialVersionUID = -8948472760821379376L;
-    private int start = -1;
-    private int end = -1;
     private String url;
     private String expandedURL;
     private String displayURL;
-
 
     /* package */ URLEntityJSONImpl(JSONObject json) throws TwitterException {
         super();
@@ -45,8 +42,8 @@ import twitter4j.internal.org.json.JSONObject;
 
     /* package */ URLEntityJSONImpl(int start, int end, String url, String expandedURL, String displayURL) {
         super();
-        this.start = start;
-        this.end = end;
+        setStart(start);
+        setEnd(end);
         this.url = url;
         this.expandedURL = expandedURL;
         this.displayURL = displayURL;
@@ -60,12 +57,25 @@ import twitter4j.internal.org.json.JSONObject;
     private void init(JSONObject json) throws TwitterException {
         try {
             JSONArray indicesArray = json.getJSONArray("indices");
-            this.start = indicesArray.getInt(0);
-            this.end = indicesArray.getInt(1);
+            setStart(indicesArray.getInt(0));
+            setEnd(indicesArray.getInt(1));
 
             this.url = json.getString("url");
-            this.expandedURL = json.getString("expanded_url");
-            this.displayURL = json.getString("display_url");
+            if (!json.isNull("expanded_url")) {
+                // sets expandedURL to url if expanded_url is null
+                // http://jira.twitter4j.org/browse/TFJ-704
+                this.expandedURL = json.getString("expanded_url");
+            }else{
+                this.expandedURL = url;
+            }
+
+            if (!json.isNull("display_url")) {
+                // sets displayURL to url if expanded_url is null
+                // http://jira.twitter4j.org/browse/TFJ-704
+                this.displayURL = json.getString("display_url");
+            }else{
+                this.displayURL = url;
+            }
         } catch (JSONException jsone) {
             throw new TwitterException(jsone);
         }
@@ -100,7 +110,7 @@ import twitter4j.internal.org.json.JSONObject;
      */
     @Override
     public int getStart() {
-        return start;
+        return super.getStart();
     }
 
     /**
@@ -108,7 +118,7 @@ import twitter4j.internal.org.json.JSONObject;
      */
     @Override
     public int getEnd() {
-        return end;
+        return super.getEnd();
     }
 
     @Override
@@ -118,24 +128,17 @@ import twitter4j.internal.org.json.JSONObject;
 
         URLEntityJSONImpl that = (URLEntityJSONImpl) o;
 
-        if (end != that.end) return false;
-        if (start != that.start) return false;
-        if (displayURL != null ? !displayURL.equals(that.displayURL) : that.displayURL != null)
-            return false;
-        if (expandedURL != null ? !expandedURL.toString().equalsIgnoreCase(that.expandedURL.toString()) : that.expandedURL != null)
-            return false;
-        if (url != null ? !url.toString().equalsIgnoreCase(that.url.toString()) : that.url != null)
-            return false;
+        if (displayURL != null ? !displayURL.equals(that.displayURL) : that.displayURL != null) return false;
+        if (expandedURL != null ? !expandedURL.equals(that.expandedURL) : that.expandedURL != null) return false;
+        if (url != null ? !url.equals(that.url) : that.url != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        int result = start;
-        result = 31 * result + end;
-        result = 31 * result + (url != null ? url.toString().hashCode() : 0);
-        result = 31 * result + (expandedURL != null ? expandedURL.toString().hashCode() : 0);
+        int result = url != null ? url.hashCode() : 0;
+        result = 31 * result + (expandedURL != null ? expandedURL.hashCode() : 0);
         result = 31 * result + (displayURL != null ? displayURL.hashCode() : 0);
         return result;
     }
@@ -143,11 +146,9 @@ import twitter4j.internal.org.json.JSONObject;
     @Override
     public String toString() {
         return "URLEntityJSONImpl{" +
-                "start=" + start +
-                ", end=" + end +
-                ", url=" + url +
-                ", expandedURL=" + expandedURL +
-                ", displayURL=" + displayURL +
+                "url='" + url + '\'' +
+                ", expandedURL='" + expandedURL + '\'' +
+                ", displayURL='" + displayURL + '\'' +
                 '}';
     }
 }

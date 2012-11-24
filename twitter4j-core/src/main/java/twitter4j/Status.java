@@ -153,6 +153,15 @@ public interface Status extends Comparable<Status>, TwitterResponse,
      * @since Twitter4J 2.1.4
      */
     boolean isRetweetedByMe();
+    
+    /**
+     * Returns the authenticating user's retweet's id of this tweet, or -1L when the tweet was created
+     * before this feature was enabled.
+     *
+     * @return the authenticating user's retweet's id of this tweet
+     * @since Twitter4J 3.0.1
+     */
+    long getCurrentUserRetweetId();
 
      /**
      * Returns true if the status contains a link that is identified as sensitive.
