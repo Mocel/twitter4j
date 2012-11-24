@@ -16,34 +16,25 @@
 
 package twitter4j.internal.json;
 
-import java.util.Date;
+import twitter4j.*;
 
 import javax.annotation.Generated;
-
-import twitter4j.GeoLocation;
-import twitter4j.HashtagEntity;
-import twitter4j.MediaEntity;
-import twitter4j.Place;
-import twitter4j.RateLimitStatus;
-import twitter4j.Status;
-import twitter4j.TwitterException;
-import twitter4j.TwitterRuntimeException;
-import twitter4j.URLEntity;
-import twitter4j.User;
-import twitter4j.UserMentionEntity;
+import java.util.Date;
 
 /**
  * A data class representing one single status of a user.
  *
  * @author Yusuke Yamamoto - yusuke at mac.com
  */
-@SuppressWarnings({ "serial" })
 @Generated(
         value = "generate-lazy-objects.sh",
         comments = "This is Tool Generated Code. DO NOT EDIT",
         date = "2011-07-13"
-        )
+)
 final class LazyStatus implements twitter4j.Status {
+
+    private static final long serialVersionUID = 1L;
+
     private twitter4j.internal.http.HttpResponse res;
     private z_T4JInternalFactory factory;
     private Status target = null;
@@ -242,7 +233,7 @@ final class LazyStatus implements twitter4j.Status {
     public boolean isRetweetedByMe() {
         return getTarget().isRetweetedByMe();
     }
-    
+
     /**
      * Returns the authenticating user's retweet's id of this tweet, or -1L when the tweet was created
      * before this feature was enabled.
@@ -332,10 +323,4 @@ final class LazyStatus implements twitter4j.Status {
                 "target=" + getTarget() +
                 "}";
     }
-
-    @Override
-    public Status getMyRetweetedStatus() {
-        return getTarget().getMyRetweetedStatus();
-    }
-
 }
