@@ -24,7 +24,6 @@ import javax.annotation.Generated;
  * @author Mocel - mocel at guma.jp
  * @since Twitter4J 2.1.8
  */
-@SuppressWarnings("serial")
 @Generated(
         value = "generate-lazy-objects.sh",
         comments = "This is Tool Generated Code. DO NOT EDIT",

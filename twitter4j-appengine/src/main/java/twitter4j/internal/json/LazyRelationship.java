@@ -31,7 +31,6 @@ import javax.annotation.Generated;
  * @see <a href="https://dev.twitter.com/docs/api/1.1/get/friendships/show">GET friendships/show | Twitter Developers</a>
  * @since Twitter4J 2.1.0
  */
-@SuppressWarnings("serial")
 @Generated(
         value = "generate-lazy-objects.sh",
         comments = "This is Tool Generated Code. DO NOT EDIT",

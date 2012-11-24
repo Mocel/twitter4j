@@ -34,7 +34,6 @@ import twitter4j.TwitterRuntimeException;
         comments = "This is Tool Generated Code. DO NOT EDIT",
         date = "2011-07-13"
 )
-@SuppressWarnings("serial")
 final class LazyAccountSettings implements twitter4j.AccountSettings {
 
     private static final long serialVersionUID = 1L;
