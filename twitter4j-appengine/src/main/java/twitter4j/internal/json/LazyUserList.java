@@ -26,7 +26,6 @@ import java.net.URI;
  *
  * @author Dan Checkoway - dcheckoway at gmail.com
  */
-@SuppressWarnings("serial")
 @Generated(
         value = "generate-lazy-objects.sh",
         comments = "This is Tool Generated Code. DO NOT EDIT",
