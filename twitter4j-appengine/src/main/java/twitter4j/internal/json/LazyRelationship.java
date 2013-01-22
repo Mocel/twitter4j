@@ -28,7 +28,7 @@ import javax.annotation.Generated;
  * A data class that has detailed information about a relationship between two users
  *
  * @author Perry Sakkaris - psakkaris at gmail.com
- * @see <a href="https://dev.twitter.com/docs/api/1/get/friendships/show">GET friendships/show | Twitter Developers</a>
+ * @see <a href="https://dev.twitter.com/docs/api/1.1/get/friendships/show">GET friendships/show | Twitter Developers</a>
  * @since Twitter4J 2.1.0
  */
 @SuppressWarnings("serial")
@@ -157,6 +157,11 @@ final class LazyRelationship implements twitter4j.Relationship {
      */
     public boolean isSourceNotificationsEnabled() {
         return getTarget().isSourceNotificationsEnabled();
+    }
+
+    @Override
+    public boolean isSourceWantRetweets() {
+        return getTarget().isSourceWantRetweets();
     }
 
 

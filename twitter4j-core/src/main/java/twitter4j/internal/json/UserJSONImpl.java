@@ -27,7 +27,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 
-import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
+import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
 
 /**
  * A data class representing Basic user information element
@@ -41,6 +41,8 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
     private String screenName;
     private String location;
     private String description;
+    private URLEntity[] descriptionURLEntities;
+    private URLEntity urlEntity;
     private boolean isContributorsEnabled;
     private String profileImageUrl;
     private String profileImageUrlHttps;
@@ -64,6 +66,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
     private String timeZone;
     private String profileBackgroundImageUrl;
     private String profileBackgroundImageUrlHttps;
+    private String profileBannerImageUrl;
     private boolean profileBackgroundTiled;
     private String lang;
     private int statusesCount;
@@ -102,7 +105,23 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
             name = getRawString("name", json);
             screenName = getRawString("screen_name", json);
             location = getRawString("location", json);
+            
+            // descriptionUrlEntities <=> entities/descriptions/urls[]
+            descriptionURLEntities = getURLEntitiesFromJSON(json, "description");
+            descriptionURLEntities = descriptionURLEntities == null ? new URLEntity[0] : descriptionURLEntities;
+            
+            // urlEntity <=> entities/url/urls[]
+            URLEntity[] urlEntities = getURLEntitiesFromJSON(json, "url");
+            if (urlEntities != null && urlEntities.length > 0) {
+                urlEntity = urlEntities[0];
+            }
+            
             description = getRawString("description", json);
+            if (description != null) {
+                description = HTMLEntity.unescapeAndSlideEntityIncdices(description, 
+                        null, descriptionURLEntities, null, null);
+            }
+            
             isContributorsEnabled = getBoolean("contributors_enabled", json);
             profileImageUrl = getRawString("profile_image_url", json);
             profileImageUrlHttps = getRawString("profile_image_url_https", json);
@@ -127,6 +146,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
             timeZone = getRawString("time_zone", json);
             profileBackgroundImageUrl = getRawString("profile_background_image_url", json);
             profileBackgroundImageUrlHttps = getRawString("profile_background_image_url_https", json);
+            profileBannerImageUrl = getRawString("profile_banner_url", json);
             profileBackgroundTiled = getBoolean("profile_background_tile", json);
             lang = getRawString("lang", json);
             statusesCount = getInt("statuses_count", json);
@@ -139,6 +159,35 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
         } catch (JSONException jsone) {
             throw new TwitterException(jsone.getMessage() + ":" + json.toString(), jsone);
         }
+    }
+    
+    /**
+     * Get URL Entities from JSON Object.
+     * returns URLEntity array by entities/[category]/urls/url[]
+     * 
+     * @param json user json object
+     * @param category entities category. e.g. "description" or "url"
+     * @return URLEntity array by entities/[category]/urls/url[]
+     * @throws JSONException
+     * @throws TwitterException
+     */
+    private static URLEntity[] getURLEntitiesFromJSON(JSONObject json, String category) throws JSONException, TwitterException {
+        if (!json.isNull("entities")) {
+            JSONObject entitiesJSON = json.getJSONObject("entities");
+            if (!entitiesJSON.isNull(category)) {
+                JSONObject descriptionEntitiesJSON = entitiesJSON.getJSONObject(category);
+                if (!descriptionEntitiesJSON.isNull("urls")) {
+                    JSONArray urlsArray = descriptionEntitiesJSON.getJSONArray("urls");
+                    int len = urlsArray.length();
+                    URLEntity[] urlEntities = new URLEntity[len];
+                    for (int i = 0; i < len; i++) {
+                        urlEntities[i] = new URLEntityJSONImpl(urlsArray.getJSONObject(i));
+                    }
+                    return urlEntities;
+                }
+            }
+        }
+        return null;
     }
 
     @Override
@@ -198,12 +247,37 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
      * {@inheritDoc}
      */
     @Override
-    public URL getProfileImageURL() {
-        try {
-            return new URL(profileImageUrl);
-        } catch (MalformedURLException ex) {
-            return null;
+    public String getProfileImageURL() {
+        return profileImageUrl;
+    }
+
+    @Override
+    public String getBiggerProfileImageURL() {
+        return toResizedURL(profileImageUrl, "_bigger");
+    }
+
+    @Override
+    public String getMiniProfileImageURL() {
+        return toResizedURL(profileImageUrl, "_mini");
+    }
+
+    @Override
+    public String getOriginalProfileImageURL() {
+        return toResizedURL(profileImageUrl, "");
+    }
+
+    private String toResizedURL(String originalURL, String sizeSuffix) {
+        if (null != originalURL) {
+            int index = originalURL.lastIndexOf("_");
+            int suffixIndex = originalURL.lastIndexOf(".");
+            int slashIndex = originalURL.lastIndexOf("/");
+            String url = originalURL.substring(0, index) + sizeSuffix;
+            if (suffixIndex > slashIndex) {
+                url += originalURL.substring(suffixIndex);
+            }
+            return url;
         }
+        return null;
     }
 
     /**
@@ -211,25 +285,38 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
      */
     @Override
     public URL getProfileImageUrlHttps() {
-        if (null == profileImageUrlHttps)
-            return null;
         try {
             return new URL(profileImageUrlHttps);
-        } catch (MalformedURLException ex) {
+        } catch (MalformedURLException e) {
             return null;
         }
+    }
+    @Override
+    public String getProfileImageURLHttps() {
+        return profileImageUrlHttps;
+    }
+
+    @Override
+    public String getBiggerProfileImageURLHttps() {
+        return toResizedURL(profileImageUrlHttps, "_bigger");
+    }
+
+    @Override
+    public String getMiniProfileImageURLHttps() {
+        return toResizedURL(profileImageUrlHttps, "_mini");
+    }
+
+    @Override
+    public String getOriginalProfileImageURLHttps() {
+        return toResizedURL(profileImageUrlHttps, "");
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public URL getURL() {
-        try {
-            return new URL(url);
-        } catch (MalformedURLException ex) {
-            return null;
-        }
+    public String getURL() {
+        return url;
     }
 
     /**
@@ -355,6 +442,14 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
      */
     @Override
     public String getProfileBackgroundImageUrl() {
+        return getProfileBackgroundImageURL();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getProfileBackgroundImageURL() {
         return profileBackgroundImageUrl;
     }
 
@@ -364,6 +459,39 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
     @Override
     public String getProfileBackgroundImageUrlHttps() {
         return profileBackgroundImageUrlHttps;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getProfileBannerURL() {
+        return profileBannerImageUrl != null ? profileBannerImageUrl+"/web" : null;
+    }
+
+    @Override
+    public String getProfileBannerRetinaURL() {
+        return profileBannerImageUrl != null ? profileBannerImageUrl + "/web_retina" : null;
+    }
+
+    @Override
+    public String getProfileBannerIPadURL() {
+        return profileBannerImageUrl != null ? profileBannerImageUrl + "/ipad" : null;
+    }
+
+    @Override
+    public String getProfileBannerIPadRetinaURL() {
+        return profileBannerImageUrl != null ? profileBannerImageUrl + "/ipad_retina" : null;
+    }
+
+    @Override
+    public String getProfileBannerMobileURL() {
+        return profileBannerImageUrl != null ? profileBannerImageUrl + "/mobile" : null;
+    }
+
+    @Override
+    public String getProfileBannerMobileRetinaURL() {
+        return profileBannerImageUrl != null ? profileBannerImageUrl + "/ipad_retina" : null;
     }
 
     /**
@@ -430,6 +558,26 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
         return isFollowRequestSent;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public URLEntity[] getDescriptionURLEntities() {
+        return descriptionURLEntities;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public URLEntity getURLEntity() {
+        if (urlEntity == null) {
+            String plainURL = url == null ? "" : url;
+            urlEntity = new URLEntityJSONImpl(0, plainURL.length(), plainURL, plainURL, plainURL);
+        }
+        return urlEntity;
+    }
+    
     /*package*/
     static PagableResponseList<User> createPagableUserList(HttpResponse res, Configuration conf) throws TwitterException {
         try {
@@ -548,4 +696,5 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
                 ", isFollowRequestSent=" + isFollowRequestSent +
                 '}';
     }
+
 }

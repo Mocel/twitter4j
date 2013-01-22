@@ -231,6 +231,22 @@ final class LazyStatus implements twitter4j.Status {
     public boolean isRetweetedByMe() {
         return getTarget().isRetweetedByMe();
     }
+    
+    /**
+     * Returns the authenticating user's retweet's id of this tweet, or -1L when the tweet was created
+     * before this feature was enabled.
+     *
+     * @return the authenticating user's retweet's id of this tweet
+     * @since Twitter4J 3.0.1
+     */
+    public long getCurrentUserRetweetId() {
+    	return getTarget().getCurrentUserRetweetId();
+    }
+
+    @Override
+    public boolean isPossiblySensitive() {
+        return getTarget().isPossiblySensitive();
+    }
 
 
     /**
@@ -264,18 +280,6 @@ final class LazyStatus implements twitter4j.Status {
     public HashtagEntity[] getHashtagEntities() {
         return getTarget().getHashtagEntities();
     }
-
-
-    /**
-     * Returns the annotations, or null if no annotations are associated with this status.
-     *
-     * @since Twitter4J 2.1.4
-     */
-    @SuppressWarnings("deprecation")
-	public Annotations getAnnotations() {
-        return getTarget().getAnnotations();
-    }
-
 
     /**
      * Returns an array of MediaEntities if medias are available in the tweet, or null if no media is included in the tweet.

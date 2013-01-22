@@ -21,7 +21,7 @@ package twitter4j;
  * A data interface that has detailed information about a relationship between two users
  *
  * @author Perry Sakkaris - psakkaris at gmail.com
- * @see <a href="https://dev.twitter.com/docs/api/1/get/friendships/show">GET friendships/show | Twitter Developers</a>
+ * @see <a href="https://dev.twitter.com/docs/api/1.1/get/friendships/show">GET friendships/show | Twitter Developers</a>
  * @since Twitter4J 2.1.0
  */
 public interface Relationship extends TwitterResponse, java.io.Serializable {
@@ -96,5 +96,13 @@ public interface Relationship extends TwitterResponse, java.io.Serializable {
      * @return true if source user enabled notifications for target user
      */
     boolean isSourceNotificationsEnabled();
+
+    /**
+     * Checks if the retweets from the target user enabled
+     *
+     * @return true if the retweets from the target user enabled
+     * @since Twitter4J 3.0.3
+     */
+    boolean isSourceWantRetweets();
 
 }

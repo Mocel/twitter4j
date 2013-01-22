@@ -102,8 +102,29 @@ final class LazyUser implements twitter4j.User {
     public String getDescription() {
         return getTarget().getDescription();
     }
-
-
+    
+    /**
+     * Returns URL entities for user description.
+     * 
+     * @return URL entities for user description
+     * @since Twitter4J 3.0.3
+     */
+	@Override
+	public URLEntity[] getDescriptionURLEntities() {
+		return getTarget().getDescriptionURLEntities();
+	}
+	
+    /**
+     * Returns URL entity for user's URL.
+     * 
+     * @return URL entity for user's URL.
+     * @since Twitter4J 3.0.3
+     */
+	@Override
+	public URLEntity getURLEntity() {
+		return getTarget().getURLEntity();
+	}
+	
     /**
      * Tests if the user is enabling contributors
      *
@@ -120,8 +141,28 @@ final class LazyUser implements twitter4j.User {
      *
      * @return the profile image url of the user
      */
-    public URL getProfileImageURL() {
+    public String getProfileImageURL() {
         return getTarget().getProfileImageURL();
+    }
+
+    @Override
+    public String getBiggerProfileImageURL() {
+        return getTarget().getBiggerProfileImageURL();
+    }
+
+    @Override
+    public String getMiniProfileImageURL() {
+        return getTarget().getMiniProfileImageURL();
+    }
+
+    @Override
+    public String getOriginalProfileImageURL() {
+        return getTarget().getOriginalProfileImageURL();
+    }
+
+    @Override
+    public URL getProfileImageUrlHttps() {
+        return getProfileImageUrlHttps();
     }
 
 
@@ -130,8 +171,23 @@ final class LazyUser implements twitter4j.User {
      *
      * @return the profile image url of the user, served over SSL
      */
-    public URL getProfileImageUrlHttps() {
-        return getTarget().getProfileImageUrlHttps();
+    public String getProfileImageURLHttps() {
+        return getTarget().getProfileImageURLHttps();
+    }
+
+    @Override
+    public String getBiggerProfileImageURLHttps() {
+        return getTarget().getBiggerProfileImageURLHttps();
+    }
+
+    @Override
+    public String getMiniProfileImageURLHttps() {
+        return getTarget().getMiniProfileImageURLHttps();
+    }
+
+    @Override
+    public String getOriginalProfileImageURLHttps() {
+        return getTarget().getOriginalProfileImageURLHttps();
     }
 
 
@@ -140,10 +196,9 @@ final class LazyUser implements twitter4j.User {
      *
      * @return the url of the user
      */
-    public URL getURL() {
+    public String getURL() {
         return getTarget().getURL();
     }
-
 
     /**
      * Test if the user status is protected
@@ -237,9 +292,14 @@ final class LazyUser implements twitter4j.User {
         return getTarget().getTimeZone();
     }
 
-
+    @Override
     public String getProfileBackgroundImageUrl() {
-        return getTarget().getProfileBackgroundImageUrl();
+        return getProfileBackgroundImageURL();
+    }
+
+
+    public String getProfileBackgroundImageURL() {
+        return getTarget().getProfileBackgroundImageURL();
     }
 
 
@@ -247,6 +307,34 @@ final class LazyUser implements twitter4j.User {
         return getTarget().getProfileBackgroundImageUrlHttps();
     }
 
+    public String getProfileBannerURL() {
+        return getTarget().getProfileBannerURL();
+    }
+
+    @Override
+    public String getProfileBannerRetinaURL() {
+        return getTarget().getProfileBannerRetinaURL();
+    }
+
+    @Override
+    public String getProfileBannerIPadURL() {
+        return getTarget().getProfileBannerIPadURL();
+    }
+
+    @Override
+    public String getProfileBannerIPadRetinaURL() {
+        return getTarget().getProfileBannerIPadRetinaURL();
+    }
+
+    @Override
+    public String getProfileBannerMobileURL() {
+        return getTarget().getProfileBannerMobileURL();
+    }
+
+    @Override
+    public String getProfileBannerMobileRetinaURL() {
+        return getTarget().getProfileBannerMobileRetinaURL();
+    }
 
     public boolean isProfileBackgroundTiled() {
         return getTarget().isProfileBackgroundTiled();

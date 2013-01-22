@@ -25,13 +25,13 @@ import twitter4j.internal.http.HttpResponse;
 import twitter4j.internal.org.json.JSONArray;
 import twitter4j.internal.org.json.JSONException;
 import twitter4j.internal.org.json.JSONObject;
-import twitter4j.internal.util.z_T4JInternalParseUtil;
+import twitter4j.internal.json.z_T4JInternalParseUtil;
 import twitter4j.internal.util.z_T4JInternalStringUtil;
 
 import java.io.Serializable;
 import java.util.Arrays;
 
-import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
+import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
 
 /**
  * @author Yusuke Yamamoto - yusuke at twitter.com
@@ -53,7 +53,7 @@ public class StreamController {
     }
 
     void setControlURI(String controlURI) {
-        this.controlURI = controlURI;
+        this.controlURI = controlURI.replace("/1.1//1.1/", "/1.1/");
         synchronized (lock) {
             lock.notifyAll();
         }

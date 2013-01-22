@@ -49,6 +49,12 @@ public interface TwitterStream extends OAuthSupport, TwitterBase {
     void addListener(SiteStreamsListener listener);
 
     /**
+     * @param listener listener to add
+     * @since Twitter4J 3.0.2
+     */
+    void addListener(RawStreamListener listener);
+
+    /**
      * Starts listening on all public statuses. Available only to approved parties and requires a signed agreement to access. Please do not contact us about access to the firehose. If your service warrants access to it, we'll contact you.
      *
      * @param count Indicates the number of previous statuses to stream before transitioning to the live stream.
@@ -67,6 +73,7 @@ public interface TwitterStream extends OAuthSupport, TwitterBase {
      * @see twitter4j.StatusStream
      * @see <a href="https://dev.twitter.com/docs/streaming-api/methods">Streaming API Methods statuses/firehose</a>
      * @since Twitter4J 2.0.4
+     * @deprecated use {@link #firehose(int)} instead
      */
     StatusStream getFirehoseStream(int count) throws TwitterException;
 
@@ -89,6 +96,7 @@ public interface TwitterStream extends OAuthSupport, TwitterBase {
      * @see twitter4j.StatusStream
      * @see <a href="https://dev.twitter.com/docs/streaming-api/methods">Streaming API Methods statuses/links</a>
      * @since Twitter4J 2.1.1
+     * @deprecated use {@link #links(int)} instead
      */
     StatusStream getLinksStream(int count) throws TwitterException;
 
@@ -109,6 +117,7 @@ public interface TwitterStream extends OAuthSupport, TwitterBase {
      * @see twitter4j.StatusStream
      * @see <a href="https://dev.twitter.com/docs/streaming-api/methods">Streaming API: Methods statuses/retweet</a>
      * @since Twitter4J 2.0.10
+     * @deprecated use {@link #getRetweetStream()} instead
      */
     StatusStream getRetweetStream() throws TwitterException;
 
@@ -129,6 +138,7 @@ public interface TwitterStream extends OAuthSupport, TwitterBase {
      * @see twitter4j.StatusStream
      * @see <a href="https://dev.twitter.com/docs/streaming-api/methods">Streaming API: Methods statuses/sample</a>
      * @since Twitter4J 2.0.10
+     * @deprecated use {@link #sample()} instead
      */
     StatusStream getSampleStream() throws TwitterException;
 
@@ -156,6 +166,7 @@ public interface TwitterStream extends OAuthSupport, TwitterBase {
      * @return UserStream
      * @throws TwitterException when Twitter service or network is unavailable
      * @see <a href="https://dev.twitter.com/docs/streaming-api/user-streams">User Streams</a>
+     * @deprecated use {@link #user()} instead
      */
     UserStream getUserStream() throws TwitterException;
 
@@ -167,6 +178,7 @@ public interface TwitterStream extends OAuthSupport, TwitterBase {
      * @throws TwitterException when Twitter service or network is unavailable
      * @see <a href="https://dev.twitter.com/docs/streaming-api/user-streams">User Streams</a>
      * @since Twitter4J 2.1.9
+     * @deprecated use {@link #user()} instead
      */
     UserStream getUserStream(String[] track) throws TwitterException;
 
@@ -204,6 +216,7 @@ public interface TwitterStream extends OAuthSupport, TwitterBase {
      * @see twitter4j.StatusStream
      * @see <a href="https://dev.twitter.com/docs/streaming-api/methods">Streaming API Methods | Twitter Developers</a>
      * @since Twitter4J 2.1.2
+     * @deprecated use {@link #filter(FilterQuery)} instead
      */
     StatusStream getFilterStream(FilterQuery query) throws TwitterException;
 

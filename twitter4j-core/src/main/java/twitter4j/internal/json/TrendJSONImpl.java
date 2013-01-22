@@ -19,7 +19,7 @@ package twitter4j.internal.json;
 import twitter4j.Trend;
 import twitter4j.internal.org.json.JSONObject;
 
-import static twitter4j.internal.util.z_T4JInternalParseUtil.getRawString;
+import static twitter4j.internal.json.z_T4JInternalParseUtil.getRawString;
 
 /**
  * A data class representing Trend.
@@ -59,6 +59,14 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.getRawString;
      */
     @Override
     public String getUrl() {
+        return getURL();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getURL() {
         return url;
     }
 
@@ -80,7 +88,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.getRawString;
         if (!name.equals(trend.getName())) return false;
         if (query != null ? !query.equals(trend.getQuery()) : trend.getQuery() != null)
             return false;
-        if (url != null ? !url.equals(trend.getUrl()) : trend.getUrl() != null)
+        if (url != null ? !url.equals(trend.getURL()) : trend.getURL() != null)
             return false;
 
         return true;

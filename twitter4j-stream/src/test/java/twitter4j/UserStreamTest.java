@@ -56,7 +56,7 @@ public class UserStreamTest extends TwitterTestBase implements UserStreamListene
         ex = null;
 
         stream.next(this);
-        waitForStatus();
+        waitForStatus("follow");
         Assert.assertEquals(23456789, source.getId());
         Assert.assertEquals(12345678, target.getId());
         Assert.assertNull(ex);
@@ -65,12 +65,12 @@ public class UserStreamTest extends TwitterTestBase implements UserStreamListene
         target = null;
         ex = null;
         stream.next(this);
-        waitForStatus();
+        waitForStatus("delete direct message");
         assertReceived("onDeletionNotice-directmessage", TwitterMethod.DESTROY_DIRECT_MESSAGE);
 
         // This one is an unknown event type.  We should safely ignore it.
         stream.next(this);
-        waitForStatus();
+        waitForStatus("unknown");
         Assert.assertNull(source);
         Assert.assertNull(target);
         Assert.assertNull(ex);
@@ -100,85 +100,95 @@ public class UserStreamTest extends TwitterTestBase implements UserStreamListene
         //twit4j2: 6377362
         twitterStream.user(new String[]{"BAh7CToPY3JlYXR"});
         //expecting onFriendList for twit4j and twit4j2
-        waitForStatus();
-        waitForStatus();
+        waitForStatus("friend list");
+        assertReceived("onfriendlist", "onfriendlist");
+
+
+        DirectMessage dm = twitter2.sendDirectMessage(id1.id, "test " + new Date());
+        waitForStatus("sentDirectMessage");
+        assertReceived("onDirectMessage", TwitterMethod.SEND_DIRECT_MESSAGE);
+
+        twitter1.destroyDirectMessage(dm.getId());
+        waitForStatus("destroyedDirectMessage");
+
 
         Status status = twitter2.updateStatus("@twit4j " + new Date());
         //expecting onStatus for twit4j from twit4j
-        waitForStatus();
-
-        twitter1.createFavorite(status.getId());
-        waitForStatus();
-
-        twitter1.destroyFavorite(status.getId());
-        waitForStatus();
-
-        // unfollow twit4j
-        twitter2.destroyFriendship(id1.id);
-        waitForStatus();
-
-        // follow twit4j
-        twitter2.createFriendship(id1.id);
-        waitForStatus();
-
-        // unfollow twit4j2
-        twitter1.destroyFriendship(id2.id);
-        waitForStatus();
-
-        status = twitter2.updateStatus("somerandometext " + new Date());
-        waitForStatus();
-        // follow twit4j2
-        twitter1.createFriendship(id2.id);
-        waitForStatus();
+        waitForStatus("onStatus");
+        assertReceived("onstatus", "onstatus");
 
         twitter1.retweetStatus(status.getId());
-        waitForStatus();
-        DirectMessage dm = twitter1.sendDirectMessage(id2.id, "test " + new Date());
-        assertNotNull(dm);
-        waitForStatus();
+        waitForStatus("onStatus");
+        assertReceived("onstatus", "onstatus");
 
-        twitter2.destroyStatus(status.getId());
-        waitForStatus();
-        // twitter1 is not permitted to delete direct message
-        // twitter1.destroyDirectMessage(dm.getId());
-        // waitForStatus();
+        twitter1.createFavorite(status.getId());
+        waitForStatus("createdFavorite");
+        assertReceived("onFavorite", TwitterMethod.CREATE_FAVORITE);
 
-        // block twit4j
+        twitter1.destroyFavorite(status.getId());
+        waitForStatus("destroyedFavorite");
+        assertReceived("onUnfavorite", TwitterMethod.DESTROY_FAVORITE);
+
+        // unfollow twit4j
+        twitter1.destroyFriendship(id2.id);
+        waitForStatus("destroyedFriendship");
+
+        // follow twit4j
+        twitter1.createFriendship(id2.id);
+        waitForStatus("createdFriendship");
+        assertReceived("onFollow", TwitterMethod.CREATE_FRIENDSHIP);
+
+        status = twitter1.updateStatus("somerandometext " + new Date());
+        waitForStatus("updatedStatus");
+        assertReceived("onstatus", "onstatus");
+
+        twitter1.destroyStatus(status.getId());
+        waitForStatus("destroyedStatus");
+        assertReceived("onDeletionNotice-status", TwitterMethod.DESTROY_STATUS);
+
+        // block twit4j2
         twitter1.createBlock(id2.id);
-        waitForStatus();
+        waitForStatus("createdBlock");
+        assertReceived("onBlock", TwitterMethod.CREATE_BLOCK);
 
-        // unblock twit4j
+        // unblock twit4j2
         twitter1.destroyBlock(id2.id);
-        waitForStatus();
+        waitForStatus("destroyedBlock");
+        assertReceived("onUnblock", TwitterMethod.DESTROY_BLOCK);
 
-        try {
-            twitter1.createFriendship(id2.id);
-            waitForStatus();
-        } catch (TwitterException ignore) {
-        }
-        try {
-            twitter2.createFriendship(id1.id);
-            waitForStatus();
-        } catch (TwitterException ignore) {
-        }
         twitter1.updateProfile(null, null, new Date().toString(), null);
-        waitForStatus();
+        waitForStatus("updateProfile");
+        assertReceived("onUserProfileUpdated", TwitterMethod.UPDATE_PROFILE);
 
         UserList list = twitter1.createUserList("test", true, "desctription");
-        waitForStatus();
-        list = twitter1.updateUserList(list.getId(), "test2", true, "description2");
-        waitForStatus();
-        twitter1.addUserListMember(list.getId(), id2.id);
-        waitForStatus();
-        twitter2.createUserListSubscription(list.getId());
-        waitForStatus();
-        twitter1.deleteUserListMember(list.getId(), id2.id);
-        waitForStatus();
-        twitter2.destroyUserListSubscription(list.getId());
-        waitForStatus();
-        twitter1.destroyUserList(list.getId());
-        waitForStatus();
+        waitForStatus("createdUserList");
+        assertReceived("onUserListCreated", TwitterMethod.CREATE_USER_LIST);
 
+        list = twitter1.updateUserList(list.getId(), "test2", true, "description2");
+        waitForStatus("updatedUserList");
+        assertReceived("onUserListUpdated", TwitterMethod.UPDATE_USER_LIST);
+
+        twitter1.createUserListMember(list.getId(), id2.id);
+        waitForStatus("addedListMember");
+        assertReceived("onUserListMemberAddition", TwitterMethod.CREATE_LIST_MEMBER);
+
+        twitter2.createUserListSubscription(list.getId());
+        waitForStatus("createdUserListSubscription");
+        assertReceived("onUserListSubscription", TwitterMethod.SUBSCRIBE_LIST);
+
+        twitter1.destroyUserListMember(list.getId(), id2.id);
+        waitForStatus("deletedUserListMember");
+        assertReceived("onUserListMemberDeletion", TwitterMethod.DESTROY_LIST_MEMBER);
+
+        twitter2.destroyUserListSubscription(list.getId());
+        waitForStatus("destroiedUserListSubscription");
+        assertReceived("onUserListUnsubscription", TwitterMethod.UNSUBSCRIBE_LIST);
+
+        twitter1.destroyUserList(list.getId());
+        waitForStatus("destroyedUserList");
+        assertReceived("onUserListDestoyed", TwitterMethod.DESTROY_USER_LIST);
+
+        assertReceived("onDeletionNotice-directmessage", TwitterMethod.DESTROY_DIRECT_MESSAGE);
         // confirm if tracking term is effective
         boolean found = false;
         for (Object[] event : this.received) {
@@ -191,32 +201,6 @@ public class UserStreamTest extends TwitterTestBase implements UserStreamListene
             }
         }
         Assert.assertTrue(found);
-
-
-        assertReceived("onstatus", "onstatus");
-        assertReceived("onfriendlist", "onfriendlist");
-        assertReceived("onFavorite", TwitterMethod.CREATE_FAVORITE);
-        assertReceived("onUnfavorite", TwitterMethod.DESTROY_FAVORITE);
-        assertReceived("onFollow", TwitterMethod.CREATE_FRIENDSHIP);
-//            assertReceived(TwitterMethod.RETWEET_STATUS);
-        assertReceived("onDirectMessage", TwitterMethod.SEND_DIRECT_MESSAGE);
-
-        assertReceived("onDeletionNotice-status", TwitterMethod.DESTROY_STATUS);
-//        assertReceived("onDeletionNotice-directmessage", TwitterMethod.DESTROY_DIRECT_MESSAGE);
-
-        assertReceived("onUserListMemberAddition", TwitterMethod.ADD_LIST_MEMBER);
-        assertReceived("onUserListMemberDeletion", TwitterMethod.DELETE_LIST_MEMBER);
-        assertReceived("onUserListSubscription", TwitterMethod.SUBSCRIBE_LIST);
-        assertReceived("onUserListUnsubscription", TwitterMethod.UNSUBSCRIBE_LIST);
-        assertReceived("onUserListCreated", TwitterMethod.CREATE_USER_LIST);
-        assertReceived("onUserListUpdated", TwitterMethod.UPDATE_USER_LIST);
-        assertReceived("onUserListDestoyed", TwitterMethod.DESTROY_USER_LIST);
-
-
-        assertReceived("onUserProfileUpdated", TwitterMethod.UPDATE_PROFILE);
-
-        assertReceived("onBlock", TwitterMethod.CREATE_BLOCK);
-        assertReceived("onUnblock", TwitterMethod.DESTROY_BLOCK);
     }
 
     private void assertReceived(String assertion, Object obj) {
@@ -230,13 +214,25 @@ public class UserStreamTest extends TwitterTestBase implements UserStreamListene
         Assert.assertTrue(assertion, received);
     }
 
-    private synchronized void waitForStatus() {
+    private synchronized void waitForStatus(String waitFor) {
+        System.out.println("waiting for:" + waitFor);
         try {
-            this.wait(5000);
-            System.out.println("notified.");
+            this.wait(20000);
+            System.out.println(received.size() + " events received so far. last notification:" + received.get(received.size() - 1)[0]);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void testDisplayURLNullCase() throws Exception {
+        // http://jira.twitter4j.org/browse/TFJ-704
+        // https://gist.github.com/4071950#file_2.parse_error_json_example.txt
+        // sometimes display_url is null and display_url doesn't exist
+        String rawJSON = "{  \"geo\": null,  \"in_reply_to_screen_name\": null,  \"favorited\": false,  \"text\": \"RT @fxThailandfans: RT @princezephyr: [PRESS PICS] 121114 f(x) - KOR-AUS Football Match Half-time Show http:\\/\\/t.co\\/cbm1aPCU http:\\/\\/t.co\\/ ...\",  \"possibly_sensitive\": false,  \"in_reply_to_status_id_str\": null,  \"created_at\": \"Wed Nov 14 12:03:02 +0000 2012\",  \"in_reply_to_user_id_str\": null,  \"retweet_count\": 2,  \"coordinates\": null,  \"source\": \"<a href=\\\"http:\\/\\/blackberry.com\\/twitter\\\" rel=\\\"nofollow\\\">Twitter for BlackBerry\\u00ae<\\/a>\",  \"entities\": {    \"hashtags\": [          ],    \"user_mentions\": [      {        \"indices\": [          3,          18        ],        \"screen_name\": \"fxThailandfans\",        \"id_str\": \"563934022\",        \"name\": \"fx_thailand\",        \"id\": 563934022      },      {        \"indices\": [          23,          36        ],        \"screen_name\": \"princezephyr\",        \"id_str\": \"251443396\",        \"name\": \"princezephyr\",        \"id\": 251443396      }    ],    \"urls\": [      {        \"indices\": [          103,          123        ],        \"display_url\": \"twitpic.com\\/bd46lk\",        \"url\": \"http:\\/\\/t.co\\/cbm1aPCU\",        \"expanded_url\": \"http:\\/\\/twitpic.com\\/bd46lk\"      },      {        \"indices\": [          124,          136        ],        \"url\": \"http:\\/\\/t.co\\/\",        \"expanded_url\": null      }    ]  },  \"place\": null,  \"retweeted\": false,  \"truncated\": false,  \"id_str\": \"268685470089764864\",  \"retweeted_status\": {    \"geo\": null,    \"in_reply_to_screen_name\": null,    \"favorited\": false,    \"text\": \"RT @princezephyr: [PRESS PICS] 121114 f(x) - KOR-AUS Football Match Half-time Show http:\\/\\/t.co\\/cbm1aPCU http:\\/\\/t.co\\/UW5HBXHn (7)\",    \"possibly_sensitive\": false,    \"in_reply_to_status_id_str\": null,    \"created_at\": \"Wed Nov 14 11:42:13 +0000 2012\",    \"in_reply_to_user_id_str\": null,    \"retweet_count\": 2,    \"coordinates\": null,    \"source\": \"<a href=\\\"http:\\/\\/www.tweetdeck.com\\\" rel=\\\"nofollow\\\">TweetDeck<\\/a>\",    \"entities\": {      \"hashtags\": [              ],      \"user_mentions\": [        {          \"indices\": [            3,            16          ],          \"screen_name\": \"princezephyr\",          \"id_str\": \"251443396\",          \"name\": \"princezephyr\",          \"id\": 251443396        }      ],      \"urls\": [        {          \"indices\": [            83,            103          ],          \"display_url\": \"twitpic.com\\/bd46lk\",          \"url\": \"http:\\/\\/t.co\\/cbm1aPCU\",          \"expanded_url\": \"http:\\/\\/twitpic.com\\/bd46lk\"        },        {          \"indices\": [            104,            124          ],          \"display_url\": \"twitpic.com\\/bd46tf\",          \"url\": \"http:\\/\\/t.co\\/UW5HBXHn\",          \"expanded_url\": \"http:\\/\\/twitpic.com\\/bd46tf\"        }      ]    },    \"place\": null,    \"retweeted\": false,    \"truncated\": false,    \"id_str\": \"268680229562744832\",    \"contributors\": null,    \"in_reply_to_user_id\": null,    \"in_reply_to_status_id\": null,    \"user\": {      \"friends_count\": 44,      \"profile_link_color\": \"939AED\",      \"followers_count\": 834,      \"is_translator\": false,      \"default_profile\": false,      \"follow_request_sent\": null,      \"contributors_enabled\": false,      \"time_zone\": \"Bangkok\",      \"created_at\": \"Thu Apr 26 18:22:34 +0000 2012\",      \"profile_background_color\": \"C0DEED\",      \"profile_background_tile\": true,      \"profile_background_image_url_https\": \"https:\\/\\/si0.twimg.com\\/profile_background_images\\/576266919\\/0bvixbmvg2lj69ajtg6i.jpeg\",      \"url\": \"http:\\/\\/www.fxthailand.com\\/\",      \"description\": \"f(x) Thailand Fans Board.\\r\\n\\r\\nhttps:\\/\\/www.facebook.com\\/Fxthailandfans\",      \"profile_sidebar_fill_color\": \"DDEEF6\",      \"default_profile_image\": false,      \"lang\": \"en\",      \"favourites_count\": 1,      \"profile_sidebar_border_color\": \"C0DEED\",      \"profile_image_url_https\": \"https:\\/\\/si0.twimg.com\\/profile_images\\/2592067376\\/3q4797y4mhfcvh7b7k14_normal.png\",      \"location\": \"\",      \"id_str\": \"563934022\",      \"verified\": false,      \"notifications\": null,      \"protected\": false,      \"screen_name\": \"fxThailandfans\",      \"following\": null,      \"geo_enabled\": false,      \"profile_use_background_image\": true,      \"profile_image_url\": \"http:\\/\\/a0.twimg.com\\/profile_images\\/2592067376\\/3q4797y4mhfcvh7b7k14_normal.png\",      \"name\": \"fx_thailand\",      \"profile_text_color\": \"333333\",      \"id\": 563934022,      \"listed_count\": 6,      \"statuses_count\": 1840,      \"profile_background_image_url\": \"http:\\/\\/a0.twimg.com\\/profile_background_images\\/576266919\\/0bvixbmvg2lj69ajtg6i.jpeg\",      \"utc_offset\": 25200    },    \"id\": 268680229562744832,    \"possibly_sensitive_editable\": true  },  \"contributors\": null,  \"in_reply_to_user_id\": null,  \"in_reply_to_status_id\": null,  \"user\": {    \"friends_count\": 96,    \"profile_link_color\": \"0084B4\",    \"followers_count\": 62,    \"is_translator\": false,    \"default_profile\": true,    \"follow_request_sent\": null,    \"contributors_enabled\": false,    \"time_zone\": null,    \"created_at\": \"Tue Jul 17 12:29:08 +0000 2012\",    \"profile_background_color\": \"C0DEED\",    \"profile_background_tile\": false,    \"profile_background_image_url_https\": \"https:\\/\\/si0.twimg.com\\/images\\/themes\\/theme1\\/bg.png\",    \"url\": null,    \"description\": \"\\u0e2d\\u0e31\\u0e19\\u0e22\\u0e2d\\u0e07\\u0e04\\u0e48\\u0e30 !! \\u0e09\\u0e31\\u0e19\\u0e0b\\u0e39\\u0e08\\u0e35\\u0e27\\u0e07\\u0e21\\u0e34\\u0e2a\\u0e40\\u0e2d \\u0e09\\u0e31\\u0e19\\u0e23\\u0e31\\u0e48\\u0e27 \\u0e19\\u0e48\\u0e32\\u0e23\\u0e31\\u0e01 \\u0e25\\u0e2d\\u0e07\\u0e1f\\u0e2d\\u0e25\\u0e21\\u0e32\\u0e2a\\u0e34\\u0e04\\u0e48\\u0e30\\u0e41\\u0e25\\u0e49\\u0e27\\u0e04\\u0e38\\u0e13\\u0e08\\u0e30\\u0e23\\u0e39\\u0e49 *\\u0e22\\u0e34\\u0e49\\u0e21\\u0e2a\\u0e27\\u0e22*\",    \"profile_sidebar_fill_color\": \"DDEEF6\",    \"default_profile_image\": false,    \"lang\": \"th\",    \"favourites_count\": 2,    \"profile_sidebar_border_color\": \"C0DEED\",    \"profile_image_url_https\": \"https:\\/\\/si0.twimg.com\\/profile_images\\/2748527294\\/6cd82d00840820ddc2bedffdfb5e15bd_normal.jpeg\",    \"location\": \"\\u0e43\\u0e19\\u0e04\\u0e48\\u0e32\\u0e22 JYP \\u0e04\\u0e48\\u0e30\",    \"id_str\": \"700968576\",    \"verified\": false,    \"notifications\": null,    \"protected\": false,    \"screen_name\": \"suzy12missA\",    \"following\": null,    \"geo_enabled\": false,    \"profile_use_background_image\": true,    \"profile_image_url\": \"http:\\/\\/a0.twimg.com\\/profile_images\\/2748527294\\/6cd82d00840820ddc2bedffdfb5e15bd_normal.jpeg\",    \"name\": \"\\u0e19\\u0e32\\u0e07\\u0e40\\u0e1a!!\\u0e0b\\u0e39\\u0e08\\u0e35^^\",    \"profile_text_color\": \"333333\",    \"id\": 700968576,    \"listed_count\": 1,    \"statuses_count\": 428,    \"profile_background_image_url\": \"http:\\/\\/a0.twimg.com\\/images\\/themes\\/theme1\\/bg.png\",    \"utc_offset\": null  },  \"id\": 268680229562744832,  \"possibly_sensitive_editable\": true}";
+        Status status = DataObjectFactory.createStatus(rawJSON);
+        URLEntity urlEntity = status.getURLEntities()[1];
+        assertEquals(urlEntity.getURL(), urlEntity.getDisplayURL());
+        assertEquals(urlEntity.getURL(), urlEntity.getExpandedURL());
     }
 
     List<Object[]> received = new ArrayList<Object[]>(3);
@@ -317,13 +313,6 @@ public class UserStreamTest extends TwitterTestBase implements UserStreamListene
         notifyResponse();
     }
 
-    public void onRetweet(User source, User target, Status retweetedStatus) {
-        System.out.println("onRetweet");
-        received.add(new Object[]{TwitterMethod.RETWEET_STATUS, retweetedStatus});
-        Assert.assertNotNull(DataObjectFactory.getRawJSON(retweetedStatus));
-        notifyResponse();
-    }
-
     public void onDirectMessage(DirectMessage directMessage) {
         System.out.println("onDirectMessage");
         received.add(new Object[]{TwitterMethod.SEND_DIRECT_MESSAGE, directMessage});
@@ -333,7 +322,7 @@ public class UserStreamTest extends TwitterTestBase implements UserStreamListene
 
     public void onUserListMemberAddition(User addedMember, User listOwner, UserList list) {
         System.out.println("onUserListMemberAddition");
-        received.add(new Object[]{TwitterMethod.ADD_LIST_MEMBER, addedMember, listOwner, list});
+        received.add(new Object[]{TwitterMethod.CREATE_LIST_MEMBER, addedMember, listOwner, list});
         Assert.assertNotNull(DataObjectFactory.getRawJSON(addedMember));
         Assert.assertNotNull(DataObjectFactory.getRawJSON(listOwner));
         Assert.assertNotNull(DataObjectFactory.getRawJSON(list));
@@ -342,7 +331,7 @@ public class UserStreamTest extends TwitterTestBase implements UserStreamListene
 
     public void onUserListMemberDeletion(User deletedMember, User listOwner, UserList list) {
         System.out.println("onUserListMemberDeletion");
-        received.add(new Object[]{TwitterMethod.DELETE_LIST_MEMBER, deletedMember, listOwner, list});
+        received.add(new Object[]{TwitterMethod.DESTROY_LIST_MEMBER, deletedMember, listOwner, list});
         Assert.assertNotNull(DataObjectFactory.getRawJSON(deletedMember));
         Assert.assertNotNull(DataObjectFactory.getRawJSON(listOwner));
         Assert.assertNotNull(DataObjectFactory.getRawJSON(list));

@@ -61,17 +61,16 @@ final class LazyQueryResult implements twitter4j.QueryResult {
 
 
     public String getRefreshUrl() {
-        return getTarget().getRefreshUrl();
+        return getRefreshURL();
     }
 
-
-    public int getResultsPerPage() {
-        return getTarget().getResultsPerPage();
+    @Override
+    public String getRefreshURL() {
+        return getTarget().getRefreshURL();
     }
 
-
-    public String getWarning() {
-        return getTarget().getWarning();
+    public int getCount() {
+        return getTarget().getCount();
     }
 
 
@@ -79,18 +78,12 @@ final class LazyQueryResult implements twitter4j.QueryResult {
         return getTarget().getCompletedIn();
     }
 
-
-    public int getPage() {
-        return getTarget().getPage();
-    }
-
-
     public String getQuery() {
         return getTarget().getQuery();
     }
 
 
-    public List<Tweet> getTweets() {
+    public List<Status> getTweets() {
         return getTarget().getTweets();
     }
 
@@ -122,5 +115,15 @@ final class LazyQueryResult implements twitter4j.QueryResult {
         return "LazyQueryResult{" +
                 "target=" + getTarget() +
                 "}";
+    }
+
+    @Override
+    public RateLimitStatus getRateLimitStatus() {
+        return getTarget().getRateLimitStatus();
+    }
+
+    @Override
+    public int getAccessLevel() {
+        return getTarget().getAccessLevel();
     }
 }

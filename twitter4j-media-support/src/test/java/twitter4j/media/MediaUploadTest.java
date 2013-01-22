@@ -24,6 +24,7 @@ import twitter4j.conf.ConfigurationBuilder;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Date;
 
 /**
  * @author Takao Nakaguchi - takao.nakaguchi at gmail.com
@@ -37,7 +38,7 @@ public class MediaUploadTest extends TestCase {
     }
 
     private String fileName = "t4j.jpeg";
-    private String message = "Twitter4J image upload test";
+    private String message = "Twitter4J image upload test" + new Date().toString();
 
     @Override
     protected void setUp() throws Exception {
@@ -66,8 +67,6 @@ public class MediaUploadTest extends TestCase {
         conf = new ConfigurationBuilder().setMediaProvider(MediaProvider.YFROG.name()).build();
         factory = new ImageUploadFactory(conf);
         conf = new ConfigurationBuilder().setMediaProvider(MediaProvider.MOBYPICTURE.name()).build();
-        factory = new ImageUploadFactory(conf);
-        conf = new ConfigurationBuilder().setMediaProvider(MediaProvider.TWIPL.name()).build();
         factory = new ImageUploadFactory(conf);
         conf = new ConfigurationBuilder().setMediaProvider(MediaProvider.POSTEROUS.name()).build();
         factory = new ImageUploadFactory(conf);
@@ -177,18 +176,6 @@ public class MediaUploadTest extends TestCase {
         try {
             ImageUploadFactory factory = new ImageUploadFactory(getConfiguration("IOUxMoqc8Snms9nU"));
             ImageUpload upload = factory.getInstance(MediaProvider.MOBYPICTURE);
-            String url = upload.upload(fileName, is);
-            assertTrue(url.length() > 0);
-        } finally {
-            is.close();
-        }
-    }
-
-    public void testTwiplUpload() throws Exception {
-        InputStream is = getClass().getResourceAsStream("/" + fileName);
-        try {
-            ImageUploadFactory factory = new ImageUploadFactory(getConfiguration("56fd1892dcf34c14beb7e2eecfc65c81"));
-            ImageUpload upload = factory.getInstance(MediaProvider.TWIPL);
             String url = upload.upload(fileName, is);
             assertTrue(url.length() > 0);
         } finally {

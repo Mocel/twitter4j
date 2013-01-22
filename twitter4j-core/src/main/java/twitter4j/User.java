@@ -73,21 +73,29 @@ public interface User extends Comparable<User>, TwitterResponse, java.io.Seriali
      *
      * @return the profile image url of the user
      */
-    URL getProfileImageURL();
+    String getProfileImageURL();
+    String getBiggerProfileImageURL();
+    String getMiniProfileImageURL();
+    String getOriginalProfileImageURL();
 
     /**
      * Returns the profile image url of the user, served over SSL
      *
      * @return the profile image url of the user, served over SSL
+     * @deprecated use {@link #getProfileImageURL()} instead
      */
     URL getProfileImageUrlHttps();
+    String getProfileImageURLHttps();
+    String getBiggerProfileImageURLHttps();
+    String getMiniProfileImageURLHttps();
+    String getOriginalProfileImageURLHttps();
 
     /**
      * Returns the url of the user
      *
      * @return the url of the user
      */
-    URL getURL();
+    String getURL();
 
     /**
      * Test if the user status is protected
@@ -137,9 +145,38 @@ public interface User extends Comparable<User>, TwitterResponse, java.io.Seriali
 
     String getTimeZone();
 
+    /**
+     * @deprecated use {@link #getProfileImageURL()} instead
+     */
     String getProfileBackgroundImageUrl();
+    String getProfileBackgroundImageURL();
 
     String getProfileBackgroundImageUrlHttps();
+
+    /**
+     * @since Twitter4J 3.0.0
+     */
+    String getProfileBannerURL();
+    /**
+     * @since Twitter4J 3.0.0
+     */
+    String getProfileBannerRetinaURL();
+    /**
+     * @since Twitter4J 3.0.0
+     */
+    String getProfileBannerIPadURL();
+    /**
+     * @since Twitter4J 3.0.0
+     */
+    String getProfileBannerIPadRetinaURL();
+    /**
+     * @since Twitter4J 3.0.0
+     */
+    String getProfileBannerMobileURL();
+    /**
+     * @since Twitter4J 3.0.0
+     */
+    String getProfileBannerMobileRetinaURL();
 
     boolean isProfileBackgroundTiled();
 
@@ -188,4 +225,22 @@ public interface User extends Comparable<User>, TwitterResponse, java.io.Seriali
      * @since Twitter4J 2.1.4
      */
     boolean isFollowRequestSent();
+    
+    /**
+     * Returns URL entities for user description.
+     * 
+     * @return URL entities for user description
+     * @since Twitter4J 3.0.3
+     */
+    URLEntity[] getDescriptionURLEntities();
+    
+    /**
+     * Returns URL entity for user's URL.
+     * 
+     * @return URL entity for user's URL.
+     * @since Twitter4J 3.0.3
+     */
+    URLEntity getURLEntity();
+    
+    
 }

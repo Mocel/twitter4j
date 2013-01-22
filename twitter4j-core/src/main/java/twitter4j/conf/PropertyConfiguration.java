@@ -20,6 +20,7 @@ import twitter4j.internal.util.z_T4JInternalStringUtil;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -65,16 +66,17 @@ public final class PropertyConfiguration extends ConfigurationBase implements ja
     public static final String OAUTH_AUTHENTICATION_URL = "oauth.authenticationURL";
 
     public static final String REST_BASE_URL = "restBaseURL";
-    public static final String SEARCH_BASE_URL = "searchBaseURL";
     public static final String STREAM_BASE_URL = "streamBaseURL";
     public static final String USER_STREAM_BASE_URL = "userStreamBaseURL";
     public static final String SITE_STREAM_BASE_URL = "siteStreamBaseURL";
-    public static final String UPLOAD_BASE_URL = "uploadBaseURL";
 
     public static final String ASYNC_NUM_THREADS = "async.numThreads";
+    public static final String CONTRIBUTING_TO = "contributingTo";
     public static final String ASYNC_DISPATCHER_IMPL = "async.dispatcherImpl";
     public static final String INCLUDE_RTS = "includeRTs";
     public static final String INCLUDE_ENTITIES = "includeEntities";
+    public static final String INCLUDE_MY_RETWEET = "includeMyRetweet";
+    public static final String LOGGER_FACTORY = "loggerFactory";
     public static final String JSON_STORE_ENABLED = "jsonStoreEnabled";
     public static final String MBEAN_ENABLED = "mbeanEnabled";
     public static final String STREAM_USER_REPLIES_ALL = "stream.user.repliesAll";
@@ -111,6 +113,12 @@ public final class PropertyConfiguration extends ConfigurationBase implements ja
         // load from system properties
         try {
             props = (Properties) System.getProperties().clone();
+            try {
+                Map<String, String> envMap = System.getenv();
+                for(String key :envMap.keySet()){
+                    props.setProperty(key, envMap.get(key));
+                }
+            }catch(SecurityException ignore){}
             normalize(props);
         } catch (SecurityException ignore) {
             // Unsigned applets are not allowed to access System properties
@@ -291,6 +299,9 @@ public final class PropertyConfiguration extends ConfigurationBase implements ja
         if (notNull(props, prefix, ASYNC_NUM_THREADS)) {
             setAsyncNumThreads(getIntProperty(props, prefix, ASYNC_NUM_THREADS));
         }
+        if (notNull(props, prefix, CONTRIBUTING_TO)) {
+            setContributingTo(getLongProperty(props, prefix, CONTRIBUTING_TO));
+        }
         if (notNull(props, prefix, ASYNC_DISPATCHER_IMPL)) {
             setDispatcherImpl(getString(props, prefix, ASYNC_DISPATCHER_IMPL));
         }
@@ -324,10 +335,6 @@ public final class PropertyConfiguration extends ConfigurationBase implements ja
             setRestBaseURL(getString(props, prefix, REST_BASE_URL));
         }
 
-        if (notNull(props, prefix, SEARCH_BASE_URL)) {
-            setSearchBaseURL(getString(props, prefix, SEARCH_BASE_URL));
-        }
-
         if (notNull(props, prefix, STREAM_BASE_URL)) {
             setStreamBaseURL(getString(props, prefix, STREAM_BASE_URL));
         }
@@ -337,14 +344,17 @@ public final class PropertyConfiguration extends ConfigurationBase implements ja
         if (notNull(props, prefix, SITE_STREAM_BASE_URL)) {
             setSiteStreamBaseURL(getString(props, prefix, SITE_STREAM_BASE_URL));
         }
-        if (notNull(props, prefix, UPLOAD_BASE_URL)) {
-            setUploadBaseURL(getString(props, prefix, UPLOAD_BASE_URL));
-        }
         if (notNull(props, prefix, INCLUDE_RTS)) {
             setIncludeRTsEnbled(getBoolean(props, prefix, INCLUDE_RTS));
         }
         if (notNull(props, prefix, INCLUDE_ENTITIES)) {
             setIncludeEntitiesEnbled(getBoolean(props, prefix, INCLUDE_ENTITIES));
+        }
+        if (notNull(props, prefix, INCLUDE_MY_RETWEET)) {
+            setIncludeMyRetweetEnabled(getBoolean(props, prefix, INCLUDE_MY_RETWEET));
+        }
+        if (notNull(props, prefix, LOGGER_FACTORY)) {
+            setLoggerFactory(getString(props, prefix, LOGGER_FACTORY));
         }
         if (notNull(props, prefix, JSON_STORE_ENABLED)) {
             setJSONStoreEnabled(getBoolean(props, prefix, JSON_STORE_ENABLED));
@@ -387,6 +397,15 @@ public final class PropertyConfiguration extends ConfigurationBase implements ja
             return Integer.parseInt(value);
         } catch (NumberFormatException nfe) {
             return -1;
+        }
+    }
+
+    protected long getLongProperty(Properties props, String prefix, String name) {
+        String value = props.getProperty(prefix + name);
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException nfe) {
+            return -1L;
         }
     }
 

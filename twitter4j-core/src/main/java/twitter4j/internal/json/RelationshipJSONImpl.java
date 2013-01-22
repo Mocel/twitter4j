@@ -25,13 +25,13 @@ import twitter4j.internal.org.json.JSONArray;
 import twitter4j.internal.org.json.JSONException;
 import twitter4j.internal.org.json.JSONObject;
 
-import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
+import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
 
 /**
  * A data class that has detailed information about a relationship between two users
  *
  * @author Perry Sakkaris - psakkaris at gmail.com
- * @see <a href="https://dev.twitter.com/docs/api/1/get/friendships/show">GET friendships/show | Twitter Developers</a>
+ * @see <a href="https://dev.twitter.com/docs/api/1.1/get/friendships/show">GET friendships/show | Twitter Developers</a>
  * @since Twitter4J 2.1.0
  */
 /*package*/ class RelationshipJSONImpl extends TwitterResponseImpl implements Relationship, java.io.Serializable {
@@ -45,6 +45,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
     private final boolean sourceFollowedByTarget;
     private final long sourceUserId;
     private final String sourceUserScreenName;
+    private boolean wantRetweets;
 
     /*package*/ RelationshipJSONImpl(HttpResponse res, Configuration conf) throws TwitterException {
         this(res, res.asJSONObject());
@@ -72,6 +73,7 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
             sourceFollowingTarget = getBoolean("following", sourceJson);
             sourceFollowedByTarget = getBoolean("followed_by", sourceJson);
             sourceNotificationsEnabled = getBoolean("notifications_enabled", sourceJson);
+            wantRetweets = getBoolean("want_retweets", sourceJson);
         } catch (JSONException jsone) {
             throw new TwitterException(jsone.getMessage() + ":" + json.toString(), jsone);
         }
@@ -184,6 +186,14 @@ import static twitter4j.internal.util.z_T4JInternalParseUtil.*;
     @Override
     public boolean isSourceNotificationsEnabled() {
         return sourceNotificationsEnabled;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isSourceWantRetweets() {
+        return wantRetweets;
     }
 
     @Override

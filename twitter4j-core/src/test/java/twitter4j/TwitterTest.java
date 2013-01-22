@@ -23,6 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Map;
 
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
@@ -52,11 +53,16 @@ public class TwitterTest extends TwitterTestBase {
 
     //need to think of a way to test this, perhaps mocking out Twitter is the way to go
     public void testRateLimitStatus() throws Exception {
-        RateLimitStatus rateLimitStatus = twitter1.getRateLimitStatus();
+        Map<String, RateLimitStatus> rateLimitStatus = twitter1.getRateLimitStatus();
         assertNotNull(DataObjectFactory.getRawJSON(rateLimitStatus));
         assertEquals(rateLimitStatus, DataObjectFactory.createRateLimitStatus(DataObjectFactory.getRawJSON(rateLimitStatus)));
-        assertTrue(10 < rateLimitStatus.getHourlyLimit());
-        assertTrue(10 < rateLimitStatus.getRemainingHits());
+        RateLimitStatus status = rateLimitStatus.values().iterator().next();
+        assertTrue(10 < status.getLimit());
+        assertTrue(10 < status.getRemaining());
+        assertTrue(0 < status.getSecondsUntilReset());
+
+        rateLimitStatus = twitter1.getRateLimitStatus("block", "statuses");
+        assertTrue(rateLimitStatus.values().size() < 10);
 
         twitter1.addRateLimitStatusListener(new RateLimitStatusListener() {
             public void onRateLimitStatus(RateLimitStatusEvent event) {
@@ -74,7 +80,7 @@ public class TwitterTest extends TwitterTestBase {
         // the listener doesn't implement serializable and deserialized form should not be equal to the original object
         assertDeserializedFormIsNotEqual(twitter1);
 
-        unauthenticated.addRateLimitStatusListener(new RateLimitStatusListener() {
+        twitter1.addRateLimitStatusListener(new RateLimitStatusListener() {
             public void onRateLimitStatus(RateLimitStatusEvent event) {
                 accountLimitStatusAcquired = event.isAccountRateLimitStatus();
                 ipLimitStatusAcquired = event.isIPRateLimitStatus();
@@ -85,7 +91,7 @@ public class TwitterTest extends TwitterTestBase {
             }
         });
         // the listener doesn't implement serializable and deserialized form should not be equal to the original object
-        assertDeserializedFormIsNotEqual(unauthenticated);
+        assertDeserializedFormIsNotEqual(twitter1);
 
         twitter1.getMentions();
         assertTrue(accountLimitStatusAcquired);
@@ -94,19 +100,12 @@ public class TwitterTest extends TwitterTestBase {
         twitter1.getMentions();
         assertTrue(accountLimitStatusAcquired);
         assertFalse(ipLimitStatusAcquired);
-        assertTrue(previous.getRemainingHits() > this.rateLimitStatus.getRemainingHits());
-        assertEquals(previous.getHourlyLimit(), this.rateLimitStatus.getHourlyLimit());
+        assertTrue(previous.getRemaining() > this.rateLimitStatus.getRemaining());
+        assertEquals(previous.getLimit(), this.rateLimitStatus.getLimit());
     }
 
     public void testGetAccessLevel() throws Exception {
         TwitterResponse response;
-        try {
-            response = unauthenticated.getDailyTrends();
-            assertEquals(TwitterResponse.NONE, response.getAccessLevel());
-        } catch (TwitterException te) {
-            // the account is being rate limited
-            assertEquals(te.getStatusCode(), 400);
-        }
         response = twitter1.verifyCredentials();
         assertEquals(TwitterResponse.READ_WRITE, response.getAccessLevel());
         response = rwPrivateMessage.verifyCredentials();

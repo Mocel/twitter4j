@@ -17,13 +17,15 @@
 package twitter4j.internal.json;
 
 import twitter4j.*;
-import twitter4j.api.HelpMethods;
+import twitter4j.api.HelpResources;
 import twitter4j.conf.Configuration;
 import twitter4j.internal.http.HttpResponse;
 import twitter4j.internal.org.json.JSONArray;
 import twitter4j.internal.org.json.JSONException;
 import twitter4j.internal.org.json.JSONObject;
 import twitter4j.internal.util.z_T4JInternalStringUtil;
+
+import java.util.Map;
 
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
@@ -58,8 +60,8 @@ public class z_T4JInternalJSONImplFactory implements z_T4JInternalFactory {
     }
 
     @Override
-    public RateLimitStatus createRateLimitStatus(HttpResponse res) throws TwitterException {
-        return new RateLimitStatusJSONImpl(res, conf);
+    public Map<String ,RateLimitStatus> createRateLimitStatuses(HttpResponse res) throws TwitterException {
+        return RateLimitStatusJSONImpl.createRateLimitStatuses(res, conf);
     }
 
     @Override
@@ -118,18 +120,9 @@ public class z_T4JInternalJSONImplFactory implements z_T4JInternalFactory {
         return RateLimitStatusJSONImpl.createFromResponseHeader(res);
     }
 
-    public static RateLimitStatus createFeatureSpecificRateLimitStatusFromResponseHeader(HttpResponse res) {
-        return RateLimitStatusJSONImpl.createFeatureSpecificRateLimitStatusFromResponseHeader(res);
-    }
-
     @Override
     public Trends createTrends(HttpResponse res) throws TwitterException {
         return new TrendsJSONImpl(res, conf);
-    }
-
-    @Override
-    public ResponseList<Trends> createTrendsList(HttpResponse res) throws TwitterException {
-        return TrendsJSONImpl.createTrendsList(res, conf.isJSONStoreEnabled());
     }
 
     @Override
@@ -197,11 +190,6 @@ public class z_T4JInternalJSONImplFactory implements z_T4JInternalFactory {
     @Override
     public ResponseList<Category> createCategoryList(HttpResponse res) throws TwitterException {
         return CategoryJSONImpl.createCategoriesList(res, conf);
-    }
-
-    @Override
-    public ProfileImage createProfileImage(HttpResponse res) throws TwitterException {
-        return new ProfileImageImpl(res);
     }
 
     @Override
@@ -283,13 +271,18 @@ public class z_T4JInternalJSONImplFactory implements z_T4JInternalFactory {
     }
 
     @Override
-    public ResponseList<HelpMethods.Language> createLanguageList(HttpResponse res) throws TwitterException {
+    public ResponseList<HelpResources.Language> createLanguageList(HttpResponse res) throws TwitterException {
         return LanguageJSONImpl.createLanguageList(res, conf);
     }
 
     @Override
     public <T> ResponseList<T> createEmptyResponseList() {
         return new ResponseListImpl<T>(0, null);
+    }
+
+    @Override
+    public OEmbed createOEmbed(HttpResponse res) throws TwitterException {
+        return new OEmbedJSONImpl(res, conf);
     }
 
     /**

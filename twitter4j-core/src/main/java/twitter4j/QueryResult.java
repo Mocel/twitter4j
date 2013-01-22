@@ -23,24 +23,25 @@ import java.util.List;
  *
  * @author Yusuke Yamamoto - yusuke at mac.com
  */
-public interface QueryResult extends java.io.Serializable {
+public interface QueryResult extends TwitterResponse, java.io.Serializable {
     long getSinceId();
 
     long getMaxId();
 
+    /**
+     * @deprecated use {@link #getRefreshURL()} instead
+     */
     String getRefreshUrl();
 
-    int getResultsPerPage();
+    String getRefreshURL();
 
-    String getWarning();
+    int getCount();
 
     double getCompletedIn();
 
-    int getPage();
-
     String getQuery();
 
-    List<Tweet> getTweets();
+    List<Status> getTweets();
 
     /**
      * Returns a Query instance to fetch next page or null if there is no next page.

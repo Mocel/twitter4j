@@ -22,7 +22,7 @@ import twitter4j.*;
  * @author Yusuke Yamamoto - yusuke at mac.com
  * @since Twitter4J 2.1.7
  */
-public class PrintRetweetStream extends StatusAdapter {
+public class PrintRetweetStream {
     /**
      * Main entry of this application.
      *
@@ -55,6 +55,8 @@ public class PrintRetweetStream extends StatusAdapter {
             public void onStallWarning(StallWarning warning) {
                 System.out.println("Got stall warning:" + warning);
             }
+
+            @Override
             public void onException(Exception ex) {
                 ex.printStackTrace();
             }

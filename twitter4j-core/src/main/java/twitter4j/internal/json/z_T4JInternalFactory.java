@@ -17,9 +17,11 @@
 package twitter4j.internal.json;
 
 import twitter4j.*;
-import twitter4j.api.HelpMethods;
+import twitter4j.api.HelpResources;
 import twitter4j.internal.http.HttpResponse;
 import twitter4j.internal.org.json.JSONObject;
+
+import java.util.Map;
 
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
@@ -34,15 +36,13 @@ public interface z_T4JInternalFactory extends java.io.Serializable {
 
     DirectMessage createDirectMessage(JSONObject json) throws TwitterException;
 
-    RateLimitStatus createRateLimitStatus(HttpResponse res) throws TwitterException;
+    Map<String ,RateLimitStatus> createRateLimitStatuses(HttpResponse res) throws TwitterException;
 
     Status createStatus(HttpResponse res) throws TwitterException;
 
     ResponseList<Status> createStatusList(HttpResponse res) throws TwitterException;
 
     Trends createTrends(HttpResponse res) throws TwitterException;
-
-    ResponseList<Trends> createTrendsList(HttpResponse res) throws TwitterException;
 
     User createUser(HttpResponse res) throws TwitterException;
 
@@ -65,8 +65,6 @@ public interface z_T4JInternalFactory extends java.io.Serializable {
     ResponseList<UserList> createUserListList(HttpResponse res) throws TwitterException;
 
     ResponseList<Category> createCategoryList(HttpResponse res) throws TwitterException;
-
-    ProfileImage createProfileImage(HttpResponse res) throws TwitterException;
 
     DirectMessage createDirectMessage(HttpResponse res) throws TwitterException;
 
@@ -96,7 +94,9 @@ public interface z_T4JInternalFactory extends java.io.Serializable {
 
     TwitterAPIConfiguration createTwitterAPIConfiguration(HttpResponse res) throws TwitterException;
 
-    ResponseList<HelpMethods.Language> createLanguageList(HttpResponse res) throws TwitterException;
+    ResponseList<HelpResources.Language> createLanguageList(HttpResponse res) throws TwitterException;
 
     <T> ResponseList<T> createEmptyResponseList();
+
+    OEmbed createOEmbed(HttpResponse res) throws TwitterException;
 }
