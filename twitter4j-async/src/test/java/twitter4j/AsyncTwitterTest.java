@@ -377,6 +377,7 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     /*Search API Methods*/
     @Override
     public void searched(QueryResult result) {
+        this.queryResult = result;
         notifyResponse();
     }
 
@@ -693,6 +694,18 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
         notifyResponse();
     }
 
+    @Override
+    public void gotFriendsList(PagableResponseList<User> users) {
+        this.users = users;
+        notifyResponse();
+    }
+
+    @Override
+    public void gotFollowersList(PagableResponseList<User> users) {
+        this.users = users;
+        notifyResponse();
+    }
+
     /**
      * @since Twitter4J 2.1.2
      */
@@ -732,6 +745,7 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
 
     @Override
     public void updatedFriendship(Relationship relationship) {
+        this.relationship = relationship;
         notifyResponse();
     }
 
@@ -888,6 +902,12 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
 
     @Override
     public void createdPlace(Place place) {
+        notifyResponse();
+    }
+
+    @Override
+    public void gotPlaceTrends(Trends trends) {
+        this.trends = trends;
         notifyResponse();
     }
 
