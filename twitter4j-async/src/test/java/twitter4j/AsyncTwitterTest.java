@@ -367,12 +367,20 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     private ResponseList<DirectMessage> messages = null;
     private Status status = null;
     private User user = null;
+    private boolean test;
+    private UserList userList;
+    private PagableResponseList<UserList> pagableUserLists;
+    private Relationship relationship;
     private DirectMessage message = null;
     private TwitterException te = null;
     private Map<String,RateLimitStatus> rateLimitStatus;
     private boolean exists;
+    private QueryResult queryResult;
     private IDs ids;
+    private List<Trends> trendsList;
+    private Trends trends;
     private boolean blockExists;
+    private RelatedResults relatedResults;
 
     /*Search API Methods*/
     @Override
@@ -473,6 +481,7 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
      */
     @Override
     public void gotSuggestedUserCategories(ResponseList<Category> categories) {
+        this.categories = categories;
         notifyResponse();
     }
 
@@ -518,11 +527,13 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
 
     @Override
     public void createdUserList(UserList userList) {
+        this.userList = userList;
         notifyResponse();
     }
 
     @Override
     public void updatedUserList(UserList userList) {
+        this.userList = userList;
         notifyResponse();
     }
 
@@ -534,11 +545,13 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
 
     @Override
     public void gotShowUserList(UserList userList) {
+        this.userList = userList;
         notifyResponse();
     }
 
     @Override
     public void destroyedUserList(UserList userList) {
+        this.userList = userList;
         notifyResponse();
     }
 
@@ -550,11 +563,13 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
 
     @Override
     public void gotUserListMemberships(PagableResponseList<UserList> userLists) {
+        this.pagableUserLists = userLists;
         notifyResponse();
     }
 
     @Override
     public void gotUserListSubscriptions(PagableResponseList<UserList> userLists) {
+        this.pagableUserLists = userLists;
         notifyResponse();
     }
 
@@ -619,10 +634,12 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
 
     @Override
     public void subscribedUserList(UserList userList) {
+        this.userList = userList;
     }
 
     @Override
     public void unsubscribedUserList(UserList userList) {
+        this.userList = userList;
     }
 
     @Override
@@ -679,18 +696,7 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
      */
     @Override
     public void gotShowFriendship(Relationship relationship) {
-        notifyResponse();
-    }
-
-    @Override
-    public void gotFriendsList(PagableResponseList<User> users) {
-        this.users = users;
-        notifyResponse();
-    }
-
-    @Override
-    public void gotFollowersList(PagableResponseList<User> users) {
-        this.users = users;
+        this.relationship = relationship;
         notifyResponse();
     }
 
@@ -739,6 +745,7 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
 
     @Override
     public void lookedUpFriendships(ResponseList<Friendship> friendships) {
+        this.friendships = friendships;
         notifyResponse();
     }
 
@@ -771,11 +778,13 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
 
     @Override
     public void gotAccountSettings(AccountSettings settings) {
+        this.settings = settings;
         notifyResponse();
     }
 
     @Override
     public void updatedAccountSettings(AccountSettings settings) {
+        this.settings = settings;
         notifyResponse();
     }
 
@@ -870,6 +879,7 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
      */
     @Override
     public void gotAvailableTrends(ResponseList<Location> locations) {
+        this.locations = locations;
         notifyResponse();
     }
 
@@ -882,32 +892,31 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     /*Geo Methods*/
     @Override
     public void searchedPlaces(ResponseList<Place> places) {
+        this.places = places;
         notifyResponse();
     }
 
     @Override
     public void gotSimilarPlaces(SimilarPlaces places) {
+        this.places = places;
         notifyResponse();
     }
 
     @Override
     public void gotReverseGeoCode(ResponseList<Place> places) {
+        this.places = places;
         notifyResponse();
     }
 
     @Override
     public void gotGeoDetails(Place place) {
+        this.place = place;
         notifyResponse();
     }
 
     @Override
     public void createdPlace(Place place) {
-        notifyResponse();
-    }
-
-    @Override
-    public void gotPlaceTrends(Trends trends) {
-        this.trends = trends;
+        this.place = place;
         notifyResponse();
     }
 
@@ -942,12 +951,14 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
      */
     @Override
     public void gotRelatedResults(RelatedResults relatedResults) {
+        this.relatedResults = relatedResults;
         notifyResponse();
     }
 
     /*Help Methods*/
     @Override
     public void gotAPIConfiguration(TwitterAPIConfiguration conf) {
+        this.apiConf = conf;
         notifyResponse();
     }
 
