@@ -225,4 +225,22 @@ public interface User extends Comparable<User>, TwitterResponse, java.io.Seriali
      * @since Twitter4J 2.1.4
      */
     boolean isFollowRequestSent();
+    
+    /**
+     * Returns URL entities for user description.
+     * 
+     * @return URL entities for user description
+     * @since Twitter4J 3.0.3
+     */
+    URLEntity[] getDescriptionURLEntities();
+    
+    /**
+     * Returns URL entity for user's URL.
+     * 
+     * @return URL entity for user's URL.
+     * @since Twitter4J 3.0.3
+     */
+    URLEntity getURLEntity();
+    
+    
 }

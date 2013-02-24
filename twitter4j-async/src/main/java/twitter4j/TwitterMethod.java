@@ -25,6 +25,7 @@ public enum TwitterMethod {
     MENTIONS_TIMELINE,
     USER_TIMELINE,
     HOME_TIMELINE,
+    RETWEETS_OF_ME,
 
     /* Tweets Resources */
     RETWEETS,
@@ -32,6 +33,7 @@ public enum TwitterMethod {
     DESTROY_STATUS,
     UPDATE_STATUS,
     RETWEET_STATUS,
+    OEMBED,
 
     /* Search Resources */
     SEARCH,
@@ -53,6 +55,8 @@ public enum TwitterMethod {
     DESTROY_FRIENDSHIP,
     UPDATE_FRIENDSHIP,
     SHOW_FRIENDSHIP,
+    FRIENDS_LIST,
+    FOLLOWERS_LIST,
 
     /* Users Resources */
     ACCOUNT_SETTINGS,
@@ -122,7 +126,9 @@ public enum TwitterMethod {
     CREATE_PLACE,
 
     /* Trends Resources */
+    PLACE_TRENDS,
     AVAILABLE_TRENDS,
+    CLOSEST_TRENDS,
 
     /* Spam Reporting Resources */
     REPORT_SPAM,

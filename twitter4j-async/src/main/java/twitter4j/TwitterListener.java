@@ -31,6 +31,7 @@ public interface TwitterListener {
     void gotMentions(ResponseList<Status> statuses);
     void gotHomeTimeline(ResponseList<Status> statuses);
     void gotUserTimeline(ResponseList<Status> statuses);
+    void gotRetweetsOfMe(ResponseList<Status> statuses);
 
     /* Tweets Resources */
     void gotRetweets(ResponseList<Status> retweets);
@@ -38,6 +39,7 @@ public interface TwitterListener {
     void destroyedStatus(Status destroyedStatus);
     void updatedStatus(Status status);
     void retweetedStatus(Status retweetedStatus);
+    void gotOEmbed(OEmbed oembed);
 
     /* Search Resources */
     void searched(QueryResult queryResult);
@@ -59,6 +61,8 @@ public interface TwitterListener {
     void destroyedFriendship(User user);
     void updatedFriendship(Relationship relationship);
     void gotShowFriendship(Relationship relationship);
+    void gotFriendsList(PagableResponseList<User> users);
+    void gotFollowersList(PagableResponseList<User> users);
 
     /* Users Resources */
     void gotAccountSettings(AccountSettings settings);
@@ -124,7 +128,9 @@ public interface TwitterListener {
     void createdPlace(Place place);
 
     /* Trends Resources */
+    void gotPlaceTrends(Trends trends);
     void gotAvailableTrends(ResponseList<Location> locations);
+    void gotClosestTrends(ResponseList<Location> locations);
 
     /* Spam Reporting Resources */
     void reportedSpam(User reportedSpammer);

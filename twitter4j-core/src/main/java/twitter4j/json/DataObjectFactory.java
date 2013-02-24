@@ -22,8 +22,8 @@ import twitter4j.internal.org.json.JSONException;
 import twitter4j.internal.org.json.JSONObject;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,6 +53,7 @@ public final class DataObjectFactory {
     private static final Constructor<RelatedResults> relatedResultsConstructor;
     private static final Constructor<StatusDeletionNotice> statusDeletionNoticeConstructor;
     private static final Constructor<AccountTotals> accountTotalsConstructor;
+    private static final Constructor<OEmbed> oembedConstructor;
 
     static {
         try {
@@ -80,7 +81,7 @@ public final class DataObjectFactory {
             IDsConstructor = (Constructor<IDs>) Class.forName("twitter4j.internal.json.IDsJSONImpl").getDeclaredConstructor(String.class);
             IDsConstructor.setAccessible(true);
 
-            rateLimitStatusConstructor = Class.forName("twitter4j.internal.json.RateLimitStatusJSONImpl").getDeclaredMethod("createRateLimitStatuses",JSONObject.class);
+            rateLimitStatusConstructor = Class.forName("twitter4j.internal.json.RateLimitStatusJSONImpl").getDeclaredMethod("createRateLimitStatuses", JSONObject.class);
             rateLimitStatusConstructor.setAccessible(true);
 
             categoryConstructor = (Constructor<Category>) Class.forName("twitter4j.internal.json.CategoryJSONImpl").getDeclaredConstructor(JSONObject.class);
@@ -103,6 +104,8 @@ public final class DataObjectFactory {
 
             accountTotalsConstructor = (Constructor<AccountTotals>) Class.forName("twitter4j.internal.json.AccountTotalsJSONImpl").getDeclaredConstructor(JSONObject.class);
             accountTotalsConstructor.setAccessible(true);
+            oembedConstructor = (Constructor<OEmbed>) Class.forName("twitter4j.internal.json.OEmbedJSONImpl").getDeclaredConstructor(JSONObject.class);
+            oembedConstructor.setAccessible(true);
         } catch (NoSuchMethodException e) {
             throw new ExceptionInInitializerError(e);
         } catch (ClassNotFoundException e) {
@@ -346,10 +349,10 @@ public final class DataObjectFactory {
      * @throws TwitterException when provided string is not a valid JSON string.
      * @since Twitter4J 2.1.7
      */
-    public static Map<String ,RateLimitStatus> createRateLimitStatus(String rawJSON) throws TwitterException {
+    public static Map<String, RateLimitStatus> createRateLimitStatus(String rawJSON) throws TwitterException {
         try {
             JSONObject json = new JSONObject(rawJSON);
-            return (Map<String ,RateLimitStatus>)rateLimitStatusConstructor.invoke(Class.forName("twitter4j.internal.json.RateLimitStatusJSONImpl"), json);
+            return (Map<String, RateLimitStatus>) rateLimitStatusConstructor.invoke(Class.forName("twitter4j.internal.json.RateLimitStatusJSONImpl"), json);
         } catch (ClassNotFoundException e) {
             throw new TwitterException(e);
         } catch (IllegalAccessException e) {
@@ -477,6 +480,29 @@ public final class DataObjectFactory {
     }
 
     /**
+     * Constructs an OEmbed object from rawJSON string.
+     *
+     * @param rawJSON raw JSON form as String
+     * @return OEmbed
+     * @throws TwitterException when provided string is not a valid JSON string.
+     * @since Twitter4J 3.0.2
+     */
+    public static OEmbed createOEmbed(String rawJSON) throws TwitterException {
+        try {
+            JSONObject json = new JSONObject(rawJSON);
+            return oembedConstructor.newInstance(json);
+        } catch (InstantiationException e) {
+            throw new TwitterException(e);
+        } catch (IllegalAccessException e) {
+            throw new AssertionError(e);
+        } catch (InvocationTargetException e) {
+            throw new TwitterException(e);
+        } catch (JSONException e) {
+            throw new TwitterException(e);
+        }
+    }
+
+    /**
      * Construct an object from rawJSON string.  This method may be called
      * when you do not know what a given raw JSON string contains.  It will
      * do the work of determining what type of object the JSON represents,
@@ -498,26 +524,25 @@ public final class DataObjectFactory {
     public static Object createObject(String rawJSON) throws TwitterException {
         try {
             JSONObject json = new JSONObject(rawJSON);
-            JSONObjectType jsonObjectType = JSONObjectType.determine(json);
-            if (JSONObjectType.SENDER == jsonObjectType) {
-                return registerJSONObject(directMessageConstructor.newInstance(json.getJSONObject("direct_message")), json);
-            } else if (JSONObjectType.STATUS == jsonObjectType) {
-                return registerJSONObject(statusConstructor.newInstance(json), json);
-            } else if (JSONObjectType.DIRECT_MESSAGE == jsonObjectType) {
-                return registerJSONObject(directMessageConstructor.newInstance(json.getJSONObject("direct_message")), json);
-            } else if (JSONObjectType.DELETE == jsonObjectType) {
-                return registerJSONObject(statusDeletionNoticeConstructor.newInstance(json.getJSONObject("delete").getJSONObject("status")), json);
-            } else if (JSONObjectType.LIMIT == jsonObjectType) {
-                // TODO: Perhaps there should be a TrackLimitationNotice object?
-                // The onTrackLimitationNotice method could take that as an arg.
-                return json;
-            } else if (JSONObjectType.SCRUB_GEO == jsonObjectType) {
-                // TODO: Perhaps there should be a ScrubGeo object?
-                // The onScrubGeo method could take that as an arg.
-                return json;
-            } else {
-                // The object type is unrecognized...just return the json
-                return json;
+            JSONObjectType.Type jsonObjectType = JSONObjectType.determine(json);
+            switch (jsonObjectType) {
+                case SENDER:
+                    return registerJSONObject(directMessageConstructor.newInstance(json.getJSONObject("direct_message")), json);
+                case STATUS:
+                    return registerJSONObject(statusConstructor.newInstance(json), json);
+                case DIRECT_MESSAGE:
+                    return registerJSONObject(directMessageConstructor.newInstance(json.getJSONObject("direct_message")), json);
+                case DELETE:
+                    return registerJSONObject(statusDeletionNoticeConstructor.newInstance(json.getJSONObject("delete").getJSONObject("status")), json);
+                case LIMIT:
+                    // TODO: Perhaps there should be a TrackLimitationNotice object?
+                    // The onTrackLimitationNotice method could take that as an arg.
+                    return json;
+                case SCRUB_GEO:
+                    return json;
+                default:
+                    // The object type is unrecognized...just return the json
+                    return json;
             }
         } catch (InstantiationException e) {
             throw new TwitterException(e);

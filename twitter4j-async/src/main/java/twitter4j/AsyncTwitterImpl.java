@@ -40,8 +40,8 @@ import static twitter4j.TwitterMethod.*;
  * Currently this class is not carefully designed to be extended. It is suggested to extend this class only for mock testing purporse.<br>
  *
  * @author Yusuke Yamamoto - yusuke at mac.com
- * @see twitter4j.AsyncTwitter
- * @see twitter4j.TwitterListener
+ * @see {@link twitter4j.AsyncTwitter}
+ * @see {@link twitter4j.TwitterListener}
  */
 class AsyncTwitterImpl extends TwitterBaseImpl implements AsyncTwitter {
     private static final long serialVersionUID = -2008667933225051907L;
@@ -235,6 +235,40 @@ class AsyncTwitterImpl extends TwitterBaseImpl implements AsyncTwitter {
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    public void getRetweetsOfMe() {
+        getDispatcher().invokeLater(new AsyncTask(RETWEETS_OF_ME, listeners) {
+            public void invoke(List<TwitterListener> listeners) throws TwitterException {
+                ResponseList<Status> statuses = twitter.getRetweetsOfMe();
+                for (TwitterListener listener : listeners) {
+                    try {
+                        listener.gotRetweetsOfMe(statuses);
+                    } catch (Exception ignore) {
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void getRetweetsOfMe(final Paging paging) {
+        getDispatcher().invokeLater(new AsyncTask(RETWEETS_OF_ME, listeners) {
+            public void invoke(List<TwitterListener> listeners) throws TwitterException {
+                ResponseList<Status> statuses = twitter.getRetweetsOfMe(paging);
+                for (TwitterListener listener : listeners) {
+                    try {
+                        listener.gotRetweetsOfMe(statuses);
+                    } catch (Exception ignore) {
+                    }
+                }
+            }
+        });
+    }
+
     /* Tweets Resources */
 
     /**
@@ -344,6 +378,22 @@ class AsyncTwitterImpl extends TwitterBaseImpl implements AsyncTwitter {
                 for (TwitterListener listener : listeners) {
                     try {
                         listener.retweetedStatus(status);
+                    } catch (Exception ignore) {
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    public void getOEmbed(final OEmbedRequest req) {
+        getDispatcher().invokeLater(new AsyncTask(OEMBED, listeners) {
+            @Override
+            public void invoke(List<TwitterListener> listeners) throws TwitterException {
+                OEmbed oembed = twitter.getOEmbed(req);
+                for (TwitterListener listener : listeners) {
+                    try {
+                        listener.gotOEmbed(oembed);
                     } catch (Exception ignore) {
                     }
                 }
@@ -915,6 +965,82 @@ class AsyncTwitterImpl extends TwitterBaseImpl implements AsyncTwitter {
         });
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void getFriendsList(final long userId, final long cursor) {
+        getDispatcher().invokeLater(new AsyncTask(FRIENDS_LIST, listeners) {
+            @Override
+            public void invoke(List<TwitterListener> listeners) throws TwitterException {
+                PagableResponseList<User> users = twitter.getFriendsList(userId, cursor);
+                for (TwitterListener listener : listeners) {
+                    try {
+                        listener.gotFriendsList(users);
+                    } catch (Exception ignore) {
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void getFriendsList(final String screenName, final long cursor) {
+        getDispatcher().invokeLater(new AsyncTask(FRIENDS_LIST, listeners) {
+            @Override
+            public void invoke(List<TwitterListener> listeners) throws TwitterException {
+                PagableResponseList<User> users = twitter.getFriendsList(screenName, cursor);
+                for (TwitterListener listener : listeners) {
+                    try {
+                        listener.gotFriendsList(users);
+                    } catch (Exception ignore) {
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void getFollowersList(final long userId, final long cursor) {
+        getDispatcher().invokeLater(new AsyncTask(FOLLOWERS_LIST, listeners) {
+            @Override
+            public void invoke(List<TwitterListener> listeners) throws TwitterException {
+                PagableResponseList<User> users = twitter.getFollowersList(userId, cursor);
+                for (TwitterListener listener : listeners) {
+                    try {
+                        listener.gotFollowersList(users);
+                    } catch (Exception ignore) {
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void getFollowersList(final String screenName, final long cursor) {
+        getDispatcher().invokeLater(new AsyncTask(FOLLOWERS_LIST, listeners) {
+            @Override
+            public void invoke(List<TwitterListener> listeners) throws TwitterException {
+                PagableResponseList<User> users = twitter.getFollowersList(screenName, cursor);
+                for (TwitterListener listener : listeners) {
+                    try {
+                        listener.gotFollowersList(users);
+                    } catch (Exception ignore) {
+                    }
+                }
+            }
+        });
+    }
+
     /* Users Resources */
 
     /**
@@ -1154,6 +1280,25 @@ class AsyncTwitterImpl extends TwitterBaseImpl implements AsyncTwitter {
             @Override
             public void invoke(List<TwitterListener> listeners) throws TwitterException {
                 IDs ids = twitter.getBlocksIDs();
+                for (TwitterListener listener : listeners) {
+                    try {
+                        listener.gotBlockIDs(ids);
+                    } catch (Exception ignore) {
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void getBlocksIDs(final long cursor) {
+        getDispatcher().invokeLater(new AsyncTask(BLOCK_LIST_IDS, listeners) {
+            @Override
+            public void invoke(List<TwitterListener> listeners) throws TwitterException {
+                IDs ids = twitter.getBlocksIDs(cursor);
                 for (TwitterListener listener : listeners) {
                     try {
                         listener.gotBlockIDs(ids);
@@ -2577,6 +2722,33 @@ class AsyncTwitterImpl extends TwitterBaseImpl implements AsyncTwitter {
     }
 
     /* Trends Resources */
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void getLocationTrends(int woeid) {
+        getPlaceTrends(woeid);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void getPlaceTrends(final int woeid) {
+        getDispatcher().invokeLater(new AsyncTask(PLACE_TRENDS, listeners) {
+            public void invoke(List<TwitterListener> listeners) throws TwitterException {
+                Trends trends = twitter.getPlaceTrends(woeid);
+                for (TwitterListener listener : listeners) {
+                    try {
+                        listener.gotPlaceTrends(trends);
+                    } catch (Exception ignore) {
+                    }
+                }
+            }
+        });
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -2589,6 +2761,33 @@ class AsyncTwitterImpl extends TwitterBaseImpl implements AsyncTwitter {
                 for (TwitterListener listener : listeners) {
                     try {
                         listener.gotAvailableTrends(locations);
+                    } catch (Exception ignore) {
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void getAvailableTrends(GeoLocation location) {
+        getClosestTrends(location);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void getClosestTrends(final GeoLocation location) {
+        getDispatcher().invokeLater(new AsyncTask(CLOSEST_TRENDS, listeners) {
+            @Override
+            public void invoke(List<TwitterListener> listeners) throws TwitterException {
+                ResponseList<Location> locations = twitter.getClosestTrends(location);
+                for (TwitterListener listener : listeners) {
+                    try {
+                        listener.gotClosestTrends(locations);
                     } catch (Exception ignore) {
                     }
                 }

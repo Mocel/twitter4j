@@ -41,6 +41,8 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
     private String screenName;
     private String location;
     private String description;
+    private URLEntity[] descriptionURLEntities;
+    private URLEntity urlEntity;
     private boolean isContributorsEnabled;
     private String profileImageUrl;
     private String profileImageUrlHttps;
@@ -103,7 +105,23 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
             name = getRawString("name", json);
             screenName = getRawString("screen_name", json);
             location = getRawString("location", json);
+            
+            // descriptionUrlEntities <=> entities/descriptions/urls[]
+            descriptionURLEntities = getURLEntitiesFromJSON(json, "description");
+            descriptionURLEntities = descriptionURLEntities == null ? new URLEntity[0] : descriptionURLEntities;
+            
+            // urlEntity <=> entities/url/urls[]
+            URLEntity[] urlEntities = getURLEntitiesFromJSON(json, "url");
+            if (urlEntities != null && urlEntities.length > 0) {
+                urlEntity = urlEntities[0];
+            }
+            
             description = getRawString("description", json);
+            if (description != null) {
+                description = HTMLEntity.unescapeAndSlideEntityIncdices(description, 
+                        null, descriptionURLEntities, null, null);
+            }
+            
             isContributorsEnabled = getBoolean("contributors_enabled", json);
             profileImageUrl = getRawString("profile_image_url", json);
             profileImageUrlHttps = getRawString("profile_image_url_https", json);
@@ -141,6 +159,35 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
         } catch (JSONException jsone) {
             throw new TwitterException(jsone.getMessage() + ":" + json.toString(), jsone);
         }
+    }
+    
+    /**
+     * Get URL Entities from JSON Object.
+     * returns URLEntity array by entities/[category]/urls/url[]
+     * 
+     * @param json user json object
+     * @param category entities category. e.g. "description" or "url"
+     * @return URLEntity array by entities/[category]/urls/url[]
+     * @throws JSONException
+     * @throws TwitterException
+     */
+    private static URLEntity[] getURLEntitiesFromJSON(JSONObject json, String category) throws JSONException, TwitterException {
+        if (!json.isNull("entities")) {
+            JSONObject entitiesJSON = json.getJSONObject("entities");
+            if (!entitiesJSON.isNull(category)) {
+                JSONObject descriptionEntitiesJSON = entitiesJSON.getJSONObject(category);
+                if (!descriptionEntitiesJSON.isNull("urls")) {
+                    JSONArray urlsArray = descriptionEntitiesJSON.getJSONArray("urls");
+                    int len = urlsArray.length();
+                    URLEntity[] urlEntities = new URLEntity[len];
+                    for (int i = 0; i < len; i++) {
+                        urlEntities[i] = new URLEntityJSONImpl(urlsArray.getJSONObject(i));
+                    }
+                    return urlEntities;
+                }
+            }
+        }
+        return null;
     }
 
     @Override
@@ -220,12 +267,15 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
     }
 
     private String toResizedURL(String originalURL, String sizeSuffix) {
-        if(null != originalURL){
+        if (null != originalURL) {
             int index = originalURL.lastIndexOf("_");
             int suffixIndex = originalURL.lastIndexOf(".");
-            return originalURL.substring(0,index)
-                    +sizeSuffix
-                    +originalURL.substring(suffixIndex);
+            int slashIndex = originalURL.lastIndexOf("/");
+            String url = originalURL.substring(0, index) + sizeSuffix;
+            if (suffixIndex > slashIndex) {
+                url += originalURL.substring(suffixIndex);
+            }
+            return url;
         }
         return null;
     }
@@ -508,6 +558,26 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
         return isFollowRequestSent;
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public URLEntity[] getDescriptionURLEntities() {
+        return descriptionURLEntities;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public URLEntity getURLEntity() {
+        if (urlEntity == null) {
+            String plainURL = url == null ? "" : url;
+            urlEntity = new URLEntityJSONImpl(0, plainURL.length(), plainURL, plainURL, plainURL);
+        }
+        return urlEntity;
+    }
+    
     /*package*/
     static PagableResponseList<User> createPagableUserList(HttpResponse res, Configuration conf) throws TwitterException {
         try {
@@ -626,4 +696,5 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
                 ", isFollowRequestSent=" + isFollowRequestSent +
                 '}';
     }
+
 }

@@ -17,14 +17,13 @@
 package twitter4j;
 
 import twitter4j.auth.AccessToken;
+import twitter4j.auth.AuthorizationFactory;
 import twitter4j.conf.ConfigurationBuilder;
 import twitter4j.internal.async.DispatcherFactory;
 import twitter4j.json.DataObjectFactory;
 
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public class StreamAPITest extends TwitterTestBase implements StatusListener, ConnectionLifeCycleListener {
     protected TwitterStream twitterStream = null;
@@ -51,6 +50,7 @@ public class StreamAPITest extends TwitterTestBase implements StatusListener, Co
 
     protected void tearDown() throws Exception {
         super.tearDown();
+        twitterStream.shutdown();
     }
 
     public void testToString() throws Exception {
@@ -64,6 +64,74 @@ public class StreamAPITest extends TwitterTestBase implements StatusListener, Co
         map.put(twitterStream1, "value");
         map.put(twitterStream2, "value");
         assertEquals(2, map.size());
+    }
+
+    List<String> received = new ArrayList<String>();
+    Object lock = new Object();
+    public void testRawStreamListener() throws Exception{
+        twitterStream.addListener(new RawStreamListener() {
+            @Override
+            public void onMessage(String rawString) {
+                received.add(rawString);
+                synchronized (lock) {
+                    lock.notify();
+                }
+            }
+
+            @Override
+            public void onException(Exception ex) {
+            }
+        });
+        twitterStream.sample();
+        synchronized (lock) {
+            lock.wait();
+        }
+        assertTrue(received.size() > 0);
+    }
+    public void testNoListener() throws Exception {
+        TwitterStream twitterStream;
+        twitterStream = new TwitterStreamFactory().getInstance();
+        twitterStream.setOAuthConsumer("dummy","dummy");
+        twitterStream.setOAuthAccessToken(new AccessToken("dummy", "dummy"));
+        try {
+            twitterStream.sample();
+            fail("expecting IllegalStateException");
+        } catch (IllegalStateException expected) {
+        }
+        try {
+            twitterStream.filter(new FilterQuery().track(new String[]{"twitter"}));
+            fail("expecting IllegalStateException");
+        } catch (IllegalStateException expected) {
+        }
+        try {
+            twitterStream.user();
+            fail("expecting IllegalStateException");
+        } catch (IllegalStateException expected) {
+        }
+        try {
+            twitterStream.firehose(0);
+            fail("expecting IllegalStateException");
+        } catch (IllegalStateException expected) {
+        }
+        try {
+            twitterStream.retweet();
+            fail("expecting IllegalStateException");
+        } catch (IllegalStateException expected) {
+        }
+
+        twitterStream.addListener(new RawStreamListener() {
+            @Override
+            public void onMessage(String rawString) {
+            }
+
+            @Override
+            public void onException(Exception ex) {
+            }
+        });
+
+        twitterStream.sample();
+        twitterStream.cleanUp();
+        twitterStream.shutdown();
     }
 
     public void testStatusStream() throws Exception {

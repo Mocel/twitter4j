@@ -46,6 +46,7 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     private TwitterAPIConfiguration apiConf;
     private SavedSearch savedSearch;
     private ResponseList<SavedSearch> savedSearches;
+    private OEmbed oembed;
 
     public AsyncTwitterTest(String name) {
         super(name);
@@ -402,6 +403,12 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     }
 
     @Override
+    public void gotRetweetsOfMe(ResponseList<Status> statuses) {
+        this.statuses = statuses;
+        notifyResponse();
+    }
+
+    @Override
     public void gotMentions(ResponseList<Status> statuses) {
         this.statuses = statuses;
         notifyResponse();
@@ -432,6 +439,12 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     @Override
     public void retweetedStatus(Status retweetedStatus) {
         this.status = retweetedStatus;
+        notifyResponse();
+    }
+
+    @Override
+    public void gotOEmbed(OEmbed oembed) {
+        this.oembed = oembed;
         notifyResponse();
     }
 
@@ -687,6 +700,18 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
         notifyResponse();
     }
 
+    @Override
+    public void gotFriendsList(PagableResponseList<User> users) {
+        this.users = users;
+        notifyResponse();
+    }
+
+    @Override
+    public void gotFollowersList(PagableResponseList<User> users) {
+        this.users = users;
+        notifyResponse();
+    }
+
     /**
      * @since Twitter4J 2.1.2
      */
@@ -858,6 +883,12 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
         notifyResponse();
     }
 
+    @Override
+    public void gotClosestTrends(ResponseList<Location> locations) {
+        this.locations = locations;
+        notifyResponse();
+    }
+
     /*Geo Methods*/
     @Override
     public void searchedPlaces(ResponseList<Place> places) {
@@ -886,6 +917,12 @@ public class AsyncTwitterTest extends TwitterTestBase implements TwitterListener
     @Override
     public void createdPlace(Place place) {
         this.place = place;
+        notifyResponse();
+    }
+
+    @Override
+    public void gotPlaceTrends(Trends trends) {
+        this.trends = trends;
         notifyResponse();
     }
 

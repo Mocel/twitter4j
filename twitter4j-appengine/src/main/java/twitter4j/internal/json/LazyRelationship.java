@@ -159,6 +159,11 @@ final class LazyRelationship implements twitter4j.Relationship {
         return getTarget().isSourceNotificationsEnabled();
     }
 
+    @Override
+    public boolean isSourceWantRetweets() {
+        return getTarget().isSourceWantRetweets();
+    }
+
 
     public RateLimitStatus getRateLimitStatus() {
         return getTarget().getRateLimitStatus();

@@ -25,7 +25,7 @@ import twitter4j.*;
  *
  * @author Yusuke Yamamoto - yusuke at mac.com
  */
-public final class PrintSampleStream extends StatusAdapter {
+public final class PrintSampleStream {
     /**
      * Main entry of this application.
      *
