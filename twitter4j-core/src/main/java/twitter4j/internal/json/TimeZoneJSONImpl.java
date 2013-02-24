@@ -26,7 +26,6 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.getInt;
 /**
  * @author Alessandro Bahgat - ale.bahgat at gmail.com
  */
-@SuppressWarnings("serial")
 public class TimeZoneJSONImpl implements TimeZone {
     private final String NAME;
     private final String TZINFO_NAME;

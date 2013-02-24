@@ -105,23 +105,23 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
             name = getRawString("name", json);
             screenName = getRawString("screen_name", json);
             location = getRawString("location", json);
-            
+
             // descriptionUrlEntities <=> entities/descriptions/urls[]
             descriptionURLEntities = getURLEntitiesFromJSON(json, "description");
             descriptionURLEntities = descriptionURLEntities == null ? new URLEntity[0] : descriptionURLEntities;
-            
+
             // urlEntity <=> entities/url/urls[]
             URLEntity[] urlEntities = getURLEntitiesFromJSON(json, "url");
             if (urlEntities != null && urlEntities.length > 0) {
                 urlEntity = urlEntities[0];
             }
-            
+
             description = getRawString("description", json);
             if (description != null) {
-                description = HTMLEntity.unescapeAndSlideEntityIncdices(description, 
+                description = HTMLEntity.unescapeAndSlideEntityIncdices(description,
                         null, descriptionURLEntities, null, null);
             }
-            
+
             isContributorsEnabled = getBoolean("contributors_enabled", json);
             profileImageUrl = getRawString("profile_image_url", json);
             profileImageUrlHttps = getRawString("profile_image_url_https", json);
@@ -160,11 +160,11 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
             throw new TwitterException(jsone.getMessage() + ":" + json.toString(), jsone);
         }
     }
-    
+
     /**
      * Get URL Entities from JSON Object.
      * returns URLEntity array by entities/[category]/urls/url[]
-     * 
+     *
      * @param json user json object
      * @param category entities category. e.g. "description" or "url"
      * @return URLEntity array by entities/[category]/urls/url[]
@@ -565,7 +565,7 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
     public URLEntity[] getDescriptionURLEntities() {
         return descriptionURLEntities;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -577,7 +577,7 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
         }
         return urlEntity;
     }
-    
+
     /*package*/
     static PagableResponseList<User> createPagableUserList(HttpResponse res, Configuration conf) throws TwitterException {
         try {

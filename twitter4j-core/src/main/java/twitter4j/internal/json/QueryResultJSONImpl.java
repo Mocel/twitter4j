@@ -169,7 +169,7 @@ import static twitter4j.internal.json.z_T4JInternalParseUtil.*;
             return null;
         }
         try {
-            return (Query) queryFactoryMethod.invoke(null, nextResults);
+            return (Query) queryFactoryMethod.invoke(null, new String[]{nextResults});
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         } catch (InvocationTargetException e) {
