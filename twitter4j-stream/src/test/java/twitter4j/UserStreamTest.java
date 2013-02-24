@@ -291,6 +291,7 @@ public class UserStreamTest extends TwitterTestBase implements UserStreamListene
         Assert.assertNotNull(DataObjectFactory.getRawJSON(source));
         Assert.assertNotNull(DataObjectFactory.getRawJSON(target));
         Assert.assertNotNull(DataObjectFactory.getRawJSON(favoritedStatus));
+        Assert.assertNotNull(createdAt);
         notifyResponse();
     }
 

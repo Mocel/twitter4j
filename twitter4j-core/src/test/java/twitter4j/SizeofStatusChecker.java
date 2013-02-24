@@ -22,6 +22,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 /**
  * @author Yusuke Yamamoto - yusuke at mac.com
@@ -37,7 +38,8 @@ public class SizeofStatusChecker {
         before = Runtime.getRuntime().freeMemory();
         for (int i = 0; i < count; i++) {
             Document doc = builder.parse(new ByteArrayInputStream(statusXML.getBytes()));
-            doc.getDocumentElement();
+            Element elem = doc.getDocumentElement();
+            elem.hashCode();
         }
         System.out.println((before - Runtime.getRuntime().freeMemory()) / count);
     }

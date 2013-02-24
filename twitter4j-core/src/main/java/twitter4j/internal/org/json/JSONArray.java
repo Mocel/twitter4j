@@ -85,14 +85,14 @@ public class JSONArray {
     /**
      * The arrayList where the JSONArray's properties are kept.
      */
-    private ArrayList myArrayList;
+    private ArrayList<Object> myArrayList;
 
 
     /**
      * Construct an empty JSONArray.
      */
     public JSONArray() {
-        this.myArrayList = new ArrayList();
+        this.myArrayList = new ArrayList<Object>();
     }
 
     /**
@@ -152,8 +152,8 @@ public class JSONArray {
      *
      * @param collection A Collection.
      */
-    public JSONArray(Collection collection) {
-        this.myArrayList = new ArrayList();
+    public JSONArray(Collection<?> collection) {
+        this.myArrayList = new ArrayList<Object>();
         if (collection != null) {
             for (Object aCollection : collection) {
                 this.myArrayList.add(JSONObject.wrap(aCollection));
@@ -388,6 +388,185 @@ public class JSONArray {
                 null : this.myArrayList.get(index);
     }
 
+
+    /**
+     * Get the optional boolean value associated with an index.
+     * It returns false if there is no value at that index,
+     * or if the value is not Boolean.TRUE or the String "true".
+     *
+     * @param index The index must be between 0 and length() - 1.
+     * @return The truth.
+     */
+    public boolean optBoolean(int index) {
+        return optBoolean(index, false);
+    }
+
+
+    /**
+     * Get the optional boolean value associated with an index.
+     * It returns the defaultValue if there is no value at that index or if
+     * it is not a Boolean or the String "true" or "false" (case insensitive).
+     *
+     * @param index        The index must be between 0 and length() - 1.
+     * @param defaultValue A boolean default.
+     * @return The truth.
+     */
+    public boolean optBoolean(int index, boolean defaultValue) {
+        try {
+            return getBoolean(index);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+
+    /**
+     * Get the optional double value associated with an index.
+     * NaN is returned if there is no value for the index,
+     * or if the value is not a number and cannot be converted to a number.
+     *
+     * @param index The index must be between 0 and length() - 1.
+     * @return The value.
+     */
+    public double optDouble(int index) {
+        return optDouble(index, Double.NaN);
+    }
+
+
+    /**
+     * Get the optional double value associated with an index.
+     * The defaultValue is returned if there is no value for the index,
+     * or if the value is not a number and cannot be converted to a number.
+     *
+     * @param index        subscript
+     * @param defaultValue The default value.
+     * @return The value.
+     */
+    public double optDouble(int index, double defaultValue) {
+        try {
+            return getDouble(index);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+
+    /**
+     * Get the optional int value associated with an index.
+     * Zero is returned if there is no value for the index,
+     * or if the value is not a number and cannot be converted to a number.
+     *
+     * @param index The index must be between 0 and length() - 1.
+     * @return The value.
+     */
+    public int optInt(int index) {
+        return optInt(index, 0);
+    }
+
+
+    /**
+     * Get the optional int value associated with an index.
+     * The defaultValue is returned if there is no value for the index,
+     * or if the value is not a number and cannot be converted to a number.
+     *
+     * @param index        The index must be between 0 and length() - 1.
+     * @param defaultValue The default value.
+     * @return The value.
+     */
+    public int optInt(int index, int defaultValue) {
+        try {
+            return getInt(index);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+
+    /**
+     * Get the optional JSONArray associated with an index.
+     *
+     * @param index subscript
+     * @return A JSONArray value, or null if the index has no value,
+     *         or if the value is not a JSONArray.
+     */
+    public JSONArray optJSONArray(int index) {
+        Object o = opt(index);
+        return o instanceof JSONArray ? (JSONArray) o : null;
+    }
+
+
+    /**
+     * Get the optional JSONObject associated with an index.
+     * Null is returned if the key is not found, or null if the index has
+     * no value, or if the value is not a JSONObject.
+     *
+     * @param index The index must be between 0 and length() - 1.
+     * @return A JSONObject value.
+     */
+    public JSONObject optJSONObject(int index) {
+        Object o = opt(index);
+        return o instanceof JSONObject ? (JSONObject) o : null;
+    }
+
+
+    /**
+     * Get the optional long value associated with an index.
+     * Zero is returned if there is no value for the index,
+     * or if the value is not a number and cannot be converted to a number.
+     *
+     * @param index The index must be between 0 and length() - 1.
+     * @return The value.
+     */
+    public long optLong(int index) {
+        return optLong(index, 0);
+    }
+
+
+    /**
+     * Get the optional long value associated with an index.
+     * The defaultValue is returned if there is no value for the index,
+     * or if the value is not a number and cannot be converted to a number.
+     *
+     * @param index        The index must be between 0 and length() - 1.
+     * @param defaultValue The default value.
+     * @return The value.
+     */
+    public long optLong(int index, long defaultValue) {
+        try {
+            return getLong(index);
+        } catch (Exception e) {
+            return defaultValue;
+        }
+    }
+
+
+    /**
+     * Get the optional string value associated with an index. It returns an
+     * empty string if there is no value at that index. If the value
+     * is not a string and is not null, then it is coverted to a string.
+     *
+     * @param index The index must be between 0 and length() - 1.
+     * @return A String value.
+     */
+    public String optString(int index) {
+        return optString(index, "");
+    }
+
+
+    /**
+     * Get the optional string associated with an index.
+     * The defaultValue is returned if the key is not found.
+     *
+     * @param index        The index must be between 0 and length() - 1.
+     * @param defaultValue The default value.
+     * @return A String value.
+     */
+    public String optString(int index, String defaultValue) {
+        Object object = opt(index);
+        return object != null ? object.toString() : defaultValue;
+    }
+
+
     /**
      * Append a boolean value. This increases the array's length by one.
      *
@@ -407,10 +586,26 @@ public class JSONArray {
      * @param value A Collection value.
      * @return this.
      */
-    public JSONArray put(Collection value) {
+    public JSONArray put(Collection<?> value) {
         put(new JSONArray(value));
         return this;
     }
+
+
+    /**
+     * Append a double value. This increases the array's length by one.
+     *
+     * @param value A double value.
+     * @return this.
+     * @throws JSONException if the value is not finite.
+     */
+    public JSONArray put(double value) throws JSONException {
+        Double d = new Double(value);
+        JSONObject.testValidity(d);
+        put(d);
+        return this;
+    }
+
 
     /**
      * Append an int value. This increases the array's length by one.
@@ -443,7 +638,7 @@ public class JSONArray {
      * @param value A Map value.
      * @return this.
      */
-    public JSONArray put(Map value) {
+    public JSONArray put(Map<String, ?> value) {
         put(new JSONObject(value));
         return this;
     }
@@ -489,7 +684,7 @@ public class JSONArray {
      * @throws JSONException If the index is negative or if the value is
      *                       not finite.
      */
-    public JSONArray put(int index, Collection value) throws JSONException {
+    public JSONArray put(int index, Collection<?> value) throws JSONException {
         put(index, new JSONArray(value));
         return this;
     }
@@ -554,7 +749,7 @@ public class JSONArray {
      * @throws JSONException If the index is negative or if the the value is
      *                       an invalid number.
      */
-    public JSONArray put(int index, Map value) throws JSONException {
+    public JSONArray put(int index, Map<String, ?> value) throws JSONException {
         put(index, new JSONObject(value));
         return this;
     }
@@ -588,6 +783,43 @@ public class JSONArray {
         }
         return this;
     }
+
+
+    /**
+     * Remove an index and close the hole.
+     *
+     * @param index The index of the element to be removed.
+     * @return The value that was associated with the index,
+     *         or null if there was no value.
+     */
+    public Object remove(int index) {
+        Object o = opt(index);
+        this.myArrayList.remove(index);
+        return o;
+    }
+
+
+    /**
+     * Produce a JSONObject by combining a JSONArray of names with the values
+     * of this JSONArray.
+     *
+     * @param names A JSONArray containing a list of key strings. These will be
+     *              paired with the values.
+     * @return A JSONObject, or null if there are no names or if this JSONArray
+     *         has no values.
+     * @throws JSONException If any of the names are null.
+     */
+    public JSONObject toJSONObject(JSONArray names) throws JSONException {
+        if (names == null || names.length() == 0 || length() == 0) {
+            return null;
+        }
+        JSONObject jo = new JSONObject();
+        for (int i = 0; i < names.length(); i += 1) {
+            jo.put(names.getString(i), this.opt(i));
+        }
+        return jo;
+    }
+
 
     /**
      * Make a JSON text of this JSONArray. For compactness, no

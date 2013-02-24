@@ -57,9 +57,8 @@ public final class TwitterFactory implements java.io.Serializable {
         }
         Constructor<Twitter> constructor;
         try {
-            @SuppressWarnings("unchecked")
             Class<Twitter> clazz = (Class<Twitter>) Class.forName(className);
-            constructor = clazz.getDeclaredConstructor(Configuration.class, Authorization.class);
+            constructor = (Constructor<Twitter>) clazz.getDeclaredConstructor(Configuration.class, Authorization.class);
         } catch (NoSuchMethodException e) {
             throw new AssertionError(e);
         } catch (ClassNotFoundException e) {

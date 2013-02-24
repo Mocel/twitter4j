@@ -131,23 +131,6 @@ class TwitterImpl extends TwitterBaseImpl implements Twitter {
     /**
      * {@inheritDoc}
      */
-    public ResponseList<Status> getRetweetsOfMe() throws TwitterException {
-        return factory.createStatusList(get(conf.getRestBaseURL()
-                + "statuses/retweets_of_me.json"));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public ResponseList<Status> getRetweetsOfMe(Paging paging) throws TwitterException {
-        return factory.createStatusList(get(conf.getRestBaseURL()
-                + "statuses/retweets_of_me.json", paging.asPostParameterArray()));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public ResponseList<Status> getUserTimeline(String screenName, Paging paging)
             throws TwitterException {
         return factory.createStatusList(get(conf.getRestBaseURL()
@@ -386,6 +369,50 @@ class TwitterImpl extends TwitterBaseImpl implements Twitter {
     public DirectMessage destroyDirectMessage(long id) throws
             TwitterException {
         return factory.createDirectMessage(post(conf.getRestBaseURL() + "direct_messages/destroy.json?id=" + id));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ResponseList<Status> getFollowingTimeline(String screenName,
+            Paging paging) throws TwitterException {
+        return factory.createStatusList(get(conf.getRestBaseURL() +
+                "statuses/following_timeline.json", mergeParameters(paging.asPostParameterArray()
+                , new HttpParameter("screen_name", screenName))));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ResponseList<Status> getFollowingTimeline(long userId, Paging paging)
+            throws TwitterException {
+        return factory.createStatusList(get(conf.getRestBaseURL() +
+                "statuses/following_timeline.json", mergeParameters(paging.asPostParameterArray()
+                , new HttpParameter("user_id", userId))));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ResponseList<Status> getFollowingTimeline(String screenName)
+            throws TwitterException {
+        return factory.createStatusList(get(conf.getRestBaseURL() +
+                "statuses/following_timeline.json"
+                , new HttpParameter[]{ new HttpParameter("screen_name", screenName) }));
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public ResponseList<Status> getFollowingTimeline(long userId)
+            throws TwitterException {
+        return factory.createStatusList(get(conf.getRestBaseURL() +
+                "statuses/following_timeline.json"
+                , new HttpParameter[]{ new HttpParameter("user_id", userId) }));
     }
 
     /**
