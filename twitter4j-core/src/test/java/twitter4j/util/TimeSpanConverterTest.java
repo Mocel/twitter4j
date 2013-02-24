@@ -46,7 +46,6 @@ public class TimeSpanConverterTest extends TestCase {
     }
 
     // Beware the 'month' argument follows the Java Calendar standard and is 0-based.
-    @SuppressWarnings("unused")
     private long getSpecificLocalDateInMillis(int month, int day) {
         return this.getSpecificLocalDateInMillis((int) this.getCurrentYear(), month, day);
     }
@@ -57,6 +56,12 @@ public class TimeSpanConverterTest extends TestCase {
         Calendar cal = Calendar.getInstance();
         cal.set(year, month, day);
         return cal.getTimeInMillis();
+    }
+
+    private long getCurrentYear() {
+        // Re-create the instance in case these tests are multi-threaded.
+        Calendar cal = Calendar.getInstance();
+        return cal.get(Calendar.YEAR);
     }
 
     public void testItalian() throws Exception {
